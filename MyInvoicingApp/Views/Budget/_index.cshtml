@@ -1,0 +1,93 @@
+﻿@model IEnumerable<MyInvoicingApp.ViewModels.BudgetViewModel>
+
+<h2>Lista budżetów</h2>
+
+<p>
+    <a asp-action="AddPartial" asp-controller="Budget" class="btn btn-success">Dodaj nowy budżet</a>
+</p>
+<table id="budget-list-table" class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.BudgetNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CommitedAmount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.InvoicedAmount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreatedBy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreatedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastModifiedBy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastModifiedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Owner)
+            </th>
+            <th>
+                Akcje
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr class="template-budget-row">
+                <td class="BudgetNumber">
+                    @Html.DisplayFor(modelItem => item.BudgetNumber)
+                </td>
+                <td class="Status">
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td class="Description">
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td class="CommitedAmount">
+                    @Html.DisplayFor(modelItem => item.CommitedAmount)
+                </td>
+                <td class="InvoicedAmount">
+                    @Html.DisplayFor(modelItem => item.InvoicedAmount)
+                </td>
+                <td class="CreatedBy-UserName">
+                    @Html.DisplayFor(modelItem => item.CreatedBy.UserName)
+                </td>
+                <td class="CreatedDate">
+                    @Html.DisplayFor(modelItem => item.CreatedDate)
+                </td>
+                <td class="LastModifiedBy-UserName">
+                    @Html.DisplayFor(modelItem => item.LastModifiedBy.UserName)
+                </td>
+                <td class="LastModifiedDate">
+                    @Html.DisplayFor(modelItem => item.LastModifiedDate)
+                </td>
+                <td class="Owner-UserName">
+                    @Html.DisplayFor(modelItem => item.Owner.UserName)
+                </td>
+                <td class="Actions">
+                    <a asp-controller="Budget" asp-action="ReOpen" asp-route-id="@item.Id" title="Otwórz ponownie" class="btn-sm btn-default"><i class="fas fa-door-open fa-lg"></i></a>
+                    <a asp-controller="Budget" asp-action="Edit" asp-route-id="@item.Id" title="Edycja" class="btn-sm btn-default"><i class="fas fa-pen fa-lg"></i></a>
+                    <a asp-controller="Budget" asp-action="Close" asp-route-id="@item.Id" title="Zamknięcie" class="btn-sm btn-default"><i class="fas fa-times fa-lg"></i></a>
+                    <a asp-controller="Budget" asp-action="Details" asp-route-id="@item.Id" title="Szczegóły" class="btn-sm btn-default"><i class="fas fa-info fa-lg"></i></a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script src="~/js/Budget/budgetIndex.js" asp-append-version="true"></script>
+}

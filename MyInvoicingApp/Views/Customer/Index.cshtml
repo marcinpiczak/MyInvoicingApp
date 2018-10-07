@@ -1,0 +1,118 @@
+﻿@model IEnumerable<MyInvoicingApp.ViewModels.CustomerViewModel>
+
+<h2>Lista klientów</h2>
+
+<p>
+    <a asp-action="Add" asp-controller="Customer" class="btn btn-success"><i class="fas fa-plus fa-lg"></i> Dodaj nowego klienta</a>
+</p>
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Status)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Description)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.City)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PostalCode)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Street)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.BuildingNumber)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Notes)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PhoneNumber)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DefaultPaymentMethod)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CreatedBy)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CreatedDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.LastModifiedBy)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.LastModifiedDate)
+        </th>
+        <th>
+            Akcje
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Status)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Description)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.City)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.PostalCode)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Street)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.BuildingNumber)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Notes)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.PhoneNumber)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DefaultPaymentMethod)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CreatedBy.UserName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CreatedDate)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.LastModifiedBy.UserName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.LastModifiedDate)
+        </td>
+        <td>
+            @if (item.Status == Status.Closed)
+            {
+                <a asp-controller="Customer" asp-action="ReOpen" asp-route-id="@item.Id" title="Otwórz ponownie" class="btn-sm btn-default"><i class="fas fa-door-open fa-lg"></i></a>
+            }
+            else
+            {
+                <a asp-controller="Customer" asp-action="Edit" asp-route-id="@item.Id" title="Edycja" class="btn-sm btn-default"><i class="fas fa-pen fa-lg"></i></a>
+                <a asp-controller="Customer" asp-action="Close" asp-route-id="@item.Id" title="Zamknięcie" class="btn-sm btn-default"><i class="fas fa-door-closed fa-lg"></i></a>
+            }
+            <a asp-controller="Customer" asp-action="Details" asp-route-id="@item.Id" title="Szczegóły" class="btn-sm btn-default"><i class="fas fa-info fa-lg"></i></a>
+        </td>
+    </tr>
+}
+    </tbody>
+</table>

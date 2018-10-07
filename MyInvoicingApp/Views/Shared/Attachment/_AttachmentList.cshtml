@@ -1,0 +1,40 @@
+﻿@model IEnumerable<MyInvoicingApp.ViewModels.AttachmentViewModel>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.OriginalFileName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FileDescription)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    <tr data-id="" class="template">
+        <td>Nazwa pliku</td>
+        <td>Opis pliku</td>
+        <td>
+            <a asp-controller="Attachment" asp-action="Delete" asp-route-id="" asp-route-documentType="" asp-route-documentId="" title="Usunięcie" class="btn-sm btn-default cancel-invoice-line"><i class="fas fa-times fa-lg"></i></a>
+            <a asp-controller="Attachment" asp-action="Download" asp-route-id="" asp-route-documentType="" asp-route-documentId="" title="Pobranie" class="btn-sm btn-default dowanload-attachment"><i class="fas fa-file-download fa-lg"></i></a>
+            /td>
+</tr>
+    @foreach (var item in Model)
+    {
+        <tr data-id="@item.Id">
+            <td>
+                @Html.DisplayFor(modelItem => item.OriginalFileName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FileDescription)
+            </td>
+            <td>
+                <a asp-controller="Attachment" asp-action="Delete" asp-route-id="@item.Id" asp-route-documentType="@item.DocumentType" asp-route-documentId="@item.DocumentId" title="Usunięcie" class="btn-sm btn-default delete-attachment"><i class="fas fa-times fa-lg"></i></a>
+                <a asp-controller="Attachment" asp-action="Download" asp-route-id="@item.Id" asp-route-documentType="@item.DocumentType" asp-route-documentId="@item.DocumentId" title="Pobranie" class="btn-sm btn-default dowanload-attachment"><i class="fas fa-file-download fa-lg"></i></a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

@@ -1,0 +1,113 @@
+﻿@using MyInvoicingApp.ViewModels
+@model MyInvoicingApp.ViewModels.InvoiceViewModel
+
+<h2>Szczegóły faktury @Model.InvoiceNumber</h2>
+
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link active show" data-toggle="tab" href="#invoiceHeader">Nagłówek</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" href="#invoiceLines">Linie</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" href="#invoice-attachments">Załączniki</a>
+    </li>
+</ul>
+<div id="myTabContent" class="tab-content">
+    <div class="tab-pane fade active show" id="invoiceHeader">
+        <div>
+            <dt>
+                @Html.DisplayNameFor(model => model.InvoiceNumber)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.InvoiceNumber)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.ReferenceNumber)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.ReferenceNumber)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.PaymentMethod)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.PaymentMethod)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.PaymentDueDate)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.PaymentDueDate)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.IssueDate)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.IssueDate)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.ReceiveDate)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.ReceiveDate)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Customer)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Customer.Name)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Currency)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Currency)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Budget)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Budget.BudgetNumber)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Status)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Status)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.CreatedDate)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.CreatedDate)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.LastModifiedDate)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.LastModifiedDate)
+            </dd>
+        </div>
+        <div>
+            @Html.ActionLink("Edytuj", "Edit", new { id = Model.Id }, new { @class = "btn btn-default" }) |
+            <a asp-action="Index" asp-controller="Invoice" class="btn btn-default">Anuluj</a>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="invoiceLines">
+        @if (!Model.InvoiceLines.Any())
+        {
+            <p>--BRAK--</p>
+        }
+        else
+        {
+            await Html.RenderPartialAsync("_InvoiceLines", @Model.InvoiceLines);
+        }
+    </div>
+    <div class="tab-pane fade" id="invoice-attachments">
+        @{
+            await Html.RenderPartialAsync("Attachment/_AttachmentList", Model.Attachments);
+        }
+    </div>
+</div>

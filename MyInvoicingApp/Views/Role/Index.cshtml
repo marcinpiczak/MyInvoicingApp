@@ -1,0 +1,53 @@
+﻿@model IEnumerable<MyInvoicingApp.Models.ApplicationRole>
+
+<h2>Lista ról/stanowisk</h2>
+
+<p>
+    <a asp-action="Add" asp-controller="Role" class="btn btn-success"><i class="fas fa-plus fa-lg"></i> Dodaj nową rolę</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                Akcje
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td>
+                    @if (item.Status == Status.Closed)
+                    {
+                        <a asp-controller="Role" asp-action="ReOpen" asp-route-id="@item.Id" title="Otwórz ponownie" class="btn-sm btn-default"><i class="fas fa-door-open fa-lg"></i></a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Role" asp-action="AsignUser" asp-route-Id="@item.Id" title="Przypisanie użytkownka" class="btn-sm btn-default"><i class="fas fa-plus fa-lg"></i></a>
+                        <a asp-controller="Role" asp-action="Edit" asp-route-id="@item.Id" title="Edycja" class="btn-sm btn-default"><i class="fas fa-pen fa-lg"></i></a>
+                        <a asp-controller="Role" asp-action="Close" asp-route-id="@item.Id" title="Zamknięcie" class="btn-sm btn-default"><i class="fas fa-times fa-lg"></i></a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

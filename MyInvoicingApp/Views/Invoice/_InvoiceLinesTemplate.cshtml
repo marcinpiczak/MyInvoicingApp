@@ -1,0 +1,99 @@
+﻿@model MyInvoicingApp.ViewModels.InvoiceLineViewModel
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LineNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ItemName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Quantity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Currency)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CurrencyRate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TaxRate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Netto)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Tax)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Gross)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BaseNetto)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BaseTax)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BaseGross)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Budget)
+            </th>
+            @*<th>
+                    @Html.DisplayNameFor(model => model.CreatedBy)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.CreatedDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.LastModifiedBy)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.LastModifiedDate)
+                </th>*@
+            <th>
+                Akcje
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="template template-invoice-line" data-id="">
+            <td>Status</td>
+            <td>LineNumber</td>
+            <td>ItemName</td>
+            <td>Description</td>
+            <td>Quantity</td>
+            <td>Price</td>
+            <td>Currency</td>
+            <td>CurrencyRate</td>
+            <td>TaxRate</td>
+            <td>Netto</td>
+            <td>Tax</td>
+            <td>Gross</td>
+            <td>BaseNetto</td>
+            <td>BaseTax</td>
+            <td>BaseGross</td>
+            <td data-id="">Budget.BudgetNumber</td>
+            @*<td>CreatedBy.UserName</td>
+                <td>CreatedDate</td>
+                <td>LastModifiedBy.UserName</td>
+                <td>LastModifiedDate</td>*@
+            <td>
+                <a asp-controller="Invoice" asp-action="Edit" asp-route-id="" title="Edycja" class="btn-sm btn-default edit-invoice-line"><i class="fas fa-pen fa-lg"></i></a>
+                <a asp-controller="Invoice" asp-action="Cancel" asp-route-id="" title="Anulowanie" class="btn-sm btn-default cancel-invoice-line"><i class="fas fa-times fa-lg"></i></a>
+            </td>
+        </tr>
+    </tbody>
+</table>

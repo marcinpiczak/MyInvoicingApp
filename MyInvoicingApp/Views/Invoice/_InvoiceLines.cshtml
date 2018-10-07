@@ -1,0 +1,179 @@
+﻿@model IEnumerable<MyInvoicingApp.ViewModels.InvoiceLineViewModel>
+
+@{
+    var actionName = this.ViewContext.RouteData.Values["action"].ToString();
+}
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LineNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ItemName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Quantity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Currency)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CurrencyRate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TaxRate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Netto)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Tax)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Gross)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BaseNetto)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BaseTax)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BaseGross)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Budget)
+            </th>
+            @*<th>
+                    @Html.DisplayNameFor(model => model.CreatedBy)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.CreatedDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.LastModifiedBy)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.LastModifiedDate)
+                </th>*@
+            @if (actionName.ToLower() != "details")
+            {
+                <th>
+                    Akcje
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="template template-invoice-line" data-id="">
+            <td>Status</td>
+            <td>LineNumber</td>
+            <td>ItemName</td>
+            <td>Description</td>
+            <td>Quantity</td>
+            <td>Price</td>
+            <td>Currency</td>
+            <td>CurrencyRate</td>
+            <td>TaxRate</td>
+            <td>Netto</td>
+            <td>Tax</td>
+            <td>Gross</td>
+            <td>BaseNetto</td>
+            <td>BaseTax</td>
+            <td>BaseGross</td>
+            <td data-id="">Budget.BudgetNumber</td>
+            @*<td>CreatedBy.UserName</td>
+                <td>CreatedDate</td>
+                <td>LastModifiedBy.UserName</td>
+                <td>LastModifiedDate</td>*@
+            <td>
+                <a asp-controller="Invoice" asp-action="Edit" asp-route-id="" title="Edycja" class="btn-sm btn-default edit-invoice-line"><i class="fas fa-pen fa-lg"></i></a>
+                <a asp-controller="Invoice" asp-action="Cancel" asp-route-id="" title="Anulowanie" class="btn-sm btn-default cancel-invoice-line"><i class="fas fa-times fa-lg"></i></a>
+            </td>
+        </tr>
+        @foreach (var item in Model)
+        {
+            <tr data-id="@item.Id">
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LineNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ItemName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Quantity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Currency)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CurrencyRate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TaxRate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Netto)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Tax)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Gross)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BaseNetto)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BaseTax)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BaseGross)
+                </td>
+                <td data-id="@item.BudgetId">
+                    @Html.DisplayFor(modelItem => item.Budget.BudgetNumber)
+                </td>
+                @*<td>
+                        @Html.DisplayFor(modelItem => item.CreatedBy.UserName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CreatedDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.LastModifiedBy.UserName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.LastModifiedDate)
+                    </td>*@
+                @if (actionName.ToLower() != "details")
+                {
+                    <td>
+                        <a asp-controller="Invoice" asp-action="Edit" asp-route-id="@item.Id" title="Edycja" class="btn-sm btn-default edit-invoice-line"><i class="fas fa-pen fa-lg"></i></a>
+                        <a asp-controller="Invoice" asp-action="Cancel" asp-route-id="@item.Id" title="Anulowanie" class="btn-sm btn-default cancel-invoice-line"><i class="fas fa-times fa-lg"></i></a>
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>

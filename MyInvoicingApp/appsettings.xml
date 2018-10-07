@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ROOT>
+  <ConnectionStrings>
+    <DefaultConnection>Data Source=.\SQLEXPRESS;Initial Catalog=MyInvoicingAppDb;Integrated Security=True</DefaultConnection>
+  </ConnectionStrings>
+</ROOT>

@@ -1,0 +1,118 @@
+﻿@model MyInvoicingApp.ViewModels.CustomerViewModel
+
+<h2>Szczegóły klienta</h2>
+
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link active show" data-toggle="tab" href="#customer">Klient</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" href="#invoices">Faktury</a>
+    </li>
+</ul>
+<div id="myTabContent" class="tab-content">
+    <div class="tab-pane fade active show" id="customer">
+        <div>
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => model.Status)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Status)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Name)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Name)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Description)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Description)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.City)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.City)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.PostalCode)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.PostalCode)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Street)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Street)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.BuildingNumber)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.BuildingNumber)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Notes)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Notes)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.PhoneNumber)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.PhoneNumber)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.DefaultPaymentMethod)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.DefaultPaymentMethod)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.CreatedBy)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.CreatedBy.UserName)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.CreatedDate)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.CreatedDate)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.LastModifiedBy)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.LastModifiedBy.UserName)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.LastModifiedDate)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.LastModifiedDate)
+                </dd>
+            </dl>
+        </div>
+        <div>
+            @Html.ActionLink("Edytuj", "Edit", new { id = Model.Id }, new { @class = "btn btn-default" }) |
+            <a asp-action="Index" asp-controller="Customer" class="btn btn-default">Anuluj</a>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="invoices">
+        @if (Model.Invoices.Count == 0)
+        {
+            <p>--BRAK--</p>
+        }
+        else
+        {
+            await Html.RenderPartialAsync("_Invoices", @Model.Invoices);
+        }
+    </div>
+</div>

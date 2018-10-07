@@ -1,0 +1,101 @@
+﻿@model MyInvoicingApp.ViewModels.InvoiceViewModel
+
+<form id="add-invoice-line-form" method="post">
+@*<form id="add-invoice-line-form" asp-action="AddLine" asp-controller="Invoice" method="post">*@
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group">
+        <input asp-for="Id" type="hidden" class="form-control"/>
+    </div>
+    <div class="form-group">
+        <input asp-for="InvoiceLine.InvoiceId" type="hidden" value="@Model.Id" class="form-control"/>
+    </div>
+    <div class="form-group">
+        <input asp-for="InvoiceLine.LineNumber" type="hidden" value="0" class="form-control"/>
+    </div>
+    <div class="form-group">
+        <label asp-for="InvoiceLine.ItemName" class="control-label"></label>
+        <input asp-for="InvoiceLine.ItemName" class="form-control"/>
+        <span asp-validation-for="InvoiceLine.ItemName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="InvoiceLine.Description" class="control-label"></label>
+        <textarea asp-for="InvoiceLine.Description" class="form-control"></textarea>
+        <span asp-validation-for="InvoiceLine.Description" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="InvoiceLine.Quantity" class="control-label"></label>
+        <input asp-for="InvoiceLine.Quantity" class="form-control"/>
+        <span asp-validation-for="InvoiceLine.Quantity" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="InvoiceLine.Price" class="control-label"></label>
+        <input asp-for="InvoiceLine.Price" class="form-control"/>
+        <span asp-validation-for="InvoiceLine.Price" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="InvoiceLine.Currency" class="control-label"></label>
+        <input asp-for="InvoiceLine.Currency" class="form-control"/>
+        <span asp-validation-for="InvoiceLine.Currency" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="InvoiceLine.CurrencyRate" class="control-label"></label>
+        <input asp-for="InvoiceLine.CurrencyRate" class="form-control"/>
+        <span asp-validation-for="InvoiceLine.CurrencyRate" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="InvoiceLine.TaxRate" class="control-label"></label>
+        <input asp-for="InvoiceLine.TaxRate" class="form-control"/>
+        <span asp-validation-for="InvoiceLine.TaxRate" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <fieldset disabled="">
+            <label asp-for="InvoiceLine.Netto" class="control-label"></label>
+            <input asp-for="InvoiceLine.Netto" class="form-control"/>
+            <span asp-validation-for="InvoiceLine.Netto" class="text-danger"></span>
+        </fieldset>
+    </div>
+    <div class="form-group">
+        <fieldset disabled="">
+            <label asp-for="InvoiceLine.Tax" class="control-label"></label>
+            <input asp-for="InvoiceLine.Tax" class="form-control"/>
+            <span asp-validation-for="InvoiceLine.Tax" class="text-danger"></span>
+        </fieldset>
+    </div>
+    <div class="form-group">
+        <fieldset disabled="">
+            <label asp-for="InvoiceLine.Gross" class="control-label"></label>
+            <input asp-for="InvoiceLine.Gross" class="form-control"/>
+            <span asp-validation-for="InvoiceLine.Gross" class="text-danger"></span>
+        </fieldset>
+    </div>
+    <div class="form-group">
+        <fieldset disabled="">
+            <label asp-for="InvoiceLine.BaseNetto" class="control-label"></label>
+            <input asp-for="InvoiceLine.BaseNetto" class="form-control"/>
+            <span asp-validation-for="InvoiceLine.BaseNetto" class="text-danger"></span>
+        </fieldset>
+    </div>
+    <div class="form-group">
+        <fieldset disabled="">
+            <label asp-for="InvoiceLine.BaseTax" class="control-label"></label>
+            <input asp-for="InvoiceLine.BaseTax" class="form-control"/>
+            <span asp-validation-for="InvoiceLine.BaseTax" class="text-danger"></span>
+        </fieldset>
+    </div>
+    <div class="form-group">
+        <fieldset disabled="">
+            <label asp-for="InvoiceLine.BaseGross" class="control-label"></label>
+            <input asp-for="InvoiceLine.BaseGross" class="form-control"/>
+            <span asp-validation-for="InvoiceLine.BaseGross" class="text-danger"></span>
+        </fieldset>
+    </div>
+    <div class="form-group">
+        <label asp-for="InvoiceLine.Budget" class="control-label"></label>
+        <select asp-for="InvoiceLine.BudgetId" asp-items="@Model.BudgetItemList" class="form-control"></select>
+        <span asp-validation-for="InvoiceLine.BudgetId" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <input id="add-invoice-line-btn" type="submit" value="Dodaj linię" class="btn btn-success"/>
+        <a id="cancel-add-invoice-line-btn" asp-action="Index" asp-controller="Invoice" class="btn btn-default">Anuluj</a>
+    </div>
+</form>

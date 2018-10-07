@@ -1,0 +1,46 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\20180911202254_modify_application_role.cs" />
+    <Compile Remove="Migrations\20180911202254_modify_application_role.Designer.cs" />
+    <Compile Remove="Migrations\20180913204034_add_Invoice_Customer_models.cs" />
+    <Compile Remove="Migrations\20180913204034_add_Invoice_Customer_models.Designer.cs" />
+    <Compile Remove="Migrations\20180913212118_add_budget_model_and_smoe_modifiaction_for_others.cs" />
+    <Compile Remove="Migrations\20180913212118_add_budget_model_and_smoe_modifiaction_for_others.Designer.cs" />
+    <Compile Remove="Migrations\20180914200722_add_budget_model_and_smoe_modifiaction_for_others.cs" />
+    <Compile Remove="Migrations\20180914200722_add_budget_model_and_smoe_modifiaction_for_others.Designer.cs" />
+    <Compile Remove="Migrations\20180916212136_add_createdBy_lastModifiedBy_Budget_Customer.cs" />
+    <Compile Remove="Migrations\20180916212136_add_createdBy_lastModifiedBy_Budget_Customer.Designer.cs" />
+    <Compile Remove="Migrations\20180916213122_add_createdBy_lastModifiedBy_Budget_Customer.cs" />
+    <Compile Remove="Migrations\20180916213122_add_createdBy_lastModifiedBy_Budget_Customer.Designer.cs" />
+    <Compile Remove="Migrations\20180916213829_new.cs" />
+    <Compile Remove="Migrations\20180916213829_new.Designer.cs" />
+    <Compile Remove="Migrations\20180917152957_new.cs" />
+    <Compile Remove="Migrations\20180917152957_new.Designer.cs" />
+    <Compile Remove="Migrations\20180919165944_InvoiceLines_add_modify_columns.cs" />
+    <Compile Remove="Migrations\20180919165944_InvoiceLines_add_modify_columns.Designer.cs" />
+    <Compile Remove="Migrations\20180927122050_Invoice_add_reference_number.cs" />
+    <Compile Remove="Migrations\20180927122050_Invoice_add_reference_number.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Adapters\" />
+    <Folder Include="wwwroot\Attachments\" />
+  </ItemGroup>
+
+</Project>

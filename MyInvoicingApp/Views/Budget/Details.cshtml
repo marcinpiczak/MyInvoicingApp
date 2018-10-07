@@ -1,0 +1,82 @@
+﻿@model MyInvoicingApp.ViewModels.BudgetViewModel
+
+<h2>Szczegóły budżetu: @Model.BudgetNumber</h2>
+
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link active show" data-toggle="tab" href="#budget">Budżet</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" href="#invoices">Faktury</a>
+    </li>
+</ul>
+<div id="myTabContent" class="tab-content">
+    <div class="tab-pane fade active show" id="budget">
+        <div>
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => model.Status)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Status)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Description)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Description)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.CommitedAmount)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.CommitedAmount)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.InvoicedAmount)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.InvoicedAmount)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.CreatedBy)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.CreatedBy.UserName)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.CreatedDate)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.CreatedDate)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.LastModifiedBy)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.LastModifiedBy.UserName)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.LastModifiedDate)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.LastModifiedDate)
+                </dd>
+            </dl>
+        </div>
+        <div>
+            @Html.ActionLink("Edytuj", "Edit", new { id = Model.Id }, new { @class = "btn btn-default" }) |
+            <a asp-action="Index" asp-controller="Budget" class="btn btn-default">Anuluj</a>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="invoices">
+        @if (Model.InvoiceLines.Count == 0)
+        {
+            <p>--BRAK--</p>
+        }
+        else
+        {
+            await Html.RenderPartialAsync("_InvoiceLines", Model.InvoiceLines);
+        }
+    </div>
+</div>

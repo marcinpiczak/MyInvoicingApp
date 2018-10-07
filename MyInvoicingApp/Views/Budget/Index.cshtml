@@ -1,0 +1,111 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using MyInvoicingApp.Interfaces
+@model IEnumerable<MyInvoicingApp.ViewModels.BudgetViewModel>
+@inject UserManager<ApplicationUser> UserManager;
+@inject IBudgetManager BudgetManager;
+@{
+    var currentUser = UserManager.Users.First(x => x.UserName == User.Identity.Name);
+}
+
+<h2>Lista budżetów</h2>
+
+<p>
+    <a asp-action="Add" asp-controller="Budget" class="btn btn-success"><i class="fas fa-plus fa-lg"></i> Dodaj nowy budżet</a>
+</p>
+<table id="budget-list-table" class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.BudgetNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CommitedAmount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.InvoicedAmount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreatedBy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreatedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastModifiedBy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastModifiedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Owner)
+            </th>
+            <th>
+                Akcje
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BudgetNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CommitedAmount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.InvoicedAmount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedBy.UserName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastModifiedBy.UserName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastModifiedDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Owner.UserName)
+                </td>
+                <td>
+
+                    @if (BudgetManager.CanEdit(item.CreatedBy, currentUser))
+                    {
+                        if (item.Status == Status.Closed)
+                        {
+                            <a asp-controller="Budget" asp-action="ReOpen" asp-route-id="@item.Id" title="Otwórz ponownie" class="btn-sm btn-default"><i class="fas fa-door-open fa-lg"></i></a>
+                        }
+                        else
+                        {
+                            <a asp-controller="Budget" asp-action="Edit" asp-route-id="@item.Id" title="Edycja" class="btn-sm btn-default"><i class="fas fa-pen fa-lg"></i></a>
+                            <a asp-controller="Budget" asp-action="Close" asp-route-id="@item.Id" title="Zamknięcie" class="btn-sm btn-default"><i class="fas fa-door-closed fa-lg"></i></a>
+                        }
+
+                    }
+                    <a asp-controller="Budget" asp-action="Details" asp-route-id="@item.Id" title="Szczegóły" class="btn-sm btn-default"><i class="fas fa-info fa-lg"></i></a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    @*<script src="~/js/Budget/budgetIndex_DataTables.js" asp-append-version="true"></script>*@
+}

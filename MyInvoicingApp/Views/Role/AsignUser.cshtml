@@ -1,0 +1,39 @@
+﻿@model MyInvoicingApp.ViewModels.RoleViewModel
+
+<h4>Przypisywanie użytkownika do roli @Model.Position</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="AsignUser" asp-controller="Role" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                @*<label asp-for="Id" class="control-label"></label>*@
+                <input asp-for="Id" class="form-control" />
+                @*<span asp-validation-for="Id" class="text-danger"></span>*@
+            </div>
+            <div class="form-group">
+                <label class="control-label">Użytkownik</label>
+                <select id="userId" name="userId" asp-items="@ViewBag.otherUsers" class="form-control" multiple="multiple"></select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Dodaj" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+<div>
+    <ul>
+        @foreach (var user in Model.AsignedUsers)
+        {
+            <li>@user.UserName <a asp-controller="Role" asp-action="RemoveFromRole" asp-route-id="@Model.Id" asp-route-userId="@user.Id" asp title="Usuń" class="btn-sm btn-default"><i class="fas fa-times fa-lg"></i></a></li>
+        }
+    </ul>
+</div>
+
+<div>
+    <a asp-action="Index" asp-controller="Role" class="btn btn-default">Anuluj</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

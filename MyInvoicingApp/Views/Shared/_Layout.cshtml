@@ -1,0 +1,156 @@
+﻿@{
+    var controllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    var actionName = this.ViewContext.RouteData.Values["action"].ToString();
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>My Invoicing Application</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    @* Bootstrap *@
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    @* Glyphs from Bootstrap v3 *@
+    <link rel="stylesheet" href="~/css/glyphs.css" />
+
+    @* Font Awsome *@
+    <link rel="stylesheet" href="~/lib/fontawesome/css/all.css" />
+
+    @* DataTables *@
+    @*<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/jszip-2.5.0/dt-1.10.18/b-1.5.2/b-colvis-1.5.2/b-flash-1.5.2/b-html5-1.5.2/datatables.min.css" />*@
+
+    @*AlertifyJS*@
+    <link rel="stylesheet" href="~/lib/alertifyjs/css/alertify.min.css" />
+    <link rel="stylesheet" href="~/lib/alertifyjs/css/themes/bootstrap.min.css" />
+
+    @* Custom CSS *@
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">My Invoicing Application</a>
+            <div class="navbar-header">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+            <div class="navbar-collapse collapse" id="navbarColor01">
+                <ul class="navbar-nav mr-auto">
+                    @*<li><a asp-area="" asp-controller="Home" asp-action="Index" class="nav-link">Home</a></li>
+                        <li><a asp-area="" asp-controller="Home" asp-action="Contact" class="nav-link">Contact</a></li>
+                        <li><a asp-area="" asp-controller="Home" asp-action="Privacy" class="nav-link">Polityka prywatności</a></li>*@
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li class="nav-item dropdown" id="menu-dropdown-role">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown-role" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Role
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a asp-controller="Role" asp-action="Index" class="dropdown-item" id="menu-dropdown-role-list">Lista</a>
+                                <a asp-controller="Role" asp-action="Add" class="dropdown-item" id="menu-dropdown-role-add">Dodaj nowy</a>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown" id="menu-dropdown-budget">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown-budget" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Budżet
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a asp-controller="Budget" asp-action="Index" class="dropdown-item" id="menu-dropdown-budget-list">Lista</a>
+                                <a asp-controller="Budget" asp-action="Add" class="dropdown-item" id="menu-dropdown-budget-add">Dodaj nowy</a>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown" id="menu-dropdown-customer">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown-customer" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Klienci
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a asp-controller="Customer" asp-action="Index" class="dropdown-item" id="menu-dropdown-customer-list">Lista</a>
+                                <a asp-controller="Customer" asp-action="Add" class="dropdown-item" id="menu-dropdown-customer-add">Dodaj nowy</a>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown" id="menu-dropdown-invoice">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown-invoice" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Faktury
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a asp-controller="Invoice" asp-action="Index" class="dropdown-item" id="menu-dropdown-invoice-list">Lista</a>
+                                <a asp-controller="Invoice" asp-action="Add" class="dropdown-item" id="menu-dropdown-invoice-add">Dodaj nowy</a>
+                            </div>
+                        </li>
+                    }
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li><a class="nav-link">Witaj [@User.Identity.Name]</a></li>
+                        <li><a asp-controller="Account" asp-action="LogOut" class="nav-link"><i class="fas fa-sign-out-alt fa-lg" aria-hidden="true"></i> Wyloguj</a></li>
+                    }
+                    else
+                    {
+                        <li><a asp-controller="Account" asp-action="Register" class="nav-link"><i class="fas fa-user fa-lg" aria-hidden="true"></i> Rejestracja</a></li>
+                        <li><a asp-controller="Account" asp-action="LogIn" class="nav-link"><i class="fas fa-sign-in-alt fa-lg" aria-hidden="true"></i> Zaloguj</a></li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container-fluid body-content">
+        <ol class="breadcrumb">
+            @if (controllerName.ToLower() == "home")
+            {
+                <li class="breadcrumb-item active">Home</li>
+            }
+            else
+            {
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+                <li class="breadcrumb-item"><a asp-controller="@controllerName" asp-action="Index">@controllerName</a></li>
+                <li class="breadcrumb-item active">@actionName</li>
+            }
+        </ol>
+        @if (@TempData["Message"] != null)
+        {
+            <div class="alert alert-dismissible alert-info">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <strong>@TempData["Message"]</strong>
+            </div>
+        }
+        @RenderBody()
+
+    </div>
+    <hr />
+    <footer>
+        <p>&copy; 2018 - My Invoicing Application</p>
+    </footer>
+
+    @* JQuery *@
+    <script src="~/lib/jquery/dist/jquery.js" asp-append-version="true"></script>
+
+    @* Popper for Bootstrap *@
+    <script src="~/lib/popper/dist/popper.js" asp-append-version="true"></script>
+
+    @* Bootstrap *@
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js" asp-append-version="true"></script>
+
+    @* DataTables *@
+    @*<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/jszip-2.5.0/dt-1.10.18/b-1.5.2/b-colvis-1.5.2/b-flash-1.5.2/b-html5-1.5.2/datatables.min.js"></script>*@
+
+    @*Numeral - JS lib for number formating*@
+    <script src="~/lib/Numeral/numeral.js"></script>
+    <script src="~/lib/Numeral/locales.js"></script>
+
+    @*AlertifyJS*@
+    <script src="~/lib/alertifyjs/alertify.min.js"></script>
+
+    @* Custom JS *@
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
