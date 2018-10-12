@@ -63,7 +63,11 @@
     var documentId = invoiceAttachmentForm.find("#DocumentId");
     var invoiceAttachmentAddBtn = invoiceAttachmentForm.find("input#add-invoice-attachment-btn");
 
-    //set default values for attachments
+    //invoice attachments lines
+    var invoiceAttachmentsListTBody = invoiceTabContent.find("table#invoice-attachments-list tbody");
+    var attachmentTemplateRow = invoiceAttachmentsListTBody.find("tr.template-invoice-attachment-row");
+
+    //set default values for attachment form
     documentType.val(2);
     documentId.val(invoiceId.val());
 
@@ -495,8 +499,6 @@
         });
 
     //edit line
-    //invoiceLineListTBody.on("click", "tr:not(.template-invoice-line)", function (event) {
-    //invoiceLineListTBody.on("dblclick", "tr:not(.template-invoice-line)", function (event) {
     invoiceLineListTBody.on("click", "a.edit-invoice-line", function (event) {
         event.preventDefault();
         event.stopImmediatePropagation();
@@ -569,16 +571,13 @@
         }
     });
 
-    function submitInvoiceAttacmentFormCallback(event) {
+    function submitInvoiceAttachmentFormCallback(event) {
         event.preventDefault();
         event.stopImmediatePropagation();
 
         $(this).validate();
 
         if ($(this).valid()) {
-            //alertify.alert('Ready!');
-            //alertify.notify('sample', 'success', 5);
-
             $.ajax(
                 {
                     url: "https://localhost:5001/Attachment/AddJson",
@@ -590,8 +589,18 @@
                     processData: false,
                     success: function (result) {
                         if (result.success) {
-                            
-                            alertify.notify('Dodano poprawnie pliki', 'success', 5);
+
+                            var attachment = {
+                                Id: result.Id,
+                                FileName: result.FileName,
+                                FileDescription: result.FileDescription,
+                                DocumentType: result.DocumentType,
+                                DocumentId: result.DocumentId
+                            };
+
+                            addAttachmentToList(attachment);
+
+                            alertify.notify('Dodano poprawnie pliki', 'success', 10);
 
                         } else {
                             var div = createValidationSummary(result.errors);
@@ -608,5 +617,68 @@
         }
     }
 
-    invoiceAttachmentForm.submit(submitInvoiceAttacmentFormCallback);
+    invoiceAttachmentForm.submit(submitInvoiceAttachmentFormCallback);
+
+    function prepareNewRowForAttachmentFromTemplate(attachment) {
+        var newRow = attachmentTemplateRow.clone();
+        newRow.removeClass(["template", "template-invoice-attachment-row"]);
+
+        newRow.attr("data-id", attachment.Id);
+        newRow.children().eq(0).text(attachment.FileName);
+        newRow.children().eq(1).text(attachment.FileDescription);
+
+        var actions = newRow.children().eq(2).find("a");
+        actions.each(function(index, element) {
+            var href = $(element).attr("href");
+            $(element).attr("href", href + "?attachmentId=" + attachment.Id + "&documentType=" + attachment.DocumentType + "&documentId=" + attachment.DocumentId);
+        });
+
+        return newRow;
+    }
+
+    function addAttachmentToList(attachment) {
+        var newRow = prepareNewRowForAttachmentFromTemplate(attachment);
+
+        newRow.appendTo(attachmentTemplateRow.parent());
+    }
+
+    invoiceAttachmentsListTBody.on("click", "a.delete-attachment", function (event) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+
+        var attachmentRow = $(this).closest("tr");
+        var attachmentId = attachmentRow.attr("data-id");
+        var documentType = "Invoice";
+        var documentId = invoiceId.val();
+
+        var attachmentData = {
+            attachmentId: attachmentId,
+            documentType: documentType,
+            documentId: documentId
+        };
+
+        console.log(attachmentData);
+
+        $.ajax(
+            {
+                url: "https://localhost:5001/Attachment/DeleteJson",
+                data: attachmentData,
+                type: "POST",
+                dataType: "json",
+                success: function (result) {
+                    if (result.success) {
+
+                        attachmentRow.remove();
+                        alertify.notify('Usunięto poprawnie pliki', 'success', 10);
+
+                    } else {
+                        var div = createValidationSummary(result.errors);
+                        alertify.alert().setContent(div[0]).show();
+                    }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    alert(xhr.status);
+                }
+            });
+    });
 });

@@ -20,15 +20,15 @@
                 @*<span asp-validation-for="DocumentId" class="text-danger"></span>*@
             </div>
             <div class="form-group">
-                <label asp-for="File" class="control-label"></label>
-                <input asp-for="File" class="form-control-file" aria-describedby="fileHelp" />
+                @*<label asp-for="File" class="control-label"></label>
+                <input asp-for="File" class="form-control-file" aria-describedby="fileHelp" />*@
                 @*<input asp-for="File" class="form-control" multiple />*@
-                <span asp-validation-for="File" class="text-danger"></span>
-
-                @*<div class="custom-file">
-            <input asp-for="File" class="custom-file-input" lang="PL-pl">
-            <label asp-for="File" class="custom-file-label"></label>
-        </div>*@
+                @*<span asp-validation-for="File" class="text-danger"></span>*@
+                <div class="custom-file">
+                    <input asp-for="File" class="custom-file-input">
+                    <label asp-for="File" class="custom-file-label"></label>
+                    <span asp-validation-for="File" class="text-danger"></span>
+                </div>
             </div>
             <div class="form-group">
                 <input id="add-invoice-attachment-btn" type="submit" value="Dodaj" class="btn btn-success" />

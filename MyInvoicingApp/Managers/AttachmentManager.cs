@@ -35,17 +35,14 @@ namespace MyInvoicingApp.Managers
             FileHelper = fileHelper;
         }
 
-        public async Task Add(AttachmentViewModel model, ApplicationUser createdBy)
+        public async Task<Attachment> Add(AttachmentViewModel model, ApplicationUser createdBy)
         {
-            //var result = System.IO.Directory.CreateDirectory(AttachmentsFolder);
-
             var uniqueFileName = FileHelper.GetUniqueFileName(model.File.FileName);
-            var uploads = Path.Combine(HostingEnvironment.WebRootPath, AttachmentsFolder);
+            //var uploads = Path.Combine(HostingEnvironment.WebRootPath, AttachmentsFolder);
+            var uploads = Path.Combine("wwwroot", AttachmentsFolder);
             var filePath = Path.Combine(uploads, uniqueFileName);
-            using (var stream = new FileStream(filePath, FileMode.CreateNew))
-            {
-                await model.File.CopyToAsync(stream);
-            }
+
+            await FileHelper.SaveFile(model, filePath);
 
             var newAttachment = new Attachment()
             {
@@ -55,7 +52,8 @@ namespace MyInvoicingApp.Managers
                 DocumentId = model.DocumentId,
                 FileDescription = model.FileDescription,
                 OriginalFileName = model.File.FileName,
-                FilePath = filePath
+                FilePath = filePath,
+                ContentType = model.File.ContentType
             };
 
             Context.Attachments.Add(newAttachment);
@@ -65,9 +63,11 @@ namespace MyInvoicingApp.Managers
             {
                 throw new Exception("Nie zapisano żadnych danych.");
             }
+
+            return newAttachment;
         }
 
-        public IEnumerable<Attachment> GetAttachmentsForDocumentById(DocumentType documentType ,string documentId)
+        public IEnumerable<Attachment> GetAttachmentsForDocument(DocumentType documentType ,string documentId)
         {
             if (string.IsNullOrWhiteSpace(documentId))
             {
@@ -84,18 +84,77 @@ namespace MyInvoicingApp.Managers
             }
 
             var list = Context.Attachments
-                .Where(x => x.DocumentType == documentType && x.DocumentId == documentId)
-                .Where(x => x.Status == Status.Opened);
+                .Where(x => x.Status == Status.Opened)
+                .Where(x => x.DocumentType == documentType && x.DocumentId == documentId);
 
             return list;
         }
 
-        public IEnumerable<AttachmentViewModel> GetAttachmentViewModelsForDocumentById(DocumentType documentType, string documentId)
+        public IEnumerable<AttachmentViewModel> GetAttachmentViewModelsForDocument(DocumentType documentType, string documentId)
         {
-            var list = GetAttachmentsForDocumentById(documentType, documentId)
+            var list = GetAttachmentsForDocument(documentType, documentId)
                 .Select(x => new AttachmentViewModel(x));
 
             return list;
+        }
+
+        public Attachment GetAttachmentById(string id, DocumentType documentType, string documentId)
+        {
+            var attachment = Context.Attachments
+                .Where(x => x.Status == Status.Opened)
+                .SingleOrDefault(x =>x.Id == id && x.DocumentType == documentType && x.DocumentId == documentId);
+
+            if (attachment == null)
+            {
+                throw new Exception("Nie istnieje załącznik dla podanych parametrów");
+            }
+
+            return attachment;
+        }
+
+        public AttachmentViewModel GetAttachmentViewModelById(string id, DocumentType documentType, string documentId)
+        {
+            var attachment = GetAttachmentById(id, documentType, documentId);
+
+            var model = new AttachmentViewModel(attachment);
+
+            return model;
+        }
+
+        public Attachment GetAttachmentAndCheckPathForDocumentById(string id, DocumentType documentType, string documentId)
+        {
+            var attachment = GetAttachmentById(id, documentType, documentId);
+
+            var exists = FileHelper.FileExists(attachment.FilePath);
+
+            if (!exists)
+            {
+                throw new Exception("Plik nie istnieje");
+            }
+
+            return attachment;
+        }
+
+        public void RemoveAttachmentForDocumentById(string id, DocumentType documentType, string documentId)
+        {
+            var attachment = GetAttachmentAndCheckPathForDocumentById(id, documentType, documentId);
+
+            var exists = FileHelper.DeleteFile(attachment.FilePath);
+
+            if (!exists)
+            {
+                throw new Exception("Nie udało się usunąć pliku");
+            }
+
+            attachment.Status = Status.Closed;
+
+            Context.Attachments.Update(attachment);
+            var result = Context.SaveChanges();
+
+            if (result == 0)
+            {
+                throw new Exception("Nie zapisano żadnych danych.");
+            }
         }
     }
 }

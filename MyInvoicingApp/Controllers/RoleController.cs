@@ -32,7 +32,7 @@ namespace MyInvoicingApp.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var roles = await RoleManager.Roles.ToListAsync();
+            var roles = await RoleManager.Roles.Select(x => new RoleViewModel(x)).ToListAsync();
             return View(roles);
         }
 

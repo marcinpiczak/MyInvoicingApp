@@ -1,12 +1,14 @@
 ﻿using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc;
 using MyInvoicingApp.Models;
 
 namespace MyInvoicingApp.ViewModels
 {
     public class BaseViewModel
     {
+        [HiddenInput]
         public string Id { get; set; }
 
         [Required]

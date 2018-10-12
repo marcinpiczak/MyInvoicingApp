@@ -2,16 +2,12 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Mvc;
 using MyInvoicingApp.Models;
 
 namespace MyInvoicingApp.ViewModels
 {
-    public class RoleViewModel
+    public class RoleViewModel : BaseViewModel
     {
-        [HiddenInput]
-        public string Id { get; set; }
-
         [Required(ErrorMessage = "Nazwa stanowiska jest wymagana")]
         [MinLength(5, ErrorMessage = "Nazwa stanowiska musi się składać przynajmniej z {1} znaków")]
         [DisplayName("Nazwa stanowiska")]
@@ -35,6 +31,7 @@ namespace MyInvoicingApp.ViewModels
             Id = model.Id;
             Position = model.Name;
             Description = model.Description;
+            Status = model.Status;
         }
 
         public RoleViewModel()

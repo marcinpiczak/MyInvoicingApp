@@ -161,7 +161,7 @@ namespace MyInvoicingApp.Managers
 
             var budget = GetBudgetById(model.Id);
 
-            if (!CanEdit(model.CreatedBy, modifiedBy))
+            if (!CanEdit(budget.CreatedBy, modifiedBy))
             {
                 throw new InvalidOperationException("Nie możesz edytować czyjegoś Budżetu");
             }

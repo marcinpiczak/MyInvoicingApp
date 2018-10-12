@@ -1,4 +1,4 @@
-﻿@model IEnumerable<MyInvoicingApp.Models.ApplicationRole>
+﻿@model IEnumerable<MyInvoicingApp.ViewModels.RoleViewModel>
 
 <h2>Lista ról/stanowisk</h2>
 
@@ -9,7 +9,7 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                @Html.DisplayNameFor(model => model.Position)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Description)
@@ -27,13 +27,13 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Name)
+                    @Html.DisplayFor(modelItem => item.Position)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Description)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Status)
+                    @item.Status.ToString()
                 </td>
                 <td>
                     @if (item.Status == Status.Closed)

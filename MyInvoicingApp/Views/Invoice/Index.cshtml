@@ -112,6 +112,7 @@
                     <a asp-controller="Invoice" asp-action="Cancel" asp-route-id="@item.Id" title="Anulowanie" class="btn-sm btn-default"><i class="fas fa-times fa-lg"></i></a>
                 }
                 <a asp-controller="Invoice" asp-action="Details" asp-route-id="@item.Id" title="Szczegóły" class="btn-sm btn-default"><i class="fas fa-info fa-lg"></i></a>
+                <a asp-controller="Pdf" asp-action="GetInvoicePdf" asp-route-invoiceId="@item.Id" title="PDF" class="btn-sm btn-default"><i class='fas fa-file-pdf fa-lg'></i></a>
             </td>
         </tr>
 }

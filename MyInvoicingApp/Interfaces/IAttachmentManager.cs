@@ -7,10 +7,18 @@ namespace MyInvoicingApp.Interfaces
 {
     public interface IAttachmentManager
     {
-        Task Add(AttachmentViewModel model, ApplicationUser createdBy);
+        Task<Attachment> Add(AttachmentViewModel model, ApplicationUser createdBy);
 
-        IEnumerable<Attachment> GetAttachmentsForDocumentById(DocumentType documentType, string documentId);
+        IEnumerable<Attachment> GetAttachmentsForDocument(DocumentType documentType, string documentId);
 
-        IEnumerable<AttachmentViewModel> GetAttachmentViewModelsForDocumentById(DocumentType documentType, string documentId);
+        IEnumerable<AttachmentViewModel> GetAttachmentViewModelsForDocument(DocumentType documentType, string documentId);
+
+        Attachment GetAttachmentById(string id, DocumentType documentType, string documentId);
+
+        AttachmentViewModel GetAttachmentViewModelById(string id, DocumentType documentType, string documentId);
+
+        Attachment GetAttachmentAndCheckPathForDocumentById(string id, DocumentType documentType, string documentId);
+
+        void RemoveAttachmentForDocumentById(string id, DocumentType documentType, string documentId);
     }
 }

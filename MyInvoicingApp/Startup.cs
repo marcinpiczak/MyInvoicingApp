@@ -57,11 +57,15 @@ namespace MyInvoicingApp
             services.AddScoped<IAttachmentManager, AttachmentManager>();
             services.AddScoped<IDocumentNumberingManager, DocumentNumberingManager>();
             services.AddSingleton<IDocumentNumberModelManager, DocumentNumberModelManager>();
+            services.AddScoped<IPdfManager, PdfManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            //Register Syncfusion license
+            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("MzIxNjNAMzEzNjJlMzMyZTMwUkJlL20xOTBBMTZzdTNuQUhIRDJzYTJaNVdNTU16YlJaYUJKemtyY2FiST0=;MzIxNjRAMzEzNjJlMzMyZTMwRkZBcitoMXloUkRaTnlnV3FhTFYveVh4NHNTWk0rdEFhVG1rQ2ZSL0VqYz0=");
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

@@ -63,12 +63,12 @@
             <th>
                 @Html.DisplayNameFor(model => model.CreatedDate)
             </th>
-            <th>
+            @*<th>
                 @Html.DisplayNameFor(model => model.LastModifiedBy)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.LastModifiedDate)
-            </th>
+            </th>*@
             @*<th>
                 Akcje
             </th>*@
@@ -138,12 +138,12 @@
             <td>
                 @Html.DisplayFor(modelItem => item.CreatedDate)
             </td>
-            <td>
+            @*<td>
                 @Html.DisplayFor(modelItem => item.LastModifiedBy.UserName)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.LastModifiedDate)
-            </td>
+            </td>*@
             @*<td>
             @Html.ActionLink("Edit", "Edit", new {id = item.Id}, new {@class = "edit-invoice-line"}) |
             @Html.ActionLink("Delete", "Cancel", new {id = item.Id}, new {@class = "cancel-invoice-line"})

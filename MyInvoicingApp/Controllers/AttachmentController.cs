@@ -30,11 +30,16 @@ namespace MyInvoicingApp.Controllers
                 {
                     if (model.File != null)
                     {
-                        await AttachmentManager.Add(model, CurrentUser);
+                        var attachment = await AttachmentManager.Add(model, CurrentUser);
 
                         return Json(new
                         {
-                            success = true
+                            success = true,
+                            Id = attachment.Id,
+                            DocumentId = attachment.DocumentId,
+                            DocumentType = attachment.DocumentType.ToString(),
+                            FileName = attachment.OriginalFileName,
+                            FileDescription = attachment.FileDescription
                         });
                     }
                 }
@@ -52,6 +57,52 @@ namespace MyInvoicingApp.Controllers
                 errors = ModelState.Keys.SelectMany(k => ModelState[k].Errors)
                     .Select(m => m.ErrorMessage).ToArray()
             });
+        }
+
+        [HttpPost]
+        public IActionResult DeleteJson(string attachmentId, DocumentType documentType, string documentId)
+        {
+            try
+            {
+                AttachmentManager.RemoveAttachmentForDocumentById(attachmentId, documentType, documentId);
+
+                return Json(new
+                {
+                    success = true
+                });
+            }
+            catch (Exception e)
+            {
+                var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+
+                return Json(new
+                {
+                    success = false,
+                    errors = new [] { $"{e.Message}: {innerMessage}" }
+                });
+            } 
+        }
+
+        [HttpGet]
+        public IActionResult Get(string attachmentId, DocumentType documentType, string documentId)
+        {
+            try
+            {
+                var attachment = AttachmentManager.GetAttachmentAndCheckPathForDocumentById(attachmentId, documentType, documentId);
+
+                return File(attachment.FilePath.Replace("wwwroot", ""), attachment.ContentType, attachment.OriginalFileName);
+                //return File(@"\Attachments\26-trp9s_73a580ec-2cd7-4e2f-a34e-455ec2ead947.jpg", "image/jpeg", "plik");
+            }
+            catch (Exception e)
+            {
+                var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+
+                return Json(new
+                {
+                    success = false,
+                    errors = new[] { $"{e.Message}: {innerMessage}" }
+                });
+            }
         }
     }
 }

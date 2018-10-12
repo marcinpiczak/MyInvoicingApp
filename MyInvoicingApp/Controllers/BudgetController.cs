@@ -27,7 +27,7 @@ namespace MyInvoicingApp.Controllers
         {
             try
             {
-                var budgetViewModels = BudgetManager.GetBudgetViewModels();
+                var budgetViewModels = BudgetManager.GetBudgetViewModels().OrderByDescending(x => x.CreatedDate);
 
                 return View(budgetViewModels);
             }

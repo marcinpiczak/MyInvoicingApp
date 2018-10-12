@@ -26,7 +26,7 @@ namespace MyInvoicingApp.Controllers
         {
             try
             {
-                var customerViewModels = CustomerManager.GetCustomerViewModels();
+                var customerViewModels = CustomerManager.GetCustomerViewModels().OrderByDescending(x => x.CreatedDate);
 
                 return View(customerViewModels);
             }

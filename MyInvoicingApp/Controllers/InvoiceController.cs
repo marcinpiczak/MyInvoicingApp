@@ -190,7 +190,7 @@ namespace MyInvoicingApp.Controllers
             invoice.BudgetItemList = InvoiceManager.GetOpenBudgetsItemList(invoice.Budget);
             invoice.CustomerItemList = InvoiceManager.GetOpenCustomersItemList(invoice.Customer);
 
-            invoice.Attachments = AttachmentManager.GetAttachmentViewModelsForDocumentById(DocumentType.Invoice, id);
+            invoice.Attachments = AttachmentManager.GetAttachmentViewModelsForDocument(DocumentType.Invoice, id);
 
             return View(invoice);
         }
@@ -289,7 +289,7 @@ namespace MyInvoicingApp.Controllers
         {
             var invoice = InvoiceManager.GetInvoiceViewModelById(id);
             invoice.InvoiceLines = InvoiceManager.GetInvoiceLineViewModels(id);
-            invoice.Attachments = AttachmentManager.GetAttachmentViewModelsForDocumentById(DocumentType.Invoice, id);
+            invoice.Attachments = AttachmentManager.GetAttachmentViewModelsForDocument(DocumentType.Invoice, id);
 
             return View(invoice);
         }

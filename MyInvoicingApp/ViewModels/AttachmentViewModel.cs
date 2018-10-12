@@ -11,7 +11,7 @@ namespace MyInvoicingApp.ViewModels
         [DisplayName("Opis dla pliku/ów")]
         public string FileDescription { get; set; }
 
-        [DisplayName("Pierwotna nazwa pliku")]
+        [DisplayName("Nazwa pliku")]
         public string OriginalFileName { get; set; }
 
         [Required(ErrorMessage = "Typ dokumentu musi zostać podany")]

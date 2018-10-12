@@ -15,6 +15,9 @@ namespace MyInvoicingApp.Models
         public string FilePath { get; set; }
 
         [Required]
+        public string ContentType { get; set; }
+
+        [Required]
         public DocumentType DocumentType { get; set; }
 
         [Required]
