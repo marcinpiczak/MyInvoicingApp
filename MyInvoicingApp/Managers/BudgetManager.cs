@@ -8,6 +8,7 @@ using MyInvoicingApp.Contexts;
 using MyInvoicingApp.Helpers;
 using MyInvoicingApp.Interfaces;
 using MyInvoicingApp.Models;
+using MyInvoicingApp.ReturnResults;
 using MyInvoicingApp.ViewModels;
 
 namespace MyInvoicingApp.Managers
@@ -114,7 +115,7 @@ namespace MyInvoicingApp.Managers
             return model;
         }
 
-        public void Add(BudgetViewModel model, ApplicationUser createdBy)
+        public BudgetReturnResult Add(BudgetViewModel model, ApplicationUser createdBy)
         {
             if (model == null || createdBy == null)
             {
@@ -150,6 +151,13 @@ namespace MyInvoicingApp.Managers
             {
                 throw new Exception("Nie zapisano żadnych danych.");
             }
+
+            return new BudgetReturnResult()
+            {
+                Id = newBudget.Id,
+                BudgetNumber = newBudget.BudgetNumber,
+                Status = newBudget.Status.ToString()
+            };
         }
 
         public void Edit(BudgetViewModel model, ApplicationUser modifiedBy)

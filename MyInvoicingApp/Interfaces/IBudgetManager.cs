@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using MyInvoicingApp.Models;
+using MyInvoicingApp.ReturnResults;
 using MyInvoicingApp.ViewModels;
 
 namespace MyInvoicingApp.Interfaces
@@ -35,7 +36,7 @@ namespace MyInvoicingApp.Interfaces
         /// </summary>
         /// <param name="model">BudgetViewModel</param>
         /// <param name="createdBy">ApplicationUser that creates Budget</param>
-        void Add(BudgetViewModel model, ApplicationUser createdBy);
+        BudgetReturnResult Add(BudgetViewModel model, ApplicationUser createdBy);
 
         void Edit(BudgetViewModel model, ApplicationUser modifiedBy);
 

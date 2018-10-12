@@ -1,8 +1,8 @@
 ﻿@model MyInvoicingApp.ViewModels.InvoiceViewModel
 
-<h2>Szczegóły faktury @Model.InvoiceNumber</h2>
+<h2 class="text-center">Szczegóły faktury: <b>@Model.InvoiceNumber</b></h2>
 
-<ul class="nav nav-tabs">
+<ul class="nav nav-tabs nav-fill">
     <li class="nav-item">
         <a class="nav-link active show" data-toggle="tab" href="#invoiceHeader">Nagłówek</a>
     </li>
@@ -90,8 +90,8 @@
             </dd>
         </div>
         <div>
-            @Html.ActionLink("Edytuj", "Edit", new { id = Model.Id }, new { @class = "btn btn-default" }) |
-            <a asp-action="Index" asp-controller="Invoice" class="btn btn-default">Anuluj</a>
+            <a asp-action="Edit" asp-controller="Invoice" asp-route-id="@Model.Id" class="btn btn-success">Edytuj</a>
+            <a asp-action="Index" asp-controller="Invoice" class="btn btn-outline-primary">Anuluj</a>
         </div>
     </div>
     <div class="tab-pane fade" id="invoiceLines">

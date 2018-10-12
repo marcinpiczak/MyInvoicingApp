@@ -33,28 +33,12 @@ namespace MyInvoicingApp.Controllers
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
-                throw;
-            }
-        }
-
-        public IActionResult IndexPartial()
-        {
-            try
-            {
-                //var budgetViewModels = BudgetManager.GetBudgetViewModels();
-
-                var budgetViewModels = new List<BudgetViewModel>()
-                {
-                    new BudgetViewModel()
-                };
-
-                return PartialView("_index", budgetViewModels);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                throw;
+                //Console.WriteLine(e.Message);
+                //throw;
+                var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+                TempData["Error"] = e.Message + innerMessage;
+                
+                return RedirectToAction("Index", "Home");
             }
         }
 
@@ -62,12 +46,6 @@ namespace MyInvoicingApp.Controllers
         public IActionResult Add()
         {
             return View();
-        }
-
-        [HttpGet]
-        public IActionResult AddPartial()
-        {
-            return PartialView("_add");
         }
 
         [HttpPost]
@@ -84,11 +62,44 @@ namespace MyInvoicingApp.Controllers
             }
             catch (Exception e)
             {
-                ModelState.AddModelError("", e.Message);
+                var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+                ModelState.AddModelError("", e.Message + innerMessage);
                 //throw;
+                TempData["Error"] = e.Message + innerMessage;
             }
 
             return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult AddJson(BudgetViewModel model)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var result = BudgetManager.Add(model, CurrentUser);
+
+                    return Json(new
+                    {
+                        success = true,
+                        Budget = result
+                    });
+                }
+            }
+            catch (Exception e)
+            {
+                var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+
+                ModelState.AddModelError("", e.Message + innerMessage);
+            }
+
+            return Json(new
+            {
+                success = false,
+                errors = ModelState.Keys.SelectMany(k => ModelState[k].Errors)
+                    .Select(m => m.ErrorMessage).ToArray()
+            });
         }
 
         [HttpGet]
@@ -109,7 +120,8 @@ namespace MyInvoicingApp.Controllers
             {
                 //Console.WriteLine(e.Message);
                 //throw;
-                TempData["Message"] = e.Message;
+                var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+                TempData["Error"] = e.Message + innerMessage;
             }
 
             return RedirectToAction("Index");
@@ -129,8 +141,10 @@ namespace MyInvoicingApp.Controllers
             }
             catch (Exception e)
             {
-                ModelState.AddModelError("", e.Message);
+                var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+                ModelState.AddModelError("", e.Message + innerMessage);
                 //throw;
+                TempData["Error"] = e.Message + innerMessage;
             }
 
             return View(model);
@@ -142,14 +156,15 @@ namespace MyInvoicingApp.Controllers
             try
             {
                 BudgetManager.ChangeStatus(id, Status.Closed, CurrentUser);
-
-                return RedirectToAction("Index");
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
-                throw;
+                var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+                //throw;
+                TempData["Error"] = e.Message + innerMessage;
             }
+
+            return RedirectToAction("Index");
         }
 
         [HttpGet]
@@ -158,14 +173,15 @@ namespace MyInvoicingApp.Controllers
             try
             {
                 BudgetManager.ChangeStatus(id, Status.Opened, CurrentUser);
-
-                return RedirectToAction("Index");
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
-                throw;
+                var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+                //throw;
+                TempData["Error"] = e.Message + innerMessage;
             }
+
+            return RedirectToAction("Index");
         }
 
         [HttpGet]
@@ -181,8 +197,11 @@ namespace MyInvoicingApp.Controllers
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
-                throw;
+                var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+                //throw;
+                TempData["Error"] = e.Message + innerMessage;
+
+                return RedirectToAction("Index");
             }
         }
     }

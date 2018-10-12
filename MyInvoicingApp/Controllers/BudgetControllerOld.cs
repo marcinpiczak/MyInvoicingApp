@@ -199,12 +199,5 @@ namespace MyInvoicingApp.Controllers
             return amount;
         }
     }
-
-    //public enum LoadType
-    //{
-    //    BudgetOnlyUsers,
-    //    BudgetOnlyInvoices,
-    //    BudgetUsersAndInvoices
-    //}
 }
 

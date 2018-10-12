@@ -1,9 +1,9 @@
 ﻿@using MyInvoicingApp.ViewModels
 @model MyInvoicingApp.ViewModels.InvoiceViewModel
 
-<h2>Edycja faktury @Model.InvoiceNumber</h2>
+<h2 class="text-center">Edycja faktury: <b>@Model.InvoiceNumber</b></h2>
 
-<ul class="nav nav-tabs" id="InvoiceTabs" role="tablist">
+<ul class="nav nav-tabs nav-fill" id="InvoiceTabs" role="tablist">
     <li class="nav-item">
         <a class="nav-link active" data-toggle="tab" href="#invoice-header">Nagłówek</a>
         @*<a class="nav-link" data-toggle="tab" href="#invoice-header">Nagłówek</a>*@
@@ -27,24 +27,16 @@
 </ul>
 <div id="InvoiceTabsContent" class="tab-content">
     <div class="tab-pane fade active show" id="invoice-header">
-    @*<div class="tab-pane fade" id="invoice-header">*@
-        <div class="row">
-            <div class="col-md-4" id="invoice-header-div-form">
-                @{
-                    await Html.RenderPartialAsync("_AddInvoiceForm", @Model);
-                }
-            </div>
-        </div>
+        @*<div class="tab-pane fade" id="invoice-header">*@
+        @{
+            await Html.RenderPartialAsync("_AddInvoiceForm", @Model);
+        }
     </div>
     <div class="tab-pane fade" id="invoice-lines">
         @*<div class="tab-pane fade active show" id="invoice-lines">*@
-        <div class="row">
-            <div class="col-md-4" id="invoice-lines-div-form">
-                @{
-                    await Html.RenderPartialAsync("_AddInvoiceLineForm", @Model);
-                }
-            </div>
-        </div>
+        @{
+            await Html.RenderPartialAsync("_AddInvoiceLineForm", @Model);
+        }
         <div id="invoice-lines-div-list">
             @{
                 await Html.RenderPartialAsync("_InvoiceLines", @Model.InvoiceLines);

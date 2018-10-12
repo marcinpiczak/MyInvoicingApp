@@ -1,59 +1,73 @@
 ﻿@model MyInvoicingApp.ViewModels.InvoiceViewModel
 
-<form id="add-invoice-header-form" method="post">
-@*<form id="add-invoice-header-form" asp-action="Add" asp-controller="Invoice" method="post">*@
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <div class="form-group">
-        <input asp-for="Id" type="hidden" class="form-control" />
+<div class="row">
+    <div class="col-md-8 border rounded mx-auto" id="invoice-header-div-form">
+        <form id="add-invoice-header-form" method="post">
+            @*<form id="add-invoice-header-form" asp-action="Add" asp-controller="Invoice" method="post">*@
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <input asp-for="Id" type="hidden" class="form-control" />
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-12">
+                    <label asp-for="InvoiceNumber" class="control-label"></label>
+                    <input asp-for="InvoiceNumber" value="@( string.IsNullOrWhiteSpace(Model.InvoiceNumber) ? "NOWA FAKTURA" : Model.InvoiceNumber )" class="form-control text-center" readonly />
+                    <span asp-validation-for="InvoiceNumber" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="ReferenceNumber" class="control-label"></label>
+                    <input asp-for="ReferenceNumber" class="form-control" />
+                    <span asp-validation-for="ReferenceNumber" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="PaymentDueDate" class="control-label"></label>
+                    <input asp-for="PaymentDueDate" class="form-control" />
+                    <span asp-validation-for="PaymentDueDate" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="Customer" class="control-label"></label>
+                    <select asp-for="CustomerId" asp-items="@Model.CustomerItemList" class="form-control"></select>
+                    <span asp-validation-for="CustomerId" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="IssueDate" class="control-label"></label>
+                    <input asp-for="IssueDate" class="form-control" />
+                    <span asp-validation-for="IssueDate" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="Budget" class="control-label"></label>
+                    <select asp-for="BudgetId" asp-items="@Model.BudgetItemList" class="form-control"></select>
+                    <span asp-validation-for="BudgetId" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="ReceiveDate" class="control-label"></label>
+                    <input asp-for="ReceiveDate" class="form-control" />
+                    <span asp-validation-for="ReceiveDate" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="PaymentMethod" class="control-label"></label>
+                    <input asp-for="PaymentMethod" class="form-control" />
+                    <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="Currency" class="control-label"></label>
+                    <input asp-for="Currency" class="form-control" />
+                    <span asp-validation-for="Currency" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <input id="add-invoice-header-btn" type="submit" value="Dodaj" class="btn btn-success" />
+                <a asp-action="Index" asp-controller="Invoice" class="btn btn-outline-primary">Anuluj</a>
+                @*<a asp-action="Add" asp-controller="Invoice" class="btn btn-primary">Dodaj nową fakturę</a>*@
+            </div>
+        </form>
     </div>
-    <div class="form-group">
-        <label asp-for="InvoiceNumber" class="control-label"></label>
-        <input asp-for="InvoiceNumber" value="@( string.IsNullOrWhiteSpace(Model.InvoiceNumber) ? "NOWA FAKTURA" : Model.InvoiceNumber )" class="form-control" readonly />
-        <span asp-validation-for="InvoiceNumber" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="ReferenceNumber" class="control-label"></label>
-        <input asp-for="ReferenceNumber" class="form-control"  />
-        <span asp-validation-for="ReferenceNumber" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="PaymentMethod" class="control-label"></label>
-        <input asp-for="PaymentMethod" class="form-control" />
-        <span asp-validation-for="PaymentMethod" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="PaymentDueDate" class="control-label"></label>
-        <input asp-for="PaymentDueDate" class="form-control" />
-        <span asp-validation-for="PaymentDueDate" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="IssueDate" class="control-label"></label>
-        <input asp-for="IssueDate" class="form-control" />
-        <span asp-validation-for="IssueDate" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="ReceiveDate" class="control-label"></label>
-        <input asp-for="ReceiveDate" class="form-control" />
-        <span asp-validation-for="ReceiveDate" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="Customer" class="control-label"></label>
-        <select asp-for="CustomerId" asp-items="@Model.CustomerItemList" class="form-control"></select>
-        <span asp-validation-for="CustomerId" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="Budget" class="control-label"></label>
-        <select asp-for="BudgetId" asp-items="@Model.BudgetItemList" class="form-control"></select>
-        <span asp-validation-for="BudgetId" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="Currency" class="control-label"></label>
-        <input asp-for="Currency" class="form-control" />
-        <span asp-validation-for="Currency" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <input id="add-invoice-header-btn" type="submit" value="Dodaj" class="btn btn-success" />
-        <a asp-action="Index" asp-controller="Invoice" class="btn btn-default">Anuluj</a>
-        @*<a asp-action="Add" asp-controller="Invoice" class="btn btn-primary">Dodaj nową fakturę</a>*@
-    </div>
-</form>
+</div>

@@ -2,21 +2,37 @@
     var budgetAddForm = $("#budget-add-form");
     var addBudgetBtn = budgetAddForm.find("input[type='submit']");
 
-    console.log(budgetAddForm);
-    console.log(addBudgetBtn);
-
     var budgetNumber = budgetAddForm.find("#BudgetNumber");
     var description = budgetAddForm.find("#Description");
     var commitedAmount = budgetAddForm.find("#CommitedAmount");
 
-    console.log(budgetNumber);
-    console.log(description);
-    console.log(commitedAmount);
+    function removeValidationSummary() {
+        var validation = $(".validation-summary-errors");
+        validation.remove();
+    }
 
-    addBudgetBtn.on("click", function(event) {
+    function createValidationSummary(errorArray) {
+        removeValidationSummary();
+        var div = $('<div class="text-danger validation-summary-errors">');
+        var ul = $("<ul>");
+        errorArray.forEach(function (element) {
+            var li = $("<li>").text(element);
+            ul.append(li);
+            div.append(ul);
+        });
+
+        return div;
+    }
+
+    function clearBudgetForm() {
+        budgetNumber.val("");
+        description.val("");
+        commitedAmount.val("");
+    }
+
+    function addBudgetCallback(event) {
         event.preventDefault();
-
-        //budgetAddForm.validate();
+        event.stopImmediatePropagation();
 
         if (budgetAddForm.valid()) {
             var newBudget = {
@@ -27,21 +43,32 @@
 
             $.ajax(
                 {
-                    url: "https://localhost:5001/Budget/Add",
+                    url: "https://localhost:5001/Budget/AddJson",
                     data: newBudget,
                     type: "POST",
 
-                    success: function (data, textStatus, xhr) {
-                        console.log(textStatus);
-                        console.log(data);
+                    success: function (result) {
+                        if (result.success) {
+
+                            removeValidationSummary();
+                            clearBudgetForm();
+
+                            alertify.notify('Dodano poprawnie nowy Budżet z numerem ' + result.Budget.BudgetNumber, 'success', 10);
+
+                        } else {
+                            var div = createValidationSummary(result.errors);
+                            alertify.alert().setContent(div[0]).show();
+                        }
                     },
                     error: function (xhr, textStatus, errorThrown) {
-                        console.log(xhr.status);
+                        alert(xhr.status);
                     }
                 });
         } else {
             return false;
         }
-    });
+    }
+
+    addBudgetBtn.on("click", addBudgetCallback);
 
 });
