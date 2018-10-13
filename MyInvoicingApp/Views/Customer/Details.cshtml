@@ -12,97 +12,90 @@
 </ul>
 <div id="myTabContent" class="tab-content">
     <div class="tab-pane fade active show" id="customer">
-        <div>
-            <dl class="dl-horizontal">
-                <dt>
-                    @Html.DisplayNameFor(model => model.Status)
-                </dt>
-                <dd>
-                    @Html.DisplayFor(model => model.Status)
-                </dd>
-                <dt>
-                    @Html.DisplayNameFor(model => model.Name)
-                </dt>
-                <dd>
-                    @Html.DisplayFor(model => model.Name)
-                </dd>
-                <dt>
-                    @Html.DisplayNameFor(model => model.Description)
-                </dt>
-                <dd>
-                    @Html.DisplayFor(model => model.Description)
-                </dd>
-                <dt>
-                    @Html.DisplayNameFor(model => model.City)
-                </dt>
-                <dd>
-                    @Html.DisplayFor(model => model.City)
-                </dd>
-                <dt>
-                    @Html.DisplayNameFor(model => model.PostalCode)
-                </dt>
-                <dd>
-                    @Html.DisplayFor(model => model.PostalCode)
-                </dd>
-                <dt>
-                    @Html.DisplayNameFor(model => model.Street)
-                </dt>
-                <dd>
-                    @Html.DisplayFor(model => model.Street)
-                </dd>
-                <dt>
-                    @Html.DisplayNameFor(model => model.BuildingNumber)
-                </dt>
-                <dd>
-                    @Html.DisplayFor(model => model.BuildingNumber)
-                </dd>
-                <dt>
-                    @Html.DisplayNameFor(model => model.Notes)
-                </dt>
-                <dd>
-                    @Html.DisplayFor(model => model.Notes)
-                </dd>
-                <dt>
-                    @Html.DisplayNameFor(model => model.PhoneNumber)
-                </dt>
-                <dd>
-                    @Html.DisplayFor(model => model.PhoneNumber)
-                </dd>
-                <dt>
-                    @Html.DisplayNameFor(model => model.DefaultPaymentMethod)
-                </dt>
-                <dd>
-                    @Html.DisplayFor(model => model.DefaultPaymentMethod)
-                </dd>
-                <dt>
-                    @Html.DisplayNameFor(model => model.CreatedBy)
-                </dt>
-                <dd>
-                    @Html.DisplayFor(model => model.CreatedBy.UserName)
-                </dd>
-                <dt>
-                    @Html.DisplayNameFor(model => model.CreatedDate)
-                </dt>
-                <dd>
-                    @Html.DisplayFor(model => model.CreatedDate)
-                </dd>
-                <dt>
-                    @Html.DisplayNameFor(model => model.LastModifiedBy)
-                </dt>
-                <dd>
-                    @Html.DisplayFor(model => model.LastModifiedBy.UserName)
-                </dd>
-                <dt>
-                    @Html.DisplayNameFor(model => model.LastModifiedDate)
-                </dt>
-                <dd>
-                    @Html.DisplayFor(model => model.LastModifiedDate)
-                </dd>
-            </dl>
-        </div>
-        <div>
-            <a asp-action="Edit" asp-controller="Customer" asp-route-id="@Model.Id" class="btn btn-success">Edytuj</a>
-            <a asp-action="Index" asp-controller="Customer" class="btn btn-outline-primary">Anuluj</a>
+        <div class="row">
+            <div class="col-md-8 border rounded mx-auto">
+                <form>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <label asp-for="Status" class="control-label"></label>
+                            <input asp-for="Status" class="form-control text-center" readonly />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <label asp-for="Name" class="control-label"></label>
+                            <input asp-for="Name" class="form-control" readonly />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label asp-for="Description" class="control-label"></label>
+                            <textarea asp-for="Description" class="form-control" readonly></textarea>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label asp-for="Notes" class="control-label"></label>
+                            <textarea asp-for="Notes" class="form-control" readonly></textarea>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label asp-for="Street" class="control-label"></label>
+                            <input asp-for="Street" class="form-control" readonly />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label asp-for="BuildingNumber" class="control-label"></label>
+                            <input asp-for="BuildingNumber" class="form-control" readonly />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label asp-for="PostalCode" class="control-label"></label>
+                            <input asp-for="PostalCode" class="form-control" readonly />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label asp-for="City" class="control-label"></label>
+                            <input asp-for="City" class="form-control" readonly />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label asp-for="PhoneNumber" class="control-label"></label>
+                            <input asp-for="PhoneNumber" class="form-control" readonly />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label asp-for="DefaultPaymentMethod" class="control-label"></label>
+                            <input asp-for="DefaultPaymentMethod" class="form-control" readonly />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label asp-for="CreatedBy" class="control-label"></label>
+                            <input asp-for="CreatedBy.UserName" class="form-control" readonly />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label asp-for="CreatedDate" class="control-label"></label>
+                            <input asp-for="CreatedDate" class="form-control" readonly />
+                        </div>
+                    </div>
+                    @if (@Model.LastModifiedBy != null)
+                    {
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label asp-for="LastModifiedBy" class="control-label"></label>
+                                <input asp-for="LastModifiedBy.UserName" class="form-control" readonly />
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label asp-for="LastModifiedDate" class="control-label"></label>
+                                <input asp-for="LastModifiedDate" class="form-control" readonly />
+                            </div>
+                        </div>
+                    }
+                    <div class="form-group">
+                        <a asp-action="Edit" asp-controller="Customer" asp-route-id="@Model.Id" class="btn btn-success">Edytuj</a>
+                        <a asp-action="Index" asp-controller="Customer" class="btn btn-outline-primary">Anuluj</a>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
     <div class="tab-pane fade" id="invoices">

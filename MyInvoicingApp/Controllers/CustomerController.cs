@@ -32,8 +32,12 @@ namespace MyInvoicingApp.Controllers
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
-                throw;
+                //Console.WriteLine(e.Message);
+                //throw;
+                var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+                TempData["Error"] = $"Wystąpił problem podczas wyświetlania listy klientów: {e.Message}{innerMessage}";
+
+                return RedirectToAction("Index", "Home");
             }
         }
 
@@ -52,13 +56,17 @@ namespace MyInvoicingApp.Controllers
                 {
                     CustomerManager.Add(model, CurrentUser);
 
-                    return RedirectToAction("Index");
+                    TempData["Success"] = $"Dodano nowego klienta";
+                    //return RedirectToAction("Index");
+                    return RedirectToAction("Add");
                 }
             }
             catch (Exception e)
             {
-                ModelState.AddModelError("", e.Message);
+                var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+                ModelState.AddModelError("", e.Message + innerMessage);
                 //throw;
+                TempData["Error"] = $"Wystąpił problem podczas dodawania nowego klienta: {e.Message}{innerMessage}";
             }
 
             return View(model);
@@ -75,9 +83,13 @@ namespace MyInvoicingApp.Controllers
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
-                throw;
+                //Console.WriteLine(e.Message);
+                //throw;
+                var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+                TempData["Error"] = $"Wystąpił problem podczas edytowania budżetu: {e.Message}{innerMessage}";
             }
+
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
@@ -89,14 +101,16 @@ namespace MyInvoicingApp.Controllers
                 {
                     CustomerManager.Edit(model, CurrentUser);
 
-
+                    TempData["Success"] = $"Zapisano wprowadzone zmiany dla klienta {model.Name}";
                     return RedirectToAction("Index");
                 }
             }
             catch (Exception e)
             {
-                ModelState.AddModelError("", e.Message);
+                var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+                ModelState.AddModelError("", e.Message + innerMessage);
                 //throw;
+                TempData["Error"] = $"Wystąpił problem podczas zapisywania zmian dla klienta: {e.Message}{innerMessage}";
             }
 
             return View(model);
@@ -107,15 +121,17 @@ namespace MyInvoicingApp.Controllers
         {
             try
             {
-                CustomerManager.ChangeStatus(id, Status.Closed, CurrentUser);
-
-                return RedirectToAction("Index");
+                var result = CustomerManager.ChangeStatus(id, Status.Closed, CurrentUser);
+                TempData["Success"] = $"Klient {result.Name} został zamknięty";
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
-                throw;
+                var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+                //throw;
+                TempData["Error"] = $"Wystąpił problem podczas zamykania budżetu: {e.Message}{innerMessage}";
             }
+
+            return RedirectToAction("Index");
         }
 
         [HttpGet]
@@ -123,15 +139,17 @@ namespace MyInvoicingApp.Controllers
         {
             try
             {
-                CustomerManager.ChangeStatus(id, Status.Opened, CurrentUser);
-
-                return RedirectToAction("Index");
+                var result = CustomerManager.ChangeStatus(id, Status.Opened, CurrentUser);
+                TempData["Success"] = $"Klient {result.Name} został otwarty";
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
-                throw;
+                var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+                //throw;
+                TempData["Error"] = $"Wystąpił problem podczas otwierania klienta: {e.Message}{innerMessage}";
             }
+
+            return RedirectToAction("Index");
         }
 
         [HttpGet]
@@ -149,9 +167,12 @@ namespace MyInvoicingApp.Controllers
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
-                throw;
+                var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+                //throw;
+                TempData["Error"] = $"Wystąpił problem podczas wyświelania szczegółów klienta: {e.Message}{innerMessage}";
             }
+
+            return RedirectToAction("Index");
         }
     }
 }

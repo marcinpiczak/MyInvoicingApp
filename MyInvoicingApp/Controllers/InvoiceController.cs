@@ -33,23 +33,39 @@ namespace MyInvoicingApp.Controllers
         {
             try
             {
-                var invoiceList = InvoiceManager.GetInvoiceViewModels();
+                var invoiceList = InvoiceManager.GetInvoiceViewModels().OrderByDescending(x => x.CreatedDate);
 
                 return View(invoiceList);
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
-                throw;
+                //Console.WriteLine(e.Message);
+                //throw;
+                var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+                TempData["Error"] = $"Wystąpił problem podczas wyświetlania listy faktur: {e.Message}{innerMessage}";
+
+                return RedirectToAction("Index", "Home");
             }
         }
 
         [HttpGet]
         public IActionResult Add()
         {
-            var model = InvoiceManager.GetDefaultInvoiceViewModelForAdd("PLN");
+            try
+            {
+                var model = InvoiceManager.GetDefaultInvoiceViewModelForAdd("PLN");
             
-            return View(model);
+                return View(model);
+            }
+            catch (Exception e)
+            {
+                //Console.WriteLine(e);
+                //throw;
+                var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+                TempData["Error"] = $"Wystąpił problem podczas pobierania domyslnych wartości dla faktury: {e.Message}{innerMessage}";
+            }
+
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
@@ -59,14 +75,19 @@ namespace MyInvoicingApp.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var invoiceId = InvoiceManager.Add(model, CurrentUser);
+                    var result = InvoiceManager.Add(model, CurrentUser);
 
-                    return RedirectToAction("AddLine", "Invoice", new { invoiceId });
+                    TempData["Success"] = $"Dodano nową fakturę z numerem {result.InvoiceNumber}";
+
+                    return RedirectToAction("AddLine", "Invoice", new { result.Id });
                 }
             }
             catch (Exception e)
             {
-                ModelState.AddModelError("", e.Message + " " + e.InnerException.Message);
+                var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+                ModelState.AddModelError("", e.Message + innerMessage);
+                //throw;
+                TempData["Error"] = $"Wystąpił problem podczas dodawania nowej faktury: {e.Message}{innerMessage}";
             }
 
             return View(model);
@@ -95,9 +116,6 @@ namespace MyInvoicingApp.Controllers
                 ModelState.AddModelError("", e.Message + innerMessage);
             }
 
-            //model.InvoiceLine = new InvoiceLineViewModel();
-            //model.BudgetItemList = InvoiceManager.GetOpenBudgetsItemList(model.Budget);
-            //model.CustomerItemList = InvoiceManager.GetOpenCustomersItemList(model.Customer);
             //return PartialView("_AddInvoiceForm", model);
             return Json(new
             {
@@ -117,9 +135,13 @@ namespace MyInvoicingApp.Controllers
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
-                throw;
+                //Console.WriteLine(e);
+                //throw;
+                var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+                TempData["Error"] = $"Wystąpił problem podczas dodwania nowej linii do faktury: {e.Message}{innerMessage}";
             }
+
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
@@ -131,21 +153,25 @@ namespace MyInvoicingApp.Controllers
                 {
                     InvoiceManager.AddLine(model.InvoiceLine, CurrentUser, false, true);
 
+                    TempData["Success"] = $"Dodano nową linię do faktury";
+
                     return RedirectToAction("AddLine", new { model.InvoiceLine.InvoiceId });
                 }
 
+                var line = model.InvoiceLine;
+
+                model = InvoiceManager.GetInvoiceViewModelById(line.InvoiceId);
+                model.InvoiceLine = line;
+
+                return View(model);
             }
             catch (Exception e)
             {
-                ModelState.AddModelError("", e.Message);
+                var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+                TempData["Error"] = $"Wystąpił problem podczas dodwania nowej linii do faktury: {e.Message}{innerMessage}";
             }
 
-            var line = model.InvoiceLine;
-
-            model = InvoiceManager.GetInvoiceViewModelById(line.InvoiceId);
-            model.InvoiceLine = line;
-
-            return View(model);
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
@@ -168,7 +194,6 @@ namespace MyInvoicingApp.Controllers
             catch (Exception e)
             {
                 var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
-
                 ModelState.AddModelError("", e.Message + innerMessage);
             }
 
@@ -183,16 +208,28 @@ namespace MyInvoicingApp.Controllers
         [HttpGet]
         public IActionResult Edit(string id)
         {
-            var invoice = InvoiceManager.GetInvoiceViewModelById(id);
-            invoice.InvoiceLines = InvoiceManager.GetInvoiceLineViewModels(id);
-            invoice.InvoiceLine = new InvoiceLineViewModel();
+            try
+            {
+                var invoice = InvoiceManager.GetInvoiceViewModelById(id);
+                invoice.InvoiceLines = InvoiceManager.GetInvoiceLineViewModels(id);
+                invoice.InvoiceLine = new InvoiceLineViewModel();
 
-            invoice.BudgetItemList = InvoiceManager.GetOpenBudgetsItemList(invoice.Budget);
-            invoice.CustomerItemList = InvoiceManager.GetOpenCustomersItemList(invoice.Customer);
+                invoice.BudgetItemList = InvoiceManager.GetOpenBudgetsItemList(invoice.Budget);
+                invoice.CustomerItemList = InvoiceManager.GetOpenCustomersItemList(invoice.Customer);
 
-            invoice.Attachments = AttachmentManager.GetAttachmentViewModelsForDocument(DocumentType.Invoice, id);
+                invoice.Attachments = AttachmentManager.GetAttachmentViewModelsForDocument(DocumentType.Invoice, id);
 
-            return View(invoice);
+                return View(invoice);
+            }
+            catch (Exception e)
+            {
+                //Console.WriteLine(e.Message);
+                //throw;
+                var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+                TempData["Error"] = $"Wystąpił problem podczas edytowania faktury: {e.Message}{innerMessage}";
+            }
+
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
@@ -287,11 +324,43 @@ namespace MyInvoicingApp.Controllers
         [HttpGet]
         public IActionResult Details(string id)
         {
-            var invoice = InvoiceManager.GetInvoiceViewModelById(id);
-            invoice.InvoiceLines = InvoiceManager.GetInvoiceLineViewModels(id);
-            invoice.Attachments = AttachmentManager.GetAttachmentViewModelsForDocument(DocumentType.Invoice, id);
+            try
+            {
+                var invoice = InvoiceManager.GetInvoiceViewModelById(id);
+                invoice.InvoiceLines = InvoiceManager.GetInvoiceLineViewModels(id);
+                invoice.Attachments = AttachmentManager.GetAttachmentViewModelsForDocument(DocumentType.Invoice, id);
 
-            return View(invoice);
+                return View(invoice);
+            }
+            catch (Exception e)
+            {
+                //Console.WriteLine(e);
+                //throw;
+                var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+                TempData["Error"] = $"Wystąpił problem podczas wyświelania szczegółów faktury: {e.Message}{innerMessage}";
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult Cancel(string invoiceId)
+        {
+            try
+            {
+                var result = InvoiceManager.ChangeStatus(invoiceId, Status.Cancelled, CurrentUser);
+
+                TempData["Success"] = $"Faktura {result.InvoiceNumber} została anulowana";
+            }
+            catch (Exception e)
+            {
+                //Console.WriteLine(e);
+                //throw;
+                var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+                ModelState.AddModelError("", e.Message + innerMessage);
+                TempData["Error"] = $"Wystąpił problem podczas anulowania faktury: {e.Message}{innerMessage}";
+            }
+
+            return RedirectToAction("Index");
         }
     }
 }

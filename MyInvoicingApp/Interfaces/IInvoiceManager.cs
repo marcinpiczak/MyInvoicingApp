@@ -10,7 +10,7 @@ namespace MyInvoicingApp.Interfaces
     {
         IEnumerable<InvoiceViewModel> GetInvoiceViewModels();
 
-        IEnumerable<Invoice> GetInvoices();
+        IEnumerable<Invoice> GetInvoices(IncludeLevel includeLevel);
 
         InvoiceReturnResult Add(InvoiceViewModel model, ApplicationUser createdBy);
 
@@ -22,19 +22,19 @@ namespace MyInvoicingApp.Interfaces
 
         InvoiceViewModel GetInvoiceViewModelById(string invoiceId);
 
-        Invoice GetInvoiceById(string invoiceId);
+        Invoice GetInvoiceById(string invoiceId, IncludeLevel includeLevel);
 
-        Invoice GetInvoiceByIdSimple(string invoiceId);
+        //Invoice GetInvoiceByIdSimple(string invoiceId);
 
-        InvoiceLine GetInvoiceLineById(string lineId, string invoiceId);
+        InvoiceLine GetInvoiceLineById(string lineId, string invoiceId, IncludeLevel includeLevel);
 
-        IEnumerable<InvoiceLine> GetInvoiceLines(string invoiceId);
+        IEnumerable<InvoiceLine> GetInvoiceLines(string invoiceId, IncludeLevel includeLevel);
 
         IEnumerable<InvoiceLineViewModel> GetInvoiceLineViewModels(string invoiceId);
 
-        void ChangeStatus(string invoiceId, Status newStatus, ApplicationUser modifiedBy);
+        InvoiceReturnResult ChangeStatus(string invoiceId, Status newStatus, ApplicationUser modifiedBy);
 
-        void ChangeLineStatus(string lineId, string invoiceId, Status newStatus, ApplicationUser modifiedBy);
+        InvoiceLineReturnResult ChangeLineStatus(string lineId, string invoiceId, Status newStatus, ApplicationUser modifiedBy);
 
         InvoiceViewModel GetDefaultInvoiceViewModelForAdd(string defaultCurrency = "PLN");
 

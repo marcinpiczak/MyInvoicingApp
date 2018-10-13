@@ -53,7 +53,7 @@
                             removeValidationSummary();
                             clearBudgetForm();
 
-                            alertify.notify('Dodano poprawnie nowy Budżet z numerem ' + result.Budget.BudgetNumber, 'success', 10);
+                            alertify.notify('Dodano nowy Budżet z numerem ' + result.Budget.BudgetNumber, 'success', 10);
 
                         } else {
                             var div = createValidationSummary(result.errors);

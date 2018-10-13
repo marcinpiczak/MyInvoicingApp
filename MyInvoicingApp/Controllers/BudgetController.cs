@@ -36,7 +36,7 @@ namespace MyInvoicingApp.Controllers
                 //Console.WriteLine(e.Message);
                 //throw;
                 var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
-                TempData["Error"] = e.Message + innerMessage;
+                TempData["Error"] = $"Wystąpił problem podczas wyświetlania listy budżetów: {e.Message}{innerMessage}";
                 
                 return RedirectToAction("Index", "Home");
             }
@@ -55,9 +55,11 @@ namespace MyInvoicingApp.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    BudgetManager.Add(model, CurrentUser);
+                    var result = BudgetManager.Add(model, CurrentUser);
 
-                    return RedirectToAction("Index");
+                    TempData["Success"] = $"Dodano nowy Budżet z numerem {result.BudgetNumber}";
+                    //return RedirectToAction("Index");
+                    return RedirectToAction("Add");
                 }
             }
             catch (Exception e)
@@ -65,7 +67,7 @@ namespace MyInvoicingApp.Controllers
                 var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
                 ModelState.AddModelError("", e.Message + innerMessage);
                 //throw;
-                TempData["Error"] = e.Message + innerMessage;
+                TempData["Error"] = $"Wystąpił problem podczas dodawania nowego budżetu: {e.Message}{innerMessage}";
             }
 
             return View(model);
@@ -121,7 +123,7 @@ namespace MyInvoicingApp.Controllers
                 //Console.WriteLine(e.Message);
                 //throw;
                 var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
-                TempData["Error"] = e.Message + innerMessage;
+                TempData["Error"] = $"Wystąpił problem podczas edytowania budżetu: {e.Message}{innerMessage}";
             }
 
             return RedirectToAction("Index");
@@ -136,6 +138,7 @@ namespace MyInvoicingApp.Controllers
                 {
                     BudgetManager.Edit(model, CurrentUser);
 
+                    TempData["Success"] = $"Zapisano wprowadzone zmiany w Budżecie {model.BudgetNumber}";
                     return RedirectToAction("Index");
                 }
             }
@@ -144,7 +147,7 @@ namespace MyInvoicingApp.Controllers
                 var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
                 ModelState.AddModelError("", e.Message + innerMessage);
                 //throw;
-                TempData["Error"] = e.Message + innerMessage;
+                TempData["Error"] = $"Wystąpił problem podczas zapisywania zmian do budżetu: {e.Message}{innerMessage}";
             }
 
             return View(model);
@@ -155,13 +158,14 @@ namespace MyInvoicingApp.Controllers
         {
             try
             {
-                BudgetManager.ChangeStatus(id, Status.Closed, CurrentUser);
+                var result = BudgetManager.ChangeStatus(id, Status.Closed, CurrentUser);
+                TempData["Success"] = $"Budżet z numerem {result.BudgetNumber} został zamknięty";
             }
             catch (Exception e)
             {
                 var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
                 //throw;
-                TempData["Error"] = e.Message + innerMessage;
+                TempData["Error"] = $"Wystąpił problem podczas zamykania budżetu: {e.Message}{innerMessage}";
             }
 
             return RedirectToAction("Index");
@@ -172,13 +176,14 @@ namespace MyInvoicingApp.Controllers
         {
             try
             {
-                BudgetManager.ChangeStatus(id, Status.Opened, CurrentUser);
+                var result = BudgetManager.ChangeStatus(id, Status.Opened, CurrentUser);
+                TempData["Success"] = $"Budżet z numerem {result.BudgetNumber} został otwarty";
             }
             catch (Exception e)
             {
                 var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
                 //throw;
-                TempData["Error"] = e.Message + innerMessage;
+                TempData["Error"] = $"Wystąpił problem podczas otwierania budżetu: {e.Message}{innerMessage}";
             }
 
             return RedirectToAction("Index");
@@ -197,12 +202,13 @@ namespace MyInvoicingApp.Controllers
             }
             catch (Exception e)
             {
-                var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+                //Console.WriteLine(e);
                 //throw;
-                TempData["Error"] = e.Message + innerMessage;
-
-                return RedirectToAction("Index");
+                var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+                TempData["Error"] = $"Wystąpił problem podczas wyświelania szczegółów budżetu: {e.Message}{innerMessage}";
             }
+
+            return RedirectToAction("Index");
         }
     }
 }

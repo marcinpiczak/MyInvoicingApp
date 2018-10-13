@@ -25,8 +25,8 @@
                 @Html.DisplayNameFor(model => model.ReceiveDate)
             </th>
             @*<th>
-                @Html.DisplayNameFor(model => model.Customer)
-            </th>*@
+                    @Html.DisplayNameFor(model => model.Customer)
+                </th>*@
             <th>
                 @Html.DisplayNameFor(model => model.Currency)
             </th>
@@ -39,12 +39,12 @@
             <th>
                 @Html.DisplayNameFor(model => model.CreatedDate)
             </th>
-            <th>
+            @*<th>
                 @Html.DisplayNameFor(model => model.LastModifiedBy)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.LastModifiedDate)
-            </th>
+            </th>*@
             <th>
                 Akcje
             </th>
@@ -76,8 +76,8 @@
                     @Html.DisplayFor(modelItem => item.ReceiveDate)
                 </td>
                 @*<td>
-                    @Html.DisplayFor(modelItem => item.Customer.Name)
-                </td>*@
+                        @Html.DisplayFor(modelItem => item.Customer.Name)
+                    </td>*@
                 <td>
                     @Html.DisplayFor(modelItem => item.Currency)
                 </td>
@@ -90,24 +90,15 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.CreatedDate)
                 </td>
-                <td>
+                @*<td>
                     @Html.DisplayFor(modelItem => item.LastModifiedBy.UserName)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.LastModifiedDate)
-                </td>
+                </td>*@
                 <td>
-                    @*@if (item.Status == Status.Closed)
-                    {
-                        <a asp-controller="Invoice" asp-action="ReOpen" asp-route-id="@item.Id" title="Otwórz ponownie" class="btn-sm btn-default"><i class="fas fa-door-open fa-lg"></i></a>
-                    }
-                    else
-                    {
-                        <a asp-controller="Invoice" asp-action="AddLine" asp-route-invoiceId="@item.Id" title="Dodanie nowej linii" class="btn-sm btn-default"><i class="fas fa-plus fa-lg"></i></a>
-                        <a asp-controller="Invoice" asp-action="Edit" asp-route-id="@item.Id" title="Edycja" class="btn-sm btn-default"><i class="fas fa-pen fa-lg"></i></a>
-                        <a asp-controller="Invoice" asp-action="Cancel" asp-route-id="@item.Id" title="Anulowanie" class="btn-sm btn-default"><i class="fas fa-times fa-lg"></i></a>
-                    }*@
                     <a asp-controller="Invoice" asp-action="Details" asp-route-id="@item.Id" title="Szczegóły" class="btn-sm btn-default"><i class="fas fa-info fa-lg"></i></a>
+                    <a asp-controller="Pdf" asp-action="GetInvoicePdf" asp-route-invoiceId="@item.Id" title="PDF" class="btn-sm btn-default"><i class='fas fa-file-pdf fa-lg'></i></a>
                 </td>
             </tr>
         }

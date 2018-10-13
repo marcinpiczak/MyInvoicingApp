@@ -31,8 +31,13 @@ namespace MyInvoicingApp
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
+                //options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
+            });
+
+            services.Configure<CookieTempDataProviderOptions>(options =>
+            {
+                options.Cookie.SameSite = SameSiteMode.Lax; // By default this is set to 'Strict'.
             });
 
             services.AddDbContext<EFCDbContext>(options =>
@@ -51,6 +56,7 @@ namespace MyInvoicingApp
             //services.AddScoped<ApplicationInitialize>();
             services.AddScoped<DateHelper>();
             services.AddScoped<FileHelper>();
+            services.AddScoped<ControllerNameHelper>();
             services.AddScoped<IBudgetManager, BudgetManager>();
             services.AddScoped<ICustomerManager, CustomerManager>();
             services.AddScoped<IInvoiceManager, InvoiceManager>();

@@ -55,8 +55,8 @@
                 @Html.DisplayNameFor(model => model.BaseGross)
             </th>
             @*<th>
-                @Html.DisplayNameFor(model => model.Budget)
-            </th>*@
+                    @Html.DisplayNameFor(model => model.Budget)
+                </th>*@
             <th>
                 @Html.DisplayNameFor(model => model.CreatedBy)
             </th>
@@ -64,91 +64,90 @@
                 @Html.DisplayNameFor(model => model.CreatedDate)
             </th>
             @*<th>
-                @Html.DisplayNameFor(model => model.LastModifiedBy)
-            </th>
+                    @Html.DisplayNameFor(model => model.LastModifiedBy)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.LastModifiedDate)
+                </th>*@
             <th>
-                @Html.DisplayNameFor(model => model.LastModifiedDate)
-            </th>*@
-            @*<th>
                 Akcje
-            </th>*@
+            </th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model)
         {
-        <tr data-id="@item.Id">
-            <td>
-                @Html.DisplayFor(modelItem => item.Invoice.InvoiceNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Invoice.ReferenceNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Invoice.Customer.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LineNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ItemName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Quantity)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Currency)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CurrencyRate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TaxRate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Netto)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Tax)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Gross)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.BaseNetto)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.BaseTax)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.BaseGross)
-            </td>
-            @*<td data-id="@item.BudgetId">
-                @Html.DisplayFor(modelItem => item.Budget.BudgetNumber)
-            </td>*@
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedBy.UserName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedDate)
-            </td>
-            @*<td>
-                @Html.DisplayFor(modelItem => item.LastModifiedBy.UserName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastModifiedDate)
-            </td>*@
-            @*<td>
-            @Html.ActionLink("Edit", "Edit", new {id = item.Id}, new {@class = "edit-invoice-line"}) |
-            @Html.ActionLink("Delete", "Cancel", new {id = item.Id}, new {@class = "cancel-invoice-line"})
-        </td>*@
-        </tr>
+            <tr data-id="@item.Id">
+                <td>
+                    @Html.DisplayFor(modelItem => item.Invoice.InvoiceNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Invoice.ReferenceNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Invoice.Customer.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LineNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ItemName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Quantity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Currency)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CurrencyRate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TaxRate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Netto)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Tax)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Gross)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BaseNetto)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BaseTax)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BaseGross)
+                </td>
+                @*<td data-id="@item.BudgetId">
+                        @Html.DisplayFor(modelItem => item.Budget.BudgetNumber)
+                    </td>*@
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedBy.UserName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedDate)
+                </td>
+                @*<td>
+                        @Html.DisplayFor(modelItem => item.LastModifiedBy.UserName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.LastModifiedDate)
+                    </td>*@
+                <td>
+                    <a asp-controller="Pdf" asp-action="GetInvoicePdf" asp-route-invoiceId="@item.InvoiceId" title="PDF" class="btn-sm btn-default"><i class='fas fa-file-pdf fa-lg'></i></a>
+                </td>
+            </tr>
         }
     </tbody>
 </table>

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using MyInvoicingApp.Models;
+using MyInvoicingApp.ReturnResults;
 using MyInvoicingApp.ViewModels;
 
 namespace MyInvoicingApp.Interfaces
@@ -10,9 +11,9 @@ namespace MyInvoicingApp.Interfaces
 
         IEnumerable<Customer> GetCustomers();
 
-        void Add(CustomerViewModel model, ApplicationUser createdBy);
+        CustomerReturnResult Add(CustomerViewModel model, ApplicationUser createdBy);
 
-        void Edit(CustomerViewModel model, ApplicationUser modifiedBy);
+        CustomerReturnResult Edit(CustomerViewModel model, ApplicationUser modifiedBy);
 
         CustomerViewModel GetCustomerViewModelById(string id);
 
@@ -22,6 +23,6 @@ namespace MyInvoicingApp.Interfaces
 
         IEnumerable<InvoiceViewModel> GetInvoiceViewModels(string id);
 
-        void ChangeStatus(string id, Status newStatus, ApplicationUser modifiedBy);
+        CustomerReturnResult ChangeStatus(string id, Status newStatus, ApplicationUser modifiedBy);
     }
 }

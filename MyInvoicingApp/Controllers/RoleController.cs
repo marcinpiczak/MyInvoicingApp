@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -12,6 +13,7 @@ using MyInvoicingApp.ViewModels;
 
 namespace MyInvoicingApp.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class RoleController : Controller
     {
         protected RoleManager<ApplicationRole> RoleManager;

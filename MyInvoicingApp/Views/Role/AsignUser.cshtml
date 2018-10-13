@@ -1,9 +1,9 @@
 ﻿@model MyInvoicingApp.ViewModels.RoleViewModel
 
-<h4>Przypisywanie użytkownika do roli @Model.Position</h4>
+<h4 class="text-center">Przypisywanie użytkownika do roli <b>@Model.Position</b></h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-4 border rounded mx-auto">
         <form asp-action="AsignUser" asp-controller="Role" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
@@ -17,21 +17,22 @@
             </div>
             <div class="form-group">
                 <input type="submit" value="Dodaj" class="btn btn-default" />
+                <a asp-action="Index" asp-controller="Role" class="btn btn-outline-primary">Anuluj</a>
             </div>
         </form>
     </div>
-</div>
-<div>
-    <ul>
-        @foreach (var user in Model.AsignedUsers)
-        {
-            <li>@user.UserName <a asp-controller="Role" asp-action="RemoveFromRole" asp-route-id="@Model.Id" asp-route-userId="@user.Id" asp title="Usuń" class="btn-sm btn-default"><i class="fas fa-times fa-lg"></i></a></li>
-        }
-    </ul>
-</div>
+    <div class="col-md-6 border rounded mx-auto">
+        <ul>
+            @foreach (var user in Model.AsignedUsers)
+            {
+                <li>@user.UserName <a asp-controller="Role" asp-action="RemoveFromRole" asp-route-id="@Model.Id" asp-route-userId="@user.Id" asp title="Usuń" class="btn-sm btn-default"><i class="fas fa-times fa-lg"></i></a></li>
+            }
+        </ul>
+    </div>
 
+</div>
 <div>
-    <a asp-action="Index" asp-controller="Role" class="btn btn-default">Anuluj</a>
+    
 </div>
 
 @section Scripts {

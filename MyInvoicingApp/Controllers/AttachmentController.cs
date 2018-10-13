@@ -88,7 +88,7 @@ namespace MyInvoicingApp.Controllers
         {
             try
             {
-                var attachment = AttachmentManager.GetAttachmentAndCheckPathForDocumentById(attachmentId, documentType, documentId);
+                var attachment = AttachmentManager.GetAttachmentById(attachmentId, documentType, documentId, true);
 
                 return File(attachment.FilePath.Replace("wwwroot", ""), attachment.ContentType, attachment.OriginalFileName);
                 //return File(@"\Attachments\26-trp9s_73a580ec-2cd7-4e2f-a34e-455ec2ead947.jpg", "image/jpeg", "plik");
@@ -96,12 +96,27 @@ namespace MyInvoicingApp.Controllers
             catch (Exception e)
             {
                 var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+                //throw;
+                TempData["Error"] = $"Wystąpił problem podczas pobierania załącznika: {e.Message}{innerMessage}";
 
-                return Json(new
+                if (documentType == DocumentType.Invoice)
                 {
-                    success = false,
-                    errors = new[] { $"{e.Message}: {innerMessage}" }
-                });
+                    return RedirectToAction("Index", "Invoice");
+                }
+                if (documentType == DocumentType.Budget)
+                {
+                    return RedirectToAction("Index", "Budget");
+                }
+                else
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+
+                //return Json(new
+                //{
+                //    success = false,
+                //    errors = new[] { $"{e.Message}: {innerMessage}" }
+                //});
             }
         }
     }

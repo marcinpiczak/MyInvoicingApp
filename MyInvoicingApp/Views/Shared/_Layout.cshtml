@@ -1,7 +1,10 @@
-﻿@{
+﻿@using MyInvoicingApp.Helpers
+@{
     var controllerName = this.ViewContext.RouteData.Values["controller"].ToString();
     var actionName = this.ViewContext.RouteData.Values["action"].ToString();
 }
+
+@inject ControllerNameHelper ControllerNameHelper;
 
 <!DOCTYPE html>
 <html>
@@ -48,11 +51,11 @@
                     {
                         <li class="nav-item dropdown" id="menu-dropdown-role">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown-role" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Role
+                                Administracja
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a asp-controller="Role" asp-action="Index" class="dropdown-item" id="menu-dropdown-role-list">Lista</a>
-                                <a asp-controller="Role" asp-action="Add" class="dropdown-item" id="menu-dropdown-role-add">Dodaj nowy</a>
+                                <a asp-controller="Role" asp-action="Index" class="dropdown-item" id="menu-dropdown-role-list">Lista ról</a>
+                                <a asp-controller="Role" asp-action="Add" class="dropdown-item" id="menu-dropdown-role-add">Nowa rola</a>
                             </div>
                         </li>
                         <li class="nav-item dropdown" id="menu-dropdown-budget">
@@ -104,20 +107,27 @@
         <ol class="breadcrumb">
             @if (controllerName.ToLower() == "home")
             {
-                <li class="breadcrumb-item active">Home</li>
+                <li class="breadcrumb-item active"><i class="fas fa-home fa-lg"></i></li>
             }
             else
             {
-                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
-                <li class="breadcrumb-item"><a asp-controller="@controllerName" asp-action="Index">@controllerName</a></li>
-                <li class="breadcrumb-item active">@actionName</li>
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index"><i class="fas fa-home fa-lg"></i></a></li>
+                <li class="breadcrumb-item"><a asp-controller="@controllerName" asp-action="Index">@ControllerNameHelper.GetName(controllerName)</a></li>
+                <li class="breadcrumb-item active">@ControllerNameHelper.GetName(controllerName, actionName)</li>
             }
         </ol>
         @if (@TempData["Message"] != null)
         {
-            <div class="alert alert-dismissible alert-info">
+            <div id="app-success-message" class="alert alert-dismissible alert-info">
                 <button type="button" class="close" data-dismiss="alert">&times;</button>
                 <strong>@TempData["Message"]</strong>
+            </div>
+        }
+        @if (@TempData["Success"] != null)
+        {
+            <div id="app-success-message" class="alert alert-dismissible alert-success template">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <strong>@TempData["Success"]</strong>
             </div>
         }
         @if (@TempData["Error"] != null)
@@ -127,10 +137,10 @@
                 <strong>@TempData["Error"]</strong>
             </div>
         }
-            <div class="border rounded">
-                @RenderBody()
-            </div>
-        
+        <div class="border rounded">
+            @RenderBody()
+        </div>
+
 
     </div>
     <hr />

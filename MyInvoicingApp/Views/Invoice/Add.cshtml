@@ -47,6 +47,7 @@
     <div class="tab-pane fade" id="invoice-attachments">
         @{
             await Html.RenderPartialAsync("Attachment/_AddAttachments", new AttachmentViewModel());
+            await Html.RenderPartialAsync("Attachment/_AttachmentList", new List<AttachmentViewModel>());
         }
     </div>
 </div>
@@ -54,6 +55,6 @@
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
-        <script src="~/js/Invoice/InvoiceAdd.js" asp-append-version="true"></script>
+        <script src="~/js/Invoice/InvoiceAddEdit.js" asp-append-version="true"></script>
     }
 }

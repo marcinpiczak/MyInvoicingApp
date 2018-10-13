@@ -42,7 +42,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Adapters\" />
     <Folder Include="wwwroot\Attachments\" />
   </ItemGroup>
 

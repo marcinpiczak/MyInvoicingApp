@@ -7,6 +7,7 @@ using MyInvoicingApp.Models;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using MyInvoicingApp.ReturnResults;
 using MyInvoicingApp.ViewModels;
 
 namespace MyInvoicingApp.Managers
@@ -29,24 +30,6 @@ namespace MyInvoicingApp.Managers
             var models = Context.Customers
                 .Include(x => x.CreatedBy)
                 .Include(x => x.LastModifiedBy)
-                //.Select(x => new CustomerViewModel()
-                //{
-                //    Id = x.Id,
-                //    Status = x.Status,
-                //    CreatedBy = x.CreatedBy,
-                //    CreatedDate = x.CreatedDate,
-                //    LastModifiedBy = x.LastModifiedBy,
-                //    LastModifiedDate = x.LastModifiedDate,
-                //    Name = x.Name,
-                //    Description = x.Description,
-                //    City = x.City,
-                //    PostalCode = x.PostalCode,
-                //    Street = x.Street,
-                //    BuildingNumber = x.BuildingNumber,
-                //    Notes = x.Notes,
-                //    PhoneNumber = x.PhoneNumber,
-                //    DefaultPaymentMethod = x.DefaultPaymentMethod
-                //});
                 .Select(x => new CustomerViewModel(x));
 
             return models;
@@ -61,7 +44,7 @@ namespace MyInvoicingApp.Managers
             return customers;
         }
 
-        public void Add(CustomerViewModel model, ApplicationUser createdBy)
+        public CustomerReturnResult Add(CustomerViewModel model, ApplicationUser createdBy)
         {
             if (model == null || createdBy == null)
             {
@@ -91,9 +74,16 @@ namespace MyInvoicingApp.Managers
             {
                 throw new Exception("Nie zapisano żadnych danych.");
             }
+
+            return new CustomerReturnResult()
+            {
+                Id = newCustomer.Id,
+                Name = newCustomer.Name,
+                Status = newCustomer.Status.ToString()
+            };
         }
 
-        public void Edit(CustomerViewModel model, ApplicationUser modifiedBy)
+        public CustomerReturnResult Edit(CustomerViewModel model, ApplicationUser modifiedBy)
         {
             if (model == null || modifiedBy == null)
             {
@@ -121,6 +111,13 @@ namespace MyInvoicingApp.Managers
             {
                 throw new Exception("Nie zapisano żadnych danych.");
             }
+
+            return new CustomerReturnResult()
+            {
+                Id = customer.Id,
+                Name = customer.Name,
+                Status = customer.Status.ToString()
+            };
         }
 
         public CustomerViewModel GetCustomerViewModelById(string id)
@@ -131,25 +128,6 @@ namespace MyInvoicingApp.Managers
             {
                 throw new ArgumentException("Bark klienta o podanym Id");
             }
-
-            //var model = new CustomerViewModel()
-            //{
-            //    Id = customer.Id,
-            //    Status = customer.Status,
-            //    CreatedBy = customer.CreatedBy,
-            //    CreatedDate = customer.CreatedDate,
-            //    LastModifiedBy = customer.LastModifiedBy,
-            //    LastModifiedDate = customer.LastModifiedDate,
-            //    Name = customer.Name,
-            //    Description = customer.Description,
-            //    City = customer.City,
-            //    PostalCode = customer.PostalCode,
-            //    Street = customer.Street,
-            //    BuildingNumber = customer.BuildingNumber,
-            //    Notes = customer.Notes,
-            //    PhoneNumber = customer.PhoneNumber,
-            //    DefaultPaymentMethod = customer.DefaultPaymentMethod
-            //};
 
             var model = new CustomerViewModel(customer);
 
@@ -193,7 +171,7 @@ namespace MyInvoicingApp.Managers
             return models;
         }
 
-        public void ChangeStatus(string id, Status newStatus, ApplicationUser modifiedBy)
+        public CustomerReturnResult ChangeStatus(string id, Status newStatus, ApplicationUser modifiedBy)
         {
             if (modifiedBy == null)
             {
@@ -212,6 +190,13 @@ namespace MyInvoicingApp.Managers
             {
                 throw new Exception("Nie zapisano żadnych danych.");
             }
+
+            return new CustomerReturnResult()
+            {
+                Id = customer.Id,
+                Name = customer.Name,
+                Status = customer.Status.ToString()
+            };
         }
     }
 }

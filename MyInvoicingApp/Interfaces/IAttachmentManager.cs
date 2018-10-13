@@ -13,11 +13,9 @@ namespace MyInvoicingApp.Interfaces
 
         IEnumerable<AttachmentViewModel> GetAttachmentViewModelsForDocument(DocumentType documentType, string documentId);
 
-        Attachment GetAttachmentById(string id, DocumentType documentType, string documentId);
+        Attachment GetAttachmentById(string id, DocumentType documentType, string documentId, bool checkIfExists);
 
         AttachmentViewModel GetAttachmentViewModelById(string id, DocumentType documentType, string documentId);
-
-        Attachment GetAttachmentAndCheckPathForDocumentById(string id, DocumentType documentType, string documentId);
 
         void RemoveAttachmentForDocumentById(string id, DocumentType documentType, string documentId);
     }

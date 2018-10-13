@@ -34,40 +34,42 @@ namespace MyInvoicingApp.Managers
 
         public IEnumerable<InvoiceViewModel> GetInvoiceViewModels()
         {
-            var models = GetInvoices()
-                //.Select(x => new InvoiceViewModel()
-                //{
-                //    Id = x.Id,
-                //    Status = x.Status,
-                //    CreatedBy = x.CreatedBy,
-                //    CreatedDate = x.CreatedDate,
-                //    LastModifiedBy = x.LastModifiedBy,
-                //    LastModifiedDate = x.LastModifiedDate,
-                //    InvoiceNumber = x.InvoiceNumber,
-                //    PaymentMethod = x.PaymentMethod,
-                //    PaymentDueDate = x.PaymentDueDate,
-                //    IssueDate = x.IssueDate,
-                //    ReceiveDate = x.ReceiveDate,
-                //    Customer = x.Customer,
-                //    Currency = x.Currency,
-                //    Budget = x.Budget
-                //})
-                .Select(x => new InvoiceViewModel(x))
-                .OrderByDescending(x => x.CreatedDate);
+            var models = GetInvoices(IncludeLevel.Level2)
+                .Select(x => new InvoiceViewModel(x));
 
             return models;
         }
 
-        public IEnumerable<Invoice> GetInvoices()
+        public IEnumerable<Invoice> GetInvoices(IncludeLevel includeLevel)
         {
-            var invoices = Context.Invoices
-                .Include(x => x.Customer).ThenInclude(x => x.CreatedBy)
-                .Include(x => x.Customer).ThenInclude(x => x.LastModifiedBy)
-                .Include(x => x.Budget).ThenInclude(x => x.CreatedBy)
-                .Include(x => x.Budget).ThenInclude(x => x.LastModifiedBy)
-                .Include(x => x.Budget).ThenInclude(x => x.Owner)
-                .Include(x => x.CreatedBy)
-                .Include(x => x.LastModifiedBy);
+            IEnumerable<Invoice> invoices;
+
+            switch (includeLevel)
+            {
+                case IncludeLevel.None:
+                    invoices = Context.Invoices;
+                    break;
+
+                case IncludeLevel.Level1:
+                    invoices = Context.Invoices
+                        .Include(x => x.Customer)
+                        .Include(x => x.Customer)
+                        .Include(x => x.Budget)
+                        .Include(x => x.Budget)
+                        .Include(x => x.CreatedBy)
+                        .Include(x => x.LastModifiedBy);
+                    break;
+
+                default:
+                    invoices = Context.Invoices
+                        .Include(x => x.Customer).ThenInclude(x => x.CreatedBy)
+                        .Include(x => x.Customer).ThenInclude(x => x.LastModifiedBy)
+                        .Include(x => x.Budget).ThenInclude(x => x.CreatedBy)
+                        .Include(x => x.Budget).ThenInclude(x => x.LastModifiedBy)
+                        .Include(x => x.CreatedBy)
+                        .Include(x => x.LastModifiedBy);
+                    break;
+            }
 
             return invoices;
         }
@@ -79,18 +81,11 @@ namespace MyInvoicingApp.Managers
                 throw new ArgumentNullException(nameof(model), "Nieprawidłowe parametry");
             }
 
-            var invoice = Context.Invoices.SingleOrDefault(x => x.Id == model.Id);
-
-            if (invoice != null)
-            {
-                throw new ArgumentException($"Faktura o podanym ID już istnieje. Nie można utworzyć faktury z takim samym ID", nameof(invoice));
-            }
-
             var now = DateHelper.GetCurrentDatetime();
 
             var documentNumber = DocumentNumberingManager.GetNextDocumentNumber(DocumentType.Invoice, now, createdBy);
 
-            invoice = Context.Invoices.SingleOrDefault(x => x.InvoiceNumber == documentNumber);
+            var invoice = Context.Invoices.SingleOrDefault(x => x.InvoiceNumber == documentNumber);
 
             if (invoice != null)
             {
@@ -120,7 +115,6 @@ namespace MyInvoicingApp.Managers
                 throw new Exception("Nie zapisano żadnych danych.");
             }
 
-            //return new []{ newInvoice.Id , newInvoice.InvoiceNumber, newInvoice.Status.ToString()};
             return new InvoiceReturnResult()
             {
                 Id = newInvoice.Id,
@@ -134,6 +128,18 @@ namespace MyInvoicingApp.Managers
             if (model == null || createdBy == null)
             {
                 throw new ArgumentNullException(nameof(model), "Nieprawidłowe parametry");
+            }
+
+            var invoice = GetInvoiceById(model.InvoiceId, IncludeLevel.None);
+
+            if (invoice == null)
+            {
+                throw new ArgumentException($"Faktura o podanym ID nie istnieje.", nameof(invoice));
+            }
+
+            if (invoice.Status == Status.Cancelled)
+            {
+                throw new InvalidOperationException("Fatura jest anulowana. Nie można dodawać nowych linii do anulowanej faktury");
             }
 
             decimal netto = model.Netto;
@@ -165,8 +171,6 @@ namespace MyInvoicingApp.Managers
 
             var now = DateHelper.GetCurrentDatetime();
             var invoiceLineNumber = GetNextInvoiceLineNum(model.InvoiceId);
-
-            //var budget = BudgetManager.GetBudgetById(model.BudgetId);
 
             BudgetManager.UpdateBudgetInvoicedAmount(model.BudgetId, baseNetto, recalculateBudgetValues);
 
@@ -201,7 +205,6 @@ namespace MyInvoicingApp.Managers
                 throw new Exception("Nie zapisano żadnych danych.");
             }
 
-            //return new []{ newInvoiceLine.Id, newInvoiceLine.InvoiceId, newInvoiceLine.LineNumber.ToString(), newInvoiceLine.Status.ToString() };
             return new InvoiceLineReturnResult()
             {
                 Id = newInvoiceLine.Id,
@@ -213,14 +216,19 @@ namespace MyInvoicingApp.Managers
 
         public InvoiceReturnResult Edit(InvoiceViewModel model, ApplicationUser modifiedBy)
         {
-            var invoice = Context.Invoices.SingleOrDefault(x => x.Id == model.Id);
-
-            if (invoice == null)
+            if (model == null || modifiedBy == null)
             {
-                throw new ArgumentException($"Faktura o podanym ID nie istnieje.", nameof(invoice));
+                throw new ArgumentNullException(nameof(model), "Nieprawidłowe parametry");
             }
 
-            if (model.BudgetId != "")
+            var invoice = GetInvoiceById(model.Id, IncludeLevel.None);
+
+            if (invoice.Status == Status.Cancelled)
+            {
+                throw new InvalidOperationException("Fatura jest anulowana. Nie można edytować anulowanej faktury");
+            }
+
+            if (!string.IsNullOrWhiteSpace(model.BudgetId))
             {
                 var budget = Context.Budgets.SingleOrDefault(x => x.Id == model.BudgetId);
 
@@ -237,7 +245,10 @@ namespace MyInvoicingApp.Managers
                 throw new ArgumentException($"Klient o podanym ID nie istnieje.", nameof(customer));
             }
 
+            var now = DateHelper.GetCurrentDatetime();
+
             invoice.LastModifiedById = modifiedBy.Id;
+            invoice.LastModifiedDate = now;
             invoice.ReferenceNumber = model.ReferenceNumber;
             invoice.PaymentMethod = model.PaymentMethod;
             invoice.PaymentDueDate = model.PaymentDueDate;
@@ -246,7 +257,7 @@ namespace MyInvoicingApp.Managers
             invoice.CustomerId = model.CustomerId;
             invoice.Currency = model.Currency;
             invoice.BudgetId = model.BudgetId;
-            
+
             Context.Invoices.Update(invoice);
             var result = Context.SaveChanges();
 
@@ -270,7 +281,12 @@ namespace MyInvoicingApp.Managers
                 throw new ArgumentNullException(nameof(model), "Nieprawidłowe parametry");
             }
 
-            var invoiceLine = GetInvoiceLineById(model.Id, model.InvoiceId);
+            var invoiceLine = GetInvoiceLineById(model.Id, model.InvoiceId, IncludeLevel.Level1);
+
+            if (invoiceLine.Status == Status.Cancelled)
+            {
+                throw new InvalidOperationException("Linia fatury jest anulowana. Nie można edytować anulowanej linii faktury");
+            }
 
             decimal netto = model.Netto;
             decimal tax = model.Tax;
@@ -345,31 +361,10 @@ namespace MyInvoicingApp.Managers
 
         public InvoiceViewModel GetInvoiceViewModelById(string invoiceId)
         {
-            var invoice = GetInvoiceById(invoiceId);
+            var invoice = GetInvoiceById(invoiceId, IncludeLevel.Level2);
 
             var customerItemList = GetOpenCustomersItemList(invoice.Customer == null ? null : new CustomerViewModel(invoice.Customer));
             var budgetItemList = GetOpenBudgetsItemList(invoice.Budget == null ? null : new BudgetViewModel(invoice.Budget));
-
-            //var model = new InvoiceViewModel()
-            //{
-            //    Id = invoice.Id,
-            //    Status = invoice.Status,
-            //    CreatedBy = invoice.CreatedBy,
-            //    CreatedDate = invoice.CreatedDate,
-            //    LastModifiedBy = invoice.LastModifiedBy,
-            //    LastModifiedDate = invoice.LastModifiedDate,
-            //    InvoiceNumber = invoice.InvoiceNumber,
-            //    PaymentMethod = invoice.PaymentMethod,
-            //    PaymentDueDate = invoice.PaymentDueDate,
-            //    IssueDate = invoice.IssueDate,
-            //    ReceiveDate = invoice.ReceiveDate,
-            //    Customer = invoice.Customer,
-            //    Currency = invoice.Currency,
-            //    Budget = invoice.Budget,
-            //    BudgetItemList = budgetItemList,
-            //    CustomerItemList = customerItemList,
-            //    InvoiceLines = GetInvoiceLineViewModels(invoiceId)
-            //};
 
             var model = new InvoiceViewModel(invoice)
             {
@@ -381,48 +376,93 @@ namespace MyInvoicingApp.Managers
             return model;
         }
 
-        public Invoice GetInvoiceById(string invoiceId)
+        public Invoice GetInvoiceById(string invoiceId, IncludeLevel includeLevel)
         {
-            var invoice = Context.Invoices
-                .Include(x => x.Customer).ThenInclude(x => x.CreatedBy)
-                .Include(x => x.Customer).ThenInclude(x => x.LastModifiedBy)
-                .Include(x => x.Budget).ThenInclude(x => x.CreatedBy)
-                .Include(x => x.Budget).ThenInclude(x => x.LastModifiedBy)
-                .Include(x => x.CreatedBy)
-                .Include(x => x.LastModifiedBy)
-                .SingleOrDefault(x => x.Id == invoiceId);
+            Invoice invoice;
+
+            switch (includeLevel)
+            {
+                case IncludeLevel.None:
+                    invoice = Context.Invoices
+                        .SingleOrDefault(x => x.Id == invoiceId);
+                    break;
+
+                case IncludeLevel.Level1:
+                    invoice = Context.Invoices
+                        .Include(x => x.Customer)
+                        .Include(x => x.Budget)
+                        .Include(x => x.CreatedBy)
+                        .Include(x => x.LastModifiedBy)
+                        .SingleOrDefault(x => x.Id == invoiceId);
+                    break;
+
+                default:
+                    invoice = Context.Invoices
+                        .Include(x => x.Customer).ThenInclude(x => x.CreatedBy)
+                        .Include(x => x.Customer).ThenInclude(x => x.LastModifiedBy)
+                        .Include(x => x.Budget).ThenInclude(x => x.CreatedBy)
+                        .Include(x => x.Budget).ThenInclude(x => x.LastModifiedBy)
+                        .Include(x => x.CreatedBy)
+                        .Include(x => x.LastModifiedBy)
+                        .SingleOrDefault(x => x.Id == invoiceId);
+                    break;
+            }
 
             if (invoice == null)
             {
-                throw new ArgumentException("Bark faktury o podanym Id", nameof(invoice));
+                throw new ArgumentException("Brak faktury o podanym Id", nameof(invoice));
             }
 
             return invoice;
         }
 
-        public Invoice GetInvoiceByIdSimple(string invoiceId)
-        {
-            var invoice = Context.Invoices
-                .SingleOrDefault(x => x.Id == invoiceId);
+        //public Invoice GetInvoiceByIdSimple(string invoiceId)
+        //{
+        //    var invoice = Context.Invoices
+        //        .SingleOrDefault(x => x.Id == invoiceId);
 
-            if (invoice == null)
+        //    if (invoice == null)
+        //    {
+        //        throw new ArgumentException("Bark faktury o podanym Id", nameof(invoice));
+        //    }
+
+        //    return invoice;
+        //}
+
+        public InvoiceLine GetInvoiceLineById(string lineId, string invoiceId, IncludeLevel includeLevel)
+        {
+            var invoice = GetInvoiceById(invoiceId, IncludeLevel.None);
+
+            InvoiceLine invoiceLine;
+
+            switch (includeLevel)
             {
-                throw new ArgumentException("Bark faktury o podanym Id", nameof(invoice));
+                case IncludeLevel.None:
+                    invoiceLine = Context.InvoiceLines
+                        .SingleOrDefault(x => x.Id == lineId && x.InvoiceId == invoice.Id);
+                    break;
+
+                case IncludeLevel.Level1:
+                    invoiceLine = Context.InvoiceLines
+                        .Include(x => x.Invoice)
+                        .Include(x => x.Budget)
+                        .Include(x => x.CreatedBy)
+                        .Include(x => x.LastModifiedBy)
+                        .SingleOrDefault(x => x.Id == lineId && x.InvoiceId == invoice.Id);
+                    break;
+
+                default:
+                    invoiceLine = Context.InvoiceLines
+                        .Include(x => x.Invoice).ThenInclude(x => x.CreatedBy)
+                        .Include(x => x.Invoice).ThenInclude(x => x.LastModifiedBy)
+                        .Include(x => x.Invoice).ThenInclude(x => x.Budget)
+                        .Include(x => x.Budget).ThenInclude(x => x.CreatedBy)
+                        .Include(x => x.Budget).ThenInclude(x => x.LastModifiedBy)
+                        .Include(x => x.CreatedBy)
+                        .Include(x => x.LastModifiedBy)
+                        .SingleOrDefault(x => x.Id == lineId && x.InvoiceId == invoice.Id);
+                    break;
             }
-
-            return invoice;
-        }
-
-        public InvoiceLine GetInvoiceLineById(string lineId, string invoiceId)
-        {
-            var invoice = GetInvoiceById(invoiceId);
-
-            var invoiceLine = Context.InvoiceLines
-                .Include(x => x.Invoice)
-                .Include(x => x.Budget)
-                .Include(x => x.CreatedBy)
-                .Include(x => x.LastModifiedBy)
-                .SingleOrDefault(x => x.Id == lineId && x.InvoiceId == invoice.Id);
 
             if (invoiceLine == null)
             {
@@ -432,67 +472,92 @@ namespace MyInvoicingApp.Managers
             return invoiceLine;
         }
 
-        public IEnumerable<InvoiceLine> GetInvoiceLines(string invoiceId)
+        public IEnumerable<InvoiceLine> GetInvoiceLines(string invoiceId, IncludeLevel includeLevel)
         {
-            var invoice = GetInvoiceById(invoiceId);
+            var invoice = GetInvoiceById(invoiceId, IncludeLevel.None);
 
-            var invoiceLines = Context.InvoiceLines
-                .Include(x => x.Invoice).ThenInclude(x => x.CreatedBy)
-                .Include(x => x.Invoice).ThenInclude(x => x.LastModifiedBy)
-                .Include(x => x.Budget).ThenInclude(x => x.CreatedBy)
-                .Include(x => x.Budget).ThenInclude(x => x.LastModifiedBy)
-                .Include(x => x.Budget).ThenInclude(x => x.Owner)
-                .Include(x => x.CreatedBy)
-                .Include(x => x.LastModifiedBy)
-                .Where(x => x.InvoiceId == invoice.Id);
+            IEnumerable<InvoiceLine> invoiceLines;
+
+            switch (includeLevel)
+            {
+                case IncludeLevel.None:
+                    invoiceLines = Context.InvoiceLines
+                        .Where(x => x.InvoiceId == invoice.Id);
+                    break;
+
+                case IncludeLevel.Level1:
+                    invoiceLines = Context.InvoiceLines
+                        .Include(x => x.Invoice)
+                        .Include(x => x.Budget)
+                        .Include(x => x.CreatedBy)
+                        .Include(x => x.LastModifiedBy)
+                        .Where(x => x.InvoiceId == invoice.Id);
+                    break;
+
+                default:
+                    invoiceLines = Context.InvoiceLines
+                        .Include(x => x.Invoice).ThenInclude(x => x.CreatedBy)
+                        .Include(x => x.Invoice).ThenInclude(x => x.LastModifiedBy)
+                        .Include(x => x.Budget).ThenInclude(x => x.CreatedBy)
+                        .Include(x => x.Budget).ThenInclude(x => x.LastModifiedBy)
+                        .Include(x => x.Budget).ThenInclude(x => x.Owner)
+                        .Include(x => x.CreatedBy)
+                        .Include(x => x.LastModifiedBy)
+                        .Where(x => x.InvoiceId == invoice.Id);
+                    break;
+            }
 
             return invoiceLines;
         }
 
         public IEnumerable<InvoiceLineViewModel> GetInvoiceLineViewModels(string invoiceId)
         {
-            var invoiceLines = GetInvoiceLines(invoiceId);
+            var invoiceLines = GetInvoiceLines(invoiceId, IncludeLevel.Level2);
 
             var models = invoiceLines
-                //.Select(x => new InvoiceLineViewModel()
-                //{
-                //    Id = x.Id,
-                //    InvoiceId = x.InvoiceId,
-                //    Status = x.Status,
-                //    CreatedBy = x.CreatedBy,
-                //    CreatedDate = x.CreatedDate,
-                //    LastModifiedBy = x.LastModifiedBy,
-                //    LastModifiedDate = x.LastModifiedDate,
-                //    Invoice = x.Invoice,
-                //    LineNumber = x.LineNumber,
-                //    ItemName = x.ItemName,
-                //    Description = x.Description,
-                //    Quantity = x.Quantity,
-                //    Price = x.Price,
-                //    Currency = x.Currency,
-                //    CurrencyRate = x.CurrencyRate,
-                //    TaxRate = x.TaxRate,
-                //    Netto = x.Netto,
-                //    Tax = x.Tax,
-                //    Gross = x.Gross,
-                //    BaseNetto = x.BaseNetto,
-                //    BaseTax = x.BaseTax,
-                //    BaseGross = x.BaseGross,
-                //    Budget = x.Budget
-                //});
                 .Select(x => new InvoiceLineViewModel(x));
 
             return models;
         }
 
-        public void ChangeStatus(string invoiceId, Status newStatus, ApplicationUser modifiedBy)
+        public InvoiceReturnResult ChangeStatus(string invoiceId, Status newStatus, ApplicationUser modifiedBy)
         {
-            throw new System.NotImplementedException();
+            var invoice = GetInvoiceById(invoiceId, IncludeLevel.None);
+            var invoiceLines = GetInvoiceLines(invoiceId, IncludeLevel.None).ToList();
+
+            var now = DateHelper.GetCurrentDatetime();
+
+            invoice.Status = newStatus;
+            invoice.LastModifiedById = modifiedBy.Id;
+            invoice.LastModifiedDate = now;
+
+            invoiceLines.ForEach(x =>
+            {
+                x.Status = newStatus;
+                x.LastModifiedById = modifiedBy.Id;
+                x.LastModifiedDate = now;
+            });
+
+            Context.Invoices.Update(invoice);
+            Context.InvoiceLines.UpdateRange(invoiceLines);
+            var result = Context.SaveChanges();
+
+            if (result == 0)
+            {
+                throw new Exception("Nie zapisano żadnych danych.");
+            }
+
+            return new InvoiceReturnResult()
+            {
+                Id = invoice.Id,
+                InvoiceNumber = invoice.InvoiceNumber,
+                Status = invoice.Status.ToString()
+            };
         }
 
-        public void ChangeLineStatus(string lineId, string invoiceId, Status newStatus, ApplicationUser modifiedBy)
+        public InvoiceLineReturnResult ChangeLineStatus(string lineId, string invoiceId, Status newStatus, ApplicationUser modifiedBy)
         {
-            var invoiceLine = GetInvoiceLineById(lineId, invoiceId);
+            var invoiceLine = GetInvoiceLineById(lineId, invoiceId, IncludeLevel.None);
 
             if (invoiceLine.Status == Status.Cancelled && newStatus == Status.Cancelled)
             {
@@ -513,6 +578,13 @@ namespace MyInvoicingApp.Managers
                 throw new Exception("Nie zapisano żadnych danych.");
             }
 
+            return new InvoiceLineReturnResult()
+            {
+                Id = invoiceLine.Id,
+                InvoiceId = invoiceLine.InvoiceId,
+                LineNumber = invoiceLine.LineNumber,
+                Status = invoiceLine.Status.ToString()
+            };
         }
 
         public InvoiceViewModel GetDefaultInvoiceViewModelForAdd(string defaultCurrency = "PLN")

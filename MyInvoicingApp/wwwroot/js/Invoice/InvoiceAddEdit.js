@@ -283,15 +283,21 @@
                             //set default values for line from header: currency and budget
                             invoiceLineCurrency.val(defaultCurrency.val());
                             invoiceLineBudgetId.val(defaultBudgetId.val()).change();
+
+                            //set documentId for attachment form
+                            documentId.val(result.Invoice.Id);
+
+                            alertify.notify('Dodano nową fakturę z numerem ' + result.Invoice.InvoiceNumber, 'success', 10);
                         } else {
                             //console.log("error");
                             var div = createValidationSummary(result.errors);
-                            invoiceHdrAddForm.prepend(div);
-                            //invoiceHdrAddForm.parent().html(result);
+                            //invoiceHdrAddForm.prepend(div);
+                            alertify.alert().setContent(div[0]).show();
                         }
                     },
                     error: function (xhr, textStatus, errorThrown) {
-                        alert(xhr.status);
+                        //alert(xhr.status);
+                        alertify.alert().setContent("Wystąpił błąd: " + errorThrown).show();
                     }
                 });
         } else {
@@ -326,15 +332,18 @@
                             //set default values for line from header: currency and budget
                             invoiceLineCurrency.val(defaultCurrency.val());
                             invoiceLineBudgetId.val(defaultBudgetId.val()).change();
+
+                            alertify.notify('Zapisano zmiany dla faktury.', 'success', 10);
                         } else {
                             //console.log("error");
                             var div = createValidationSummary(result.errors);
-                            invoiceHdrAddForm.prepend(div);
-                            //invoiceHdrAddForm.parent().html(result);
+                            //invoiceHdrAddForm.prepend(div);
+                            alertify.alert().setContent(div[0]).show();
                         }
                     },
                     error: function (xhr, textStatus, errorThrown) {
-                        alert(xhr.status);
+                        //alert(xhr.status);
+                        alertify.alert().setContent("Wystąpił błąd: " + errorThrown).show();
                     }
                 });
         } else {
@@ -379,15 +388,17 @@
                             addInvoiceLineToList(newInvoiceLine);
                             clearInvoiceLineForm();
 
+                            alertify.notify('Dodano nową linię faktury' + result.Invoice.InvoiceNumber, 'success', 10);
                         } else {
                             //console.log("error");
                             var div = createValidationSummary(result.errors);
-                            invoiceLineAddForm.prepend(div);
-                            //invoiceLineAddForm.parent().html(result);
+                            //invoiceLineAddForm.prepend(div);
+                            alertify.alert().setContent(div[0]).show();
                         }
                     },
                     error: function (xhr, textStatus, errorThrown) {
-                        alert(xhr.status);
+                        //alert(xhr.status);
+                        alertify.alert().setContent("Wystąpił błąd: " + errorThrown).show();
                     }
                 });
 
@@ -406,10 +417,6 @@
 
             var invoiceLine = getInvoiceLineFromForm();
 
-            //testy
-            //replaceModifiedLineInList(invoiceLine);
-            //clearInvoiceLineForm();
-
             $.ajax(
                 {
                     url: "https://localhost:5001/Invoice/EditLineJson",
@@ -425,15 +432,17 @@
                             clearInvoiceLineForm();
                             setInvoiceLineAddBtnDefaultAction();
 
+                            alertify.notify('Zapisano zmiany dla linii faktury', 'success', 10);
                         } else {
                             //console.log("error");
                             var div = createValidationSummary(result.errors);
-                            invoiceLineAddForm.prepend(div);
-                            //invoiceLineAddForm.parent().html(result);
+                            //invoiceLineAddForm.prepend(div);
+                            alertify.alert().setContent(div[0]).show();
                         }
                     },
                     error: function (xhr, textStatus, errorThrown) {
-                        alert(xhr.status);
+                        //alert(xhr.status);
+                        alertify.alert().setContent("Wystąpił błąd: " + errorThrown).show();
                     }
                 });
 
@@ -485,17 +494,6 @@
             invoiceLineBaseNetto.val(numeral(Math.round(baseNetto * 100) / 100).format());
             invoiceLineBaseTax.val(numeral(Math.round(baseTax * 100) / 100).format());
             invoiceLineBaseGross.val(numeral(Math.round(baseGross * 100) / 100).format());
-
-            //var val = $(this).val();
-            //console.log(val);
-
-            //var number = numeral(gross);
-            //console.log(number.format('0,0.00 $'));
-            //console.log(gross);
-
-            //var numberFromString = numeral("1 518,37 zł");
-            //console.log(numberFromString.value());
-
         });
 
     //edit line
@@ -558,12 +556,14 @@
                         if (result.success) {
                             lineStatus.text("Cancelled");
 
+                            alertify.notify('Anulowano linię faktury', 'success', 10);
                         } else {
                             alert(result.errors);
                         }
                     },
                     error: function (xhr, textStatus, errorThrown) {
-                        alert(xhr.status);
+                        //alert(xhr.status);
+                        alertify.alert().setContent("Wystąpił błąd: " + errorThrown).show();
                     }
                 });
         } else {
@@ -600,7 +600,7 @@
 
                             addAttachmentToList(attachment);
 
-                            alertify.notify('Dodano poprawnie pliki', 'success', 10);
+                            alertify.notify('Dodano nowy załącznik', 'success', 10);
 
                         } else {
                             var div = createValidationSummary(result.errors);
@@ -669,15 +669,17 @@
                     if (result.success) {
 
                         attachmentRow.remove();
-                        alertify.notify('Usunięto poprawnie pliki', 'success', 10);
+                        alertify.notify('Usunięto załącznik', 'success', 10);
 
                     } else {
                         var div = createValidationSummary(result.errors);
+                        //invoiceLineAddForm.prepend(div);
                         alertify.alert().setContent(div[0]).show();
                     }
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    alert(xhr.status);
+                    //alert(xhr.status);
+                    alertify.alert().setContent("Wystąpił błąd: " + errorThrown).show();
                 }
             });
     });

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -31,7 +30,7 @@ namespace MyInvoicingApp.Managers
         public IEnumerable<Budget> GetBudgets()
         {
             var budgets = Context.Budgets
-                .Include(x => x.CreatedBy)
+                .Include(x => x.CreatedBy).ThenInclude(x => x.Manager)
                 .Include(x => x.Owner)
                 .Include(x => x.LastModifiedBy);
 
@@ -41,20 +40,6 @@ namespace MyInvoicingApp.Managers
         public IEnumerable<BudgetViewModel> GetBudgetViewModels()
         {
             var models = GetBudgets()
-                //.Select(x => new BudgetViewModel()
-                //{
-                //    Id = x.Id,
-                //    Status = x.Status,
-                //    BudgetNumber = x.BudgetNumber,
-                //    Description = x.Description,
-                //    CommitedAmount = x.CommitedAmount,
-                //    InvoicedAmount = x.InvoicedAmount,
-                //    CreatedBy = x.CreatedBy,
-                //    CreatedDate = x.CreatedDate,
-                //    LastModifiedBy = x.LastModifiedBy,
-                //    LastModifiedDate = x.LastModifiedDate,
-                //    Owner = x.Owner
-                //});
                 .Select(x => new BudgetViewModel(x));
 
             return models;
@@ -72,8 +57,6 @@ namespace MyInvoicingApp.Managers
             {
                 throw new ArgumentException("Brak budżetu o podanym Id", nameof(budget));
             }
-
-            //Context.Entry(budget).State = EntityState.Detached;
 
             return budget;
         }
@@ -94,21 +77,6 @@ namespace MyInvoicingApp.Managers
         public BudgetViewModel GetBudgetViewModelById(string budgetId)
         {
             var budget = GetBudgetById(budgetId);
-
-            //var model = new BudgetViewModel()
-            //{
-            //    Id = budget.Id,
-            //    Status = budget.Status,
-            //    BudgetNumber = budget.BudgetNumber,
-            //    Description = budget.Description,
-            //    CommitedAmount = budget.CommitedAmount,
-            //    InvoicedAmount = budget.InvoicedAmount,
-            //    CreatedBy = budget.CreatedBy,
-            //    CreatedDate = budget.CreatedDate,
-            //    LastModifiedBy = budget.LastModifiedBy,
-            //    LastModifiedDate = budget.LastModifiedDate,
-            //    Owner = budget.Owner
-            //};
 
             var model = new BudgetViewModel(budget);
 
@@ -160,7 +128,7 @@ namespace MyInvoicingApp.Managers
             };
         }
 
-        public void Edit(BudgetViewModel model, ApplicationUser modifiedBy)
+        public BudgetReturnResult Edit(BudgetViewModel model, ApplicationUser modifiedBy)
         {
             if (model == null || modifiedBy == null)
             {
@@ -200,6 +168,13 @@ namespace MyInvoicingApp.Managers
             {
                 throw new Exception("Nie zapisano żadnych danych.");
             }
+
+            return new BudgetReturnResult()
+            {
+                Id = budget.Id,
+                BudgetNumber = budget.BudgetNumber,
+                Status = budget.Status.ToString()
+            };
         }
 
         public decimal GetBudgetBaseNettoTotalInvoicesAmount(string budgetId)
@@ -227,38 +202,12 @@ namespace MyInvoicingApp.Managers
         public IEnumerable<InvoiceLineViewModel> GetInvoiceLineViewModelsForBudget(string budgetId)
         {
             var models = GetInvoiceLinesForBudget(budgetId)
-                //    .Select(x => new InvoiceLineViewModel()
-                //    {
-                //        Id = x.Id,
-                //        InvoiceId = x.InvoiceId,
-                //        Status = x.Status,
-                //        CreatedBy = x.CreatedBy,
-                //        CreatedDate = x.CreatedDate,
-                //        LastModifiedBy = x.LastModifiedBy,
-                //        LastModifiedDate = x.LastModifiedDate,
-                //        Invoice = x.Invoice,
-                //        LineNumber = x.LineNumber,
-                //        ItemName = x.ItemName,
-                //        Description = x.Description,
-                //        Quantity = x.Quantity,
-                //        Price = x.Price,
-                //        Currency = x.Currency,
-                //        CurrencyRate = x.CurrencyRate,
-                //        TaxRate = x.TaxRate,
-                //        Netto = x.Netto,
-                //        Tax = x.Tax,
-                //        Gross = x.Gross,
-                //        BaseNetto = x.BaseNetto,
-                //        BaseTax = x.BaseTax,
-                //        BaseGross = x.BaseGross,
-                //        Budget = x.Budget
-                //    });
                 .Select(x => new InvoiceLineViewModel(x));
 
             return models;
         }
 
-        public void ChangeStatus(string budgetId, Status newStatus, ApplicationUser modifiedBy)
+        public BudgetReturnResult ChangeStatus(string budgetId, Status newStatus, ApplicationUser modifiedBy)
         {
             if (modifiedBy == null)
             {
@@ -286,6 +235,13 @@ namespace MyInvoicingApp.Managers
             {
                 throw new Exception("Nie zapisano żadnych danych.");
             }
+
+            return new BudgetReturnResult()
+            {
+                Id = budget.Id,
+                BudgetNumber = budget.BudgetNumber,
+                Status = budget.Status.ToString()
+            };
         }
 
         public void UpdateBudgetInvoicedAmount(string budgetId, decimal invoiceAmount, bool recalculateInvoicedAmount)
@@ -296,7 +252,6 @@ namespace MyInvoicingApp.Managers
 
             if (recalculateInvoicedAmount)
             {
-                //sprawdzić kwestię jednoczesnego dostępu
                 currentInvoicedAmount = GetBudgetBaseNettoTotalInvoicesAmount(budgetId);
             }
 

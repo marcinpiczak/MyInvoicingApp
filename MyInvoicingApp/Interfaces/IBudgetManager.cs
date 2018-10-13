@@ -38,7 +38,7 @@ namespace MyInvoicingApp.Interfaces
         /// <param name="createdBy">ApplicationUser that creates Budget</param>
         BudgetReturnResult Add(BudgetViewModel model, ApplicationUser createdBy);
 
-        void Edit(BudgetViewModel model, ApplicationUser modifiedBy);
+        BudgetReturnResult Edit(BudgetViewModel model, ApplicationUser modifiedBy);
 
         decimal GetBudgetBaseNettoTotalInvoicesAmount(string id);
 
@@ -46,7 +46,7 @@ namespace MyInvoicingApp.Interfaces
 
         IEnumerable<InvoiceLineViewModel> GetInvoiceLineViewModelsForBudget(string id);
 
-        void ChangeStatus(string id, Status newStatus, ApplicationUser modifiedBy);
+        BudgetReturnResult ChangeStatus(string id, Status newStatus, ApplicationUser modifiedBy);
 
         void UpdateBudgetInvoicedAmount(string budgetId, decimal invoiceAmount, bool recalculateInvoicedAmount);
 

@@ -71,7 +71,7 @@ namespace MyInvoicingApp.Managers
         {
             if (string.IsNullOrWhiteSpace(documentId))
             {
-                throw new ArgumentNullException("Nieprawidłowe parametry");
+                throw new ArgumentNullException(nameof(documentId) ,"Nieprawidłowe parametry");
             }
 
             if (documentType == DocumentType.Budget)
@@ -80,25 +80,25 @@ namespace MyInvoicingApp.Managers
             }
             else if (documentType == DocumentType.Invoice)
             {
-                InvoiceManager.GetInvoiceByIdSimple(documentId);
+                InvoiceManager.GetInvoiceById(documentId, IncludeLevel.None);
             }
 
-            var list = Context.Attachments
+            var attachments = Context.Attachments
                 .Where(x => x.Status == Status.Opened)
                 .Where(x => x.DocumentType == documentType && x.DocumentId == documentId);
 
-            return list;
+            return attachments;
         }
 
         public IEnumerable<AttachmentViewModel> GetAttachmentViewModelsForDocument(DocumentType documentType, string documentId)
         {
-            var list = GetAttachmentsForDocument(documentType, documentId)
+            var attachments = GetAttachmentsForDocument(documentType, documentId)
                 .Select(x => new AttachmentViewModel(x));
 
-            return list;
+            return attachments;
         }
 
-        public Attachment GetAttachmentById(string id, DocumentType documentType, string documentId)
+        public Attachment GetAttachmentById(string id, DocumentType documentType, string documentId, bool checkIfExists)
         {
             var attachment = Context.Attachments
                 .Where(x => x.Status == Status.Opened)
@@ -109,41 +109,37 @@ namespace MyInvoicingApp.Managers
                 throw new Exception("Nie istnieje załącznik dla podanych parametrów");
             }
 
+            if (checkIfExists)
+            {
+                var exists = FileHelper.FileExists(attachment.FilePath);
+
+                if (!exists)
+                {
+                    throw new Exception("Plik nie istnieje");
+                }
+            }
+
             return attachment;
         }
 
         public AttachmentViewModel GetAttachmentViewModelById(string id, DocumentType documentType, string documentId)
         {
-            var attachment = GetAttachmentById(id, documentType, documentId);
+            var attachment = GetAttachmentById(id, documentType, documentId, false);
 
             var model = new AttachmentViewModel(attachment);
 
             return model;
         }
 
-        public Attachment GetAttachmentAndCheckPathForDocumentById(string id, DocumentType documentType, string documentId)
-        {
-            var attachment = GetAttachmentById(id, documentType, documentId);
-
-            var exists = FileHelper.FileExists(attachment.FilePath);
-
-            if (!exists)
-            {
-                throw new Exception("Plik nie istnieje");
-            }
-
-            return attachment;
-        }
-
         public void RemoveAttachmentForDocumentById(string id, DocumentType documentType, string documentId)
         {
-            var attachment = GetAttachmentAndCheckPathForDocumentById(id, documentType, documentId);
+            var attachment = GetAttachmentById(id, documentType, documentId, true);
 
             var exists = FileHelper.DeleteFile(attachment.FilePath);
 
             if (!exists)
             {
-                throw new Exception("Nie udało się usunąć pliku");
+                throw new Exception("Plik nie istnieje lub nie udało się usunąć pliku");
             }
 
             attachment.Status = Status.Closed;

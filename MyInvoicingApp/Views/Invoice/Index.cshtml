@@ -1,9 +1,9 @@
 ﻿@model IEnumerable<MyInvoicingApp.ViewModels.InvoiceViewModel>
 
-<h2>Lista faktur</h2>
+<h2 class="text-center">Lista faktur</h2>
 
 <p>
-    <a asp-action="Add" asp-controller="Invoice" class="btn btn-success"><i class="fas fa-plus fa-lg"></i> Dodaj nową fakturę</a>
+    <a asp-action="Add" asp-controller="Invoice" class="btn btn-success template my-add-btn"><i class="fas fa-plus fa-lg"></i> Dodaj nową fakturę</a>
 </p>
 <table class="table">
     <thead>
@@ -56,65 +56,61 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.InvoiceNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ReferenceNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PaymentMethod)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PaymentDueDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IssueDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ReceiveDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Customer.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Currency)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Budget.BudgetNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedBy.UserName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastModifiedBy.UserName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastModifiedDate)
-            </td>
-            <td>
-                @if (item.Status == Status.Closed)
-                {
-                    <a asp-controller="Invoice" asp-action="ReOpen" asp-route-id="@item.Id" title="Otwórz ponownie" class="btn-sm btn-default"><i class="fas fa-door-open fa-lg"></i></a>
-                }
-                else
-                {
-                    @*<a asp-controller="Invoice" asp-action="AddLine" asp-route-invoiceId="@item.Id" title="Dodanie nowej linii" class="btn-sm btn-default"><i class="fas fa-plus fa-lg"></i></a>*@
-                    <a asp-controller="Invoice" asp-action="Edit" asp-route-id="@item.Id" title="Edycja" class="btn-sm btn-default"><i class="fas fa-pen fa-lg"></i></a>
-                    <a asp-controller="Invoice" asp-action="Cancel" asp-route-id="@item.Id" title="Anulowanie" class="btn-sm btn-default"><i class="fas fa-times fa-lg"></i></a>
-                }
-                <a asp-controller="Invoice" asp-action="Details" asp-route-id="@item.Id" title="Szczegóły" class="btn-sm btn-default"><i class="fas fa-info fa-lg"></i></a>
-                <a asp-controller="Pdf" asp-action="GetInvoicePdf" asp-route-invoiceId="@item.Id" title="PDF" class="btn-sm btn-default"><i class='fas fa-file-pdf fa-lg'></i></a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.InvoiceNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ReferenceNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PaymentMethod)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PaymentDueDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IssueDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ReceiveDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Customer.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Currency)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Budget.BudgetNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedBy.UserName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastModifiedBy.UserName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastModifiedDate)
+                </td>
+                <td>
+                    @if (item.Status != Status.Cancelled)
+                    {
+                        <a asp-controller="Invoice" asp-action="Edit" asp-route-id="@item.Id" title="Edycja" class="btn-sm btn-default"><i class="fas fa-pen fa-lg"></i></a>
+                    }
+                    <a asp-controller="Invoice" asp-action="Cancel" asp-route-invoiceId="@item.Id" title="Anulowanie" class="btn-sm btn-default"><i class="fas fa-times fa-lg"></i></a>
+                    <a asp-controller="Invoice" asp-action="Details" asp-route-id="@item.Id" title="Szczegóły" class="btn-sm btn-default"><i class="fas fa-info fa-lg"></i></a>
+                    <a asp-controller="Pdf" asp-action="GetInvoicePdf" asp-route-invoiceId="@item.Id" title="PDF" class="btn-sm btn-default"><i class='fas fa-file-pdf fa-lg'></i></a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
