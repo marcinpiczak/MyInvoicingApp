@@ -9,7 +9,8 @@ namespace MyInvoicingApp.Helpers
             {"Invoice", "Faktury" },
             {"Budget", "Budżety" },
             {"Customer", "Klienci" },
-            {"Role", "Stanowiska" }
+            {"Role", "Stanowiska" },
+            {"Account", "Konta" }
 
         };
 
@@ -20,40 +21,53 @@ namespace MyInvoicingApp.Helpers
             {"Edit", "Edycja" },
             {"Details", "Szczegóły" },
             {"AddLine", "Dodawania linii" },
-            {"AsignUser", "Przypisanie użytkownika" }
-
+            {"AsignUser", "Przypisanie użytkownika" },
+            {"Login", "Logowanie" },
+            {"Register", "Rejesracja" }
         };
 
-
-        public string GetName(string controller, string action = null)
+        /// <summary>
+        /// Returns localised name of the controller
+        /// </summary>
+        /// <param name="controller">Controller name</param>
+        /// <returns>localised name of the controller</returns>
+        public string GetControllerName(string controller)
         {
             if (string.IsNullOrWhiteSpace(controller))
             {
                 return "Nieznany";
             }
 
+            var exists = _controllers.TryGetValue(controller, out string name);
+
+            if (exists)
+            {
+                return name;
+            }
+
+            return controller;
+        }
+
+        /// <summary>
+        /// Returns localised name of the controllers action
+        /// </summary>
+        /// <param name="action">Action name</param>
+        /// <returns>localised name of the controllers action</returns>
+        public string GetActionName(string action = null)
+        {
             if (string.IsNullOrWhiteSpace(action))
             {
-                var exists = _controllers.TryGetValue(controller, out string name);
-
-                if (exists)
-                {
-                    return name;
-                }
-
-                return controller;
+                return "Nieznana";
             }
-            else
+
+            var exists = _actions.TryGetValue(action, out string name);
+
+            if (exists)
             {
-                var exists = _actions.TryGetValue(action, out string name);
-
-                if (exists)
-                {
-                    return name;
-                }
-
-                return action;
+                return name;
             }
+
+            return action;
         }
     }
 }

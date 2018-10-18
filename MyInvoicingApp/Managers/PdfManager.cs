@@ -24,6 +24,11 @@ namespace MyInvoicingApp.Managers
             DateHelper = dateHelper;
         }
 
+        /// <summary>
+        /// Gets PDF file for invoice using Syncfusion.Pdf
+        /// </summary>
+        /// <param name="invoiceId">invoice Id for which file should be generated</param>
+        /// <returns>PDF file for invoice</returns>
         public FileStreamResult GetInvoicePdf(string invoiceId)
         {
             //Declaring colors        
@@ -278,9 +283,12 @@ namespace MyInvoicingApp.Managers
             //If the position is not set to '0' then the PDF will be empty.
             ms.Position = 0;
 
+            var contentType = "application/pdf";
+            var fileName = $"{invoiceNo.Replace("/", "_")}_{DateHelper.GetCurrentDatetime():yyyyMMdd}.pdf";
+
             //Download the PDF document in the browser.
-            FileStreamResult fileStreamResult = new FileStreamResult(ms, "application/pdf");
-            fileStreamResult.FileDownloadName = $"{invoiceNo.Replace("/", "_")}_{DateHelper.GetCurrentDatetime():yyyyMMdd}.pdf";
+            FileStreamResult fileStreamResult = new FileStreamResult(ms, contentType);
+            fileStreamResult.FileDownloadName = fileName;
             return fileStreamResult;
         }
 

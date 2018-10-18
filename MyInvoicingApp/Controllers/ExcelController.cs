@@ -6,28 +6,28 @@ using MyInvoicingApp.Interfaces;
 namespace MyInvoicingApp.Controllers
 {
     [Authorize(Roles = "Admin,Accountant,Manager")]
-    public class PdfController : Controller
+    public class ExcelController : Controller
     {
-        protected IPdfManager PdfManager { get; set; }
+        protected IExcelManager ExcelManager { get; set; }
 
-        public PdfController(IPdfManager pdfManager)
+        public ExcelController(IExcelManager excelManager)
         {
-            PdfManager = pdfManager;
+            ExcelManager = excelManager;
         }
-    
-        [HttpGet]
-        public ActionResult GetInvoicePdf(string invoiceId)
+
+        // GET: /<controller>/
+        public IActionResult GetInvoiceExcel(string invoiceId)
         {
             try
             {
-                return PdfManager.GetInvoicePdf(invoiceId);
+                return ExcelManager.GetInvoiceExcel(invoiceId);
             }
             catch (Exception e)
             {
                 var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
                 ModelState.AddModelError("", e.Message + innerMessage);
                 //throw;
-                TempData["Error"] = $"Wystąpił problem podczas pobierania PDF dla faktury: {e.Message}{innerMessage}";
+                TempData["Error"] = $"Wystąpił problem podczas pobierania Excel dla faktury: {e.Message}{innerMessage}";
             }
 
             return RedirectToAction("Index", "Invoice");

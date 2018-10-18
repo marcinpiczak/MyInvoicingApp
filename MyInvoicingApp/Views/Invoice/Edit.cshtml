@@ -21,7 +21,8 @@
         <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 42px, 0px); top: 0px; left: 0px; will-change: transform;">
             <a class="dropdown-item" href="#"><i class="fa fa-check fa-lg" aria-hidden="true"></i> Wyślij do akceptacji</a>
             <a asp-controller="Invoice" asp-action="Add" class="dropdown-item"><i class="fas fa-plus fa-lg" aria-hidden="true"></i> Dodaj nową fakturę</a>
-            <a asp-controller="Pdf" asp-action="GetInvoicePdf" asp-route-invoiceId="@Model.Id" class="dropdown-item"><i class='far fa-file-pdf fa-lg' aria-hidden="true"></i> PDF</a>
+            <a asp-controller="Pdf" asp-action="GetInvoicePdf" asp-route-invoiceId="@Model.Id" class="dropdown-item"><i class='far fa-file-pdf fa-lg' aria-hidden="true"></i> eksport faktury do PDF</a>
+            <a asp-controller="Excel" asp-action="GetInvoiceExcel" asp-route-invoiceId="@Model.Id" class="dropdown-item"><i class='far fa-file-excel fa-lg' aria-hidden="true"></i> eksport faktury do Excel</a>
         </div>
     </li>
 </ul>

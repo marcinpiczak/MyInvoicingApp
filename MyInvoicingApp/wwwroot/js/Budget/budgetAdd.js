@@ -57,7 +57,7 @@
 
                         } else {
                             var div = createValidationSummary(result.errors);
-                            alertify.alert().setContent(div[0]).show();
+                            alertify.alert("Przepraszamy, wystąpił problem:", "").setContent(div[0]).show();
                         }
                     },
                     error: function (xhr, textStatus, errorThrown) {

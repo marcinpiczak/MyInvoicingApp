@@ -57,12 +57,12 @@
             @*<th>
                     @Html.DisplayNameFor(model => model.Budget)
                 </th>*@
-            <th>
+            @*<th>
                 @Html.DisplayNameFor(model => model.CreatedBy)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.CreatedDate)
-            </th>
+            </th>*@
             @*<th>
                     @Html.DisplayNameFor(model => model.LastModifiedBy)
                 </th>
@@ -132,12 +132,12 @@
                 @*<td data-id="@item.BudgetId">
                         @Html.DisplayFor(modelItem => item.Budget.BudgetNumber)
                     </td>*@
-                <td>
+                @*<td>
                     @Html.DisplayFor(modelItem => item.CreatedBy.UserName)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.CreatedDate)
-                </td>
+                </td>*@
                 @*<td>
                         @Html.DisplayFor(modelItem => item.LastModifiedBy.UserName)
                     </td>
@@ -145,7 +145,9 @@
                         @Html.DisplayFor(modelItem => item.LastModifiedDate)
                     </td>*@
                 <td>
+                    <a asp-controller="Invoice" asp-action="Details" asp-route-id="@item.InvoiceId" title="Szczegóły" class="btn-sm btn-default"><i class="fas fa-info fa-lg"></i></a>
                     <a asp-controller="Pdf" asp-action="GetInvoicePdf" asp-route-invoiceId="@item.InvoiceId" title="PDF" class="btn-sm btn-default"><i class='fas fa-file-pdf fa-lg'></i></a>
+                    <a asp-controller="Excel" asp-action="GetInvoiceExcel" asp-route-invoiceId="@item.InvoiceId" title="Excel" class="btn-sm btn-default"><i class='fas fa-file-excel fa-lg'></i></a>
                 </td>
             </tr>
         }

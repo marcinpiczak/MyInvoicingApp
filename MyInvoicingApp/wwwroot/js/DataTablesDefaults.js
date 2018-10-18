@@ -1,5 +1,6 @@
-﻿$(document).ready(function() {
+﻿$(document).ready(function () {
     var table = $("table");
+    //table.addClass("display nowrap");
 
     //var tableLength = table.children().first().find("th").length;
 
@@ -11,7 +12,7 @@
     if (addBtn.length === 0) {
         btnClass = "template";
     }
-    
+
 
     $.extend(true, $.fn.dataTable.defaults, {
         "language": {
@@ -58,8 +59,14 @@
         //]
     });
 
-    table.DataTable({
+    var dataTable = table.DataTable({
         "order": []
-        //,"scrollX": true
+        //, "scrollX": true
     });
+
+    //$('a[data-toggle="tab"]').on('shown.bs.tab', function (e2) {
+    //    dataTable.draw();
+    //});
+
+
 });

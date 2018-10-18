@@ -20,8 +20,13 @@ namespace MyInvoicingApp.Managers
             DocumentNumberModelManager = documentNumberModelManager;
         }
 
-        private readonly object _lock = new object();
-
+        /// <summary>
+        /// Gets next formatted document number for given document type and date
+        /// </summary>
+        /// <param name="type">type of document</param>
+        /// <param name="forDate">date for which document number should be taken</param>
+        /// <param name="modifiedBy">ApplicationUser that is getting document number</param>
+        /// <returns>formatted document number</returns>
         public string GetNextDocumentNumber(DocumentType type, DateTime forDate, ApplicationUser modifiedBy)
         {
             if (modifiedBy == null)

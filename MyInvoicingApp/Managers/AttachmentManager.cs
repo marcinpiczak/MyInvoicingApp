@@ -35,6 +35,12 @@ namespace MyInvoicingApp.Managers
             FileHelper = fileHelper;
         }
 
+        /// <summary>
+        /// Saves attachment in Attachments folder and creates entry in attachments table in database
+        /// </summary>
+        /// <param name="model">An AttachmentViewModel with all data passed from form: file and description</param>
+        /// <param name="createdBy">ApplicationUser which is adding attachment</param>
+        /// <returns>created attachment model from ViewModel</returns>
         public async Task<Attachment> Add(AttachmentViewModel model, ApplicationUser createdBy)
         {
             var uniqueFileName = FileHelper.GetUniqueFileName(model.File.FileName);
@@ -67,6 +73,12 @@ namespace MyInvoicingApp.Managers
             return newAttachment;
         }
 
+        /// <summary>
+        /// Gets list of all attachments model for given document type and document Id.
+        /// </summary>
+        /// <param name="documentType">Document type for attachment</param>
+        /// <param name="documentId">Document Id for attachment</param>
+        /// <returns>List of attachment models</returns>
         public IEnumerable<Attachment> GetAttachmentsForDocument(DocumentType documentType ,string documentId)
         {
             if (string.IsNullOrWhiteSpace(documentId))
@@ -76,7 +88,7 @@ namespace MyInvoicingApp.Managers
 
             if (documentType == DocumentType.Budget)
             {
-                BudgetManager.GetBudgetByIdSimple(documentId);
+                BudgetManager.GetBudgetById(documentId, IncludeLevel.None);
             }
             else if (documentType == DocumentType.Invoice)
             {
@@ -90,6 +102,12 @@ namespace MyInvoicingApp.Managers
             return attachments;
         }
 
+        /// <summary>
+        /// Gets list of all attachment View Models for given document type and document Id.
+        /// </summary>
+        /// <param name="documentType">Document type for attachment</param>
+        /// <param name="documentId">Document Id for attachment</param>
+        /// <returns>List of attachment View Models</returns>
         public IEnumerable<AttachmentViewModel> GetAttachmentViewModelsForDocument(DocumentType documentType, string documentId)
         {
             var attachments = GetAttachmentsForDocument(documentType, documentId)
@@ -98,6 +116,14 @@ namespace MyInvoicingApp.Managers
             return attachments;
         }
 
+        /// <summary>
+        /// Gets attachment model for given attachment id, document type and document Id.
+        /// </summary>
+        /// <param name="id">Attachment Id for attachment</param>
+        /// <param name="documentType">Document type for attachment</param>
+        /// <param name="documentId">Document Id for attachment</param>
+        /// <param name="checkIfExists">Checks if attachment exists in Attachment folder</param>
+        /// <returns>Attachment model for given attachment id, document type and document Id</returns>
         public Attachment GetAttachmentById(string id, DocumentType documentType, string documentId, bool checkIfExists)
         {
             var attachment = Context.Attachments
@@ -122,6 +148,13 @@ namespace MyInvoicingApp.Managers
             return attachment;
         }
 
+        /// <summary>
+        /// Gets attachment View Model for given attachment id, document type and document Id.
+        /// </summary>
+        /// <param name="id">Attachment Id for attachment</param>
+        /// <param name="documentType">Document type for attachment</param>
+        /// <param name="documentId">Document Id for attachment</param>
+        /// <returns>Attachment View Model for given attachment id, document type and document Id</returns>
         public AttachmentViewModel GetAttachmentViewModelById(string id, DocumentType documentType, string documentId)
         {
             var attachment = GetAttachmentById(id, documentType, documentId, false);
@@ -131,6 +164,12 @@ namespace MyInvoicingApp.Managers
             return model;
         }
 
+        /// <summary>
+        /// Removes attachment from Attachment folder and changes status of database entry to Closed
+        /// </summary>
+        /// <param name="id">Attachment Id for attachment</param>
+        /// <param name="documentType">Document type for attachment</param>
+        /// <param name="documentId">Document Id for attachment</param>
         public void RemoveAttachmentForDocumentById(string id, DocumentType documentType, string documentId)
         {
             var attachment = GetAttachmentById(id, documentType, documentId, true);

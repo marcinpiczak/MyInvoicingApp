@@ -11,7 +11,7 @@ using MyInvoicingApp.ViewModels;
 
 namespace MyInvoicingApp.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin,Accountant,Manager")]
     //[DisplayName("Faktury")]
     public class InvoiceController : Controller
     {

@@ -4,7 +4,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4 border rounded mx-auto">
-        <form asp-action="AsignUser" asp-controller="Role" method="post">
+        <form asp-action="AddToRole" asp-controller="Role" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 @*<label asp-for="Id" class="control-label"></label>*@
@@ -13,26 +13,32 @@
             </div>
             <div class="form-group">
                 <label class="control-label">Użytkownik</label>
-                <select id="userId" name="userId" asp-items="@ViewBag.otherUsers" class="form-control" multiple="multiple"></select>
+                <select id="userId" name="userId" asp-items="@((IEnumerable<SelectListItem>)ViewBag.otherUsers)" class="form-control" multiple="multiple"></select>
             </div>
             <div class="form-group">
-                <input type="submit" value="Dodaj" class="btn btn-default" />
+                <input type="submit" value="Dodaj" class="btn btn-success" @(((IEnumerable<SelectListItem>)ViewBag.otherUsers).Any() ? "" : "disabled") />
                 <a asp-action="Index" asp-controller="Role" class="btn btn-outline-primary">Anuluj</a>
             </div>
         </form>
     </div>
-    <div class="col-md-6 border rounded mx-auto">
-        <ul>
-            @foreach (var user in Model.AsignedUsers)
-            {
-                <li>@user.UserName <a asp-controller="Role" asp-action="RemoveFromRole" asp-route-id="@Model.Id" asp-route-userId="@user.Id" asp title="Usuń" class="btn-sm btn-default"><i class="fas fa-times fa-lg"></i></a></li>
-            }
-        </ul>
+    <div class="col-md-4 border rounded mx-auto">
+        <form asp-action="RemoveFromRole" asp-controller="Role" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                @*<label asp-for="Id" class="control-label"></label>*@
+                <input asp-for="Id" class="form-control" />
+                @*<span asp-validation-for="Id" class="text-danger"></span>*@
+            </div>
+            <div class="form-group">
+                <label class="control-label">Użytkownik</label>
+                <select id="userId" name="userId" asp-items="@((IEnumerable<SelectListItem>)ViewBag.asignedUsers)" class="form-control" multiple="multiple"></select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Usuń" class="btn btn-danger" @(((IEnumerable<SelectListItem>)ViewBag.asignedUsers).Any() ? "" : "disabled") />
+                <a asp-action="Index" asp-controller="Role" class="btn btn-outline-primary">Anuluj</a>
+            </div>
+        </form>
     </div>
-
-</div>
-<div>
-    
 </div>
 
 @section Scripts {

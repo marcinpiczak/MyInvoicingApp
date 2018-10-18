@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -34,8 +35,20 @@ namespace MyInvoicingApp.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var roles = await RoleManager.Roles.Select(x => new RoleViewModel(x)).ToListAsync();
-            return View(roles);
+            try
+            {
+                var roles = await RoleManager.Roles.Select(x => new RoleViewModel(x)).ToListAsync();
+                return View(roles);
+            }
+            catch (Exception e)
+            {
+                var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+                ModelState.AddModelError("", e.Message + innerMessage);
+                //throw;
+                TempData["Error"] = $"Wystąpił problem: {e.Message}{innerMessage}";
+            }
+
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpGet]
@@ -47,24 +60,36 @@ namespace MyInvoicingApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Add(RoleViewModel model)
         {
-            if (ModelState.IsValid)
+            try
             {
-                var newRole = new ApplicationRole(model.Position)
+                if (ModelState.IsValid)
                 {
-                    Description = model.Description
-                };
+                    var newRole = new ApplicationRole(model.Position)
+                    {
+                        Description = model.Description
+                    };
 
-                var result = await RoleManager.CreateAsync(newRole);
+                    var result = await RoleManager.CreateAsync(newRole);
 
-                if (result.Succeeded)
-                {
-                    return RedirectToAction("Index", "Role");
+                    if (result.Succeeded)
+                    {
+                        TempData["Success"] = $"Dodano nową rolę/stanowisko <b> {newRole.Name} </b>";
+
+                        return RedirectToAction("Index", "Role");
+                    }
+
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
                 }
-
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError("", error.Description);
-                }
+            }
+            catch (Exception e)
+            {
+                var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+                ModelState.AddModelError("", e.Message + innerMessage);
+                //throw;
+                TempData["Error"] = $"Wystąpił problem: {e.Message}{innerMessage}";
             }
 
             return View(model);
@@ -73,47 +98,71 @@ namespace MyInvoicingApp.Controllers
         [HttpGet]
         public IActionResult Edit(string id)
         {
-            var role = RoleManager.Roles.SingleOrDefault(x => x.Id == id);
-
-            if (role == null)
+            try
             {
-                throw new ArgumentNullException();
+                var role = RoleManager.Roles.SingleOrDefault(x => x.Id == id);
+
+                if (role == null)
+                {
+                    throw new ArgumentNullException(nameof(id), "Nie pobrano żadnej roli dla podanego Id");
+                }
+
+                return View(new RoleViewModel()
+                {
+                    Position = role.Name,
+                    Description = role.Description,
+                    Id = role.Id
+                });
+            }
+            catch (Exception e)
+            {
+                var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+                ModelState.AddModelError("", e.Message + innerMessage);
+                //throw;
+                TempData["Error"] = $"Wystąpił problem: {e.Message}{innerMessage}";
             }
 
-            return View(new RoleViewModel()
-            {
-                Position = role.Name,
-                Description = role.Description,
-                Id = role.Id
-            });
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
         public async Task<IActionResult> Edit(RoleViewModel model)
         {
-            if (ModelState.IsValid)
+            try
             {
-                var role = RoleManager.Roles.SingleOrDefault(x => x.Id == model.Id);
-
-                if (role == null)
+                if (ModelState.IsValid)
                 {
-                    throw new ArgumentNullException();
+                    var role = RoleManager.Roles.SingleOrDefault(x => x.Id == model.Id);
+
+                    if (role == null)
+                    {
+                        throw new ArgumentNullException();
+                    }
+
+                    role.Name = model.Position;
+                    role.Description = model.Description;
+
+                    var result = await RoleManager.UpdateAsync(role);
+
+                    if (result.Succeeded)
+                    {
+                        TempData["Success"] = $"Zapisano wprowadzone zmiany dla roli/stanowiska <b> {role.Name} </b>";
+
+                        return RedirectToAction("Index");
+                    }
+
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
                 }
-
-                role.Name = model.Position;
-                role.Description = model.Description;
-
-                var result = await RoleManager.UpdateAsync(role);
-
-                if (result.Succeeded)
-                {
-                    return RedirectToAction("Index");
-                }
-
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError("", error.Description);
-                }
+            }
+            catch (Exception e)
+            {
+                var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+                ModelState.AddModelError("", e.Message + innerMessage);
+                //throw;
+                TempData["Error"] = $"Wystąpił problem: {e.Message}{innerMessage}";
             }
 
             return View(model);
@@ -122,31 +171,43 @@ namespace MyInvoicingApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Close(string id)
         {
-            var role = await RoleManager.FindByIdAsync(id);
-
-            if (role == null)
+            try
             {
-                throw new ArgumentException("Nie istnieje role o podanym Id", nameof(role));
-            }
+                var role = await RoleManager.FindByIdAsync(id);
 
-            if (_systemRoles.Contains(role.Name))
-            {
-                throw new Exception("Nie można zamknąć ról systemowych");
-            }
+                if (role == null)
+                {
+                    throw new ArgumentException("Nie istnieje role o podanym Id", nameof(role));
+                }
+
+                if (_systemRoles.Contains(role.Name))
+                {
+                    throw new Exception("Nie można zamknąć ról systemowych");
+                }
             
-            var usersInRole = await UserManager.GetUsersInRoleAsync(role.Name);
+                var usersInRole = await UserManager.GetUsersInRoleAsync(role.Name);
 
-            if (usersInRole.Any())
-            {
-                throw new ArgumentException("Nie można zamknąć roli do której przypisani są użytkownicy", nameof(role));
+                if (usersInRole.Any())
+                {
+                    throw new ArgumentException("Nie można zamknąć roli do której przypisani są użytkownicy", nameof(role));
+                }
+
+                role.Status = Status.Closed;
+                var result = await RoleManager.UpdateAsync(role);
+
+                if (!result.Succeeded)
+                {
+                    throw new ArgumentException("Nie udało się zamknąć roli", nameof(role));
+                }
+
+                TempData["Success"] = $"Rola/stanowisko zostało <b> {role.Name} </b> zamknięte";
             }
-
-            role.Status = Status.Closed;
-            var result = await RoleManager.UpdateAsync(role);
-
-            if (!result.Succeeded)
+            catch (Exception e)
             {
-                throw new ArgumentException("Nie udało się zamknąć roli", nameof(role));
+                var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+                ModelState.AddModelError("", e.Message + innerMessage);
+                //throw;
+                TempData["Error"] = $"Wystąpił problem: {e.Message}{innerMessage}";
             }
 
             return RedirectToAction("Index");
@@ -155,19 +216,31 @@ namespace MyInvoicingApp.Controllers
         [HttpGet]
         public async Task<IActionResult> ReOpen(string id)
         {
-            var role = await RoleManager.FindByIdAsync(id);
-
-            if (role == null)
+            try
             {
-                throw new ArgumentException("Nie istnieje role o podanym Id", nameof(role));
+                var role = await RoleManager.FindByIdAsync(id);
+
+                if (role == null)
+                {
+                    throw new ArgumentException("Nie istnieje role o podanym Id", nameof(role));
+                }
+
+                role.Status = Status.Opened;
+                var result = await RoleManager.UpdateAsync(role);
+
+                if (!result.Succeeded)
+                {
+                    throw new ArgumentException("Nie udało się ponownie otworzyć roli", nameof(role));
+                }
+
+                TempData["Success"] = $"Rola/stanowisko <b> {role.Name} </b> zostało otwarte";
             }
-
-            role.Status = Status.Opened;
-            var result = await RoleManager.UpdateAsync(role);
-
-            if (!result.Succeeded)
+            catch (Exception e)
             {
-                throw new ArgumentException("Nie udało się ponownie otworzyć roli", nameof(role));
+                var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+                ModelState.AddModelError("", e.Message + innerMessage);
+                //throw;
+                TempData["Error"] = $"Wystąpił problem: {e.Message}{innerMessage}";
             }
 
             return RedirectToAction("Index");
@@ -176,67 +249,120 @@ namespace MyInvoicingApp.Controllers
         [HttpGet]
         public async Task<IActionResult> AsignUser(string id)
         {
-            var role = await RoleManager.FindByIdAsync(id);
-
-            if (role == null)
+            try
             {
-                throw new Exception("Nie istnieje role o podanym Id.");
+                var role = await RoleManager.FindByIdAsync(id);
+
+                if (role == null)
+                {
+                    throw new Exception("Nie istnieje role o podanym Id.");
+                }
+
+                var asignedUsers = await UserManager.GetUsersInRoleAsync(role.Name);
+                var otherUsers = UserManager.Users.Except(asignedUsers);
+
+                ViewBag.otherUsers = otherUsers.ToList().Select(x => new SelectListItem(){ Text = x.UserName, Value = x.Id });
+                ViewBag.asignedUsers = asignedUsers.ToList().Select(x => new SelectListItem() { Text = x.UserName, Value = x.Id });
+
+                return View(new RoleViewModel(role)
+                {
+                    AsignedUsers = asignedUsers,
+                });
+            }
+            catch (Exception e)
+            {
+                var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+                ModelState.AddModelError("", e.Message + innerMessage);
+                //throw;
+                TempData["Error"] = $"Wystąpił problem: {e.Message}{innerMessage}";
             }
 
-            var asignedUsers = await UserManager.GetUsersInRoleAsync(role.Name);
-            var otherUsers = UserManager.Users.Except(asignedUsers);
-
-           ViewBag.otherUsers = otherUsers.ToList().Select(x => new SelectListItem(){Text = x.UserName, Value = x.Id});
-
-            return View(new RoleViewModel(role)
-            {
-                AsignedUsers = asignedUsers,
-            });
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
-        public async Task<IActionResult> AsignUser(string id, string[] userId)
+        public async Task<IActionResult> AddToRole(string id, string[] userId)
         {
-            var role = await RoleManager.FindByIdAsync(id);
+            var asignedUsersSb = new StringBuilder("");
 
-            if (role == null)
+            try
             {
-                throw new ArgumentException("Nie istnieje role o podanym Id", nameof(role));
-            }
+                var role = await RoleManager.FindByIdAsync(id);
 
-            if (!userId.Any())
-            {
-                throw new ArgumentException("Nie podano żadnego użytkownika", nameof(role));
-            }
-
-            foreach (var uid in userId)
-            {
-                var user = await UserManager.FindByIdAsync(uid);
-                var result = await UserManager.AddToRoleAsync(user, role.Name);
-
-                if (!result.Succeeded)
+                if (role == null)
                 {
-                    Console.WriteLine($"Nie udało się dodać użytkownika {user.UserName} do roli {role.Name}");
+                    throw new ArgumentException("Nie istnieje role o podanym Id", nameof(role));
                 }
+
+                if (!userId.Any())
+                {
+                    throw new ArgumentException("Nie podano żadnego użytkownika", nameof(role));
+                }
+
+                foreach (var uid in userId)
+                {
+                    var user = await UserManager.FindByIdAsync(uid);
+                    var result = await UserManager.AddToRoleAsync(user, role.Name);
+
+                    if (!result.Succeeded)
+                    {
+                        throw new Exception($"Nie udało się dodać użytkownika {user.UserName} do roli {role.Name}");
+                    }
+
+                    asignedUsersSb.Append($", {user.UserName}");
+                }
+
+                TempData["Success"] = $"Przypisano uzytkowników <b> {asignedUsersSb.ToString().Substring(2)} </b> do roli {role.Name}";
+            }
+            catch (Exception e)
+            {
+                var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+                ModelState.AddModelError("", e.Message + innerMessage);
+                //throw;
+                TempData["Error"] = $"Wystąpił problem: {e.Message}{innerMessage}";
             }
 
-            return RedirectToAction("Index", "Role");
+            return RedirectToAction("Index");
         }
 
-        [HttpGet]
-        public async Task<IActionResult> RemoveFromRole(string id, string userId)
+        [HttpPost]
+        public async Task<IActionResult> RemoveFromRole(string id, string[] userId)
         {
-            var role = await RoleManager.FindByIdAsync(id);
-            var user = await UserManager.FindByIdAsync(userId);
+            var removedUsersSb = new StringBuilder("");
 
-            var result = await UserManager.RemoveFromRoleAsync(user, role.Name);
-
-            if (!result.Succeeded)
+            try
             {
-                throw new Exception($"Nie udało się usunąć użytkownika {user.UserName} od roli {role.Name}");
+                var role = await RoleManager.FindByIdAsync(id);
+
+                if (!userId.Any())
+                {
+                    throw new ArgumentException("Nie podano żadnego użytkownika", nameof(role));
+                }
+
+                foreach (var uid in userId)
+                {
+                    var user = await UserManager.FindByIdAsync(uid);
+                    var result = await UserManager.RemoveFromRoleAsync(user, role.Name);
+
+                    if (!result.Succeeded)
+                    {
+                        throw new Exception($"Nie udało się usunąć użytkownika {user.UserName} z roli {role.Name}");
+                    }
+
+                    removedUsersSb.Append($", {user.UserName}");
+                }
+
+                TempData["Success"] = $"Usunięto uzytkowników <b> {removedUsersSb.ToString().Substring(2)} </b> z roli {role.Name}";
+            }
+            catch (Exception e)
+            {
+                var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
+                ModelState.AddModelError("", e.Message + innerMessage);
+                //throw;
+                TempData["Error"] = $"Wystąpił problem: {e.Message}{innerMessage}";
             }
 
-            return RedirectToAction("Index", "Role");
+            return RedirectToAction("Index");
         }
     }
 }

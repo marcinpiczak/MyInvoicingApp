@@ -37,3 +37,14 @@
 .template {
     display: none;
 }
+
+.row {
+    margin-top: 10px;
+    margin-bottom: 10px
+}
+
+/*table.dataTable thead,
+table.dataTable tbody th,
+table.dataTable tbody td {
+    white-space: nowrap;
+}*/

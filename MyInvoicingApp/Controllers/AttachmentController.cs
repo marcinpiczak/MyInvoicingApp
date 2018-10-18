@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MyInvoicingApp.Interfaces;
@@ -9,6 +10,7 @@ using MyInvoicingApp.ViewModels;
 
 namespace MyInvoicingApp.Controllers
 {
+    [Authorize(Roles = "Admin,Accountant,Manager")]
     public class AttachmentController : Controller
     {
         protected UserManager<ApplicationUser> UserManager { get; set; }
@@ -21,6 +23,11 @@ namespace MyInvoicingApp.Controllers
             AttachmentManager = attachmentManager;
         }
 
+        /// <summary>
+        /// Add attachments to Attachments folder and creates entry in attachments table in database
+        /// </summary>
+        /// <param name="model">An AttachmentViewModel with all data passed from form: file and description</param>
+        /// <returns>JSON with status of attachment addition and array of error if any occure</returns>
         [HttpPost]
         public async Task<IActionResult> AddJson(AttachmentViewModel model)
         {
@@ -59,6 +66,13 @@ namespace MyInvoicingApp.Controllers
             });
         }
 
+        /// <summary>
+        /// Removes attachment from Attachment folder and changes status of database entry to Closed
+        /// </summary>
+        /// <param name="attachmentId">Attachment Id for attachment</param>
+        /// <param name="documentType">Document type for attachment</param>
+        /// <param name="documentId">Document Id for attachment</param>
+        /// <returns>JSON with status of attachment deletion and array of error if any occure</returns>
         [HttpPost]
         public IActionResult DeleteJson(string attachmentId, DocumentType documentType, string documentId)
         {
@@ -83,6 +97,13 @@ namespace MyInvoicingApp.Controllers
             } 
         }
 
+        /// <summary>
+        /// Gets attachment file for given attachment id, document type and document Id
+        /// </summary>
+        /// <param name="attachmentId">Attachment Id for attachment</param>
+        /// <param name="documentType">Document type for attachment</param>
+        /// <param name="documentId">Document Id for attachment</param>
+        /// <returns>Attachment file for given attachment id, document type and document Id</returns>
         [HttpGet]
         public IActionResult Get(string attachmentId, DocumentType documentType, string documentId)
         {

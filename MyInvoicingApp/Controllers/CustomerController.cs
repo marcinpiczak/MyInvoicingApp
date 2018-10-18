@@ -9,17 +9,19 @@ using MyInvoicingApp.ViewModels;
 
 namespace MyInvoicingApp.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin,Accountant,Manager")]
     public class CustomerController : Controller
     {
         protected UserManager<ApplicationUser> UserManager { get; set; }
         protected ApplicationUser CurrentUser => UserManager.Users.First(x => x.UserName == User.Identity.Name);
         protected ICustomerManager CustomerManager { get; set; }
+        protected IInvoiceManager InvoiceManager { get; set; }
 
-        public CustomerController(UserManager<ApplicationUser> userManager, ICustomerManager customerManager)
+        public CustomerController(UserManager<ApplicationUser> userManager, ICustomerManager customerManager, IInvoiceManager invoiceManager)
         {
             UserManager = userManager;
             CustomerManager = customerManager;
+            InvoiceManager = invoiceManager;
         }
 
         public IActionResult Index()
@@ -159,9 +161,7 @@ namespace MyInvoicingApp.Controllers
             {
                 var model = CustomerManager.GetCustomerViewModelById(id);
 
-                var invoiceList = CustomerManager.GetInvoiceViewModels(id);
-
-                model.Invoices = invoiceList.ToList();
+                model.Invoices = InvoiceManager.GetInvoiceViewModelsForCustomer(id).ToList();
             
                 return View(model);
             }

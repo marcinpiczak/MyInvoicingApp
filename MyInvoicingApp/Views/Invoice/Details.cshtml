@@ -12,6 +12,13 @@
     <li class="nav-item">
         <a class="nav-link" data-toggle="tab" href="#invoice-attachments">Załączniki</a>
     </li>
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Akcje</a>
+        <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 42px, 0px); top: 0px; left: 0px; will-change: transform;">
+            <a asp-controller="Pdf" asp-action="GetInvoicePdf" asp-route-invoiceId="@Model.Id" class="dropdown-item"><i class='far fa-file-pdf fa-lg' aria-hidden="true"></i> eksport faktury do PDF</a>
+            <a asp-controller="Excel" asp-action="GetInvoiceExcel" asp-route-invoiceId="@Model.Id" class="dropdown-item"><i class='far fa-file-excel fa-lg' aria-hidden="true"></i> eksport faktury do Excel</a>
+        </div>
+    </li>
 </ul>
 <div id="myTabContent" class="tab-content">
     <div class="tab-pane fade active show" id="invoiceHeader">

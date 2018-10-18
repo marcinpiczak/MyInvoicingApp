@@ -27,31 +27,84 @@ namespace MyInvoicingApp.Managers
             DateHelper = dateHelper;
         }
 
-        public IEnumerable<Budget> GetBudgets()
+        /// <summary>
+        /// Gets list of Budgets models
+        /// </summary>
+        /// <returns>collection with Budget models</returns>
+        public IEnumerable<Budget> GetBudgets(IncludeLevel includeLevel)
         {
-            var budgets = Context.Budgets
-                .Include(x => x.CreatedBy).ThenInclude(x => x.Manager)
-                .Include(x => x.Owner)
-                .Include(x => x.LastModifiedBy);
+            IEnumerable<Budget> budgets;
+
+            switch (includeLevel)
+            {
+                case IncludeLevel.None:
+                    budgets = Context.Budgets;
+                    break;
+
+                case IncludeLevel.Level1:
+                    budgets = Context.Budgets
+                        .Include(x => x.CreatedBy)
+                        .Include(x => x.Owner)
+                        .Include(x => x.LastModifiedBy);
+                    break;
+
+                default:
+                    budgets = Context.Budgets
+                        .Include(x => x.CreatedBy).ThenInclude(x => x.Manager)
+                        .Include(x => x.Owner).ThenInclude(x => x.Manager)
+                        .Include(x => x.LastModifiedBy);
+                    break;
+            }
 
             return budgets;
         }
 
+        /// <summary>
+        /// Gets list of BudgetViewModel
+        /// </summary>
+        /// <returns>collection with BudgetViewModels</returns>
         public IEnumerable<BudgetViewModel> GetBudgetViewModels()
         {
-            var models = GetBudgets()
+            var models = GetBudgets(IncludeLevel.Level2)
                 .Select(x => new BudgetViewModel(x));
 
             return models;
         }
 
-        public Budget GetBudgetById(string budgetId)
+        /// <summary>
+        /// Gets Budget for given Id or throws exceptions if budget not found.
+        /// </summary>
+        /// <param name="budgetId">Budget id</param>
+        /// <param name="includeLevel">indicates level of dependencies to be retrieved from database</param>
+        /// <returns>Budget based on budget for given Id</returns>
+        public Budget GetBudgetById(string budgetId, IncludeLevel includeLevel)
         {
-            var budget = Context.Budgets
-                .Include(x => x.CreatedBy).ThenInclude(x => x.Manager)
-                .Include(x => x.Owner)
-                .Include(x => x.LastModifiedBy)
-                .FirstOrDefault(x => x.Id == budgetId);
+
+            Budget budget;
+
+            switch (includeLevel)
+            {
+                case IncludeLevel.None:
+                    budget = Context.Budgets
+                        .FirstOrDefault(x => x.Id == budgetId);
+                    break;
+
+                case IncludeLevel.Level1:
+                    budget = Context.Budgets
+                        .Include(x => x.CreatedBy)
+                        .Include(x => x.Owner)
+                        .Include(x => x.LastModifiedBy)
+                        .FirstOrDefault(x => x.Id == budgetId);
+                    break;
+
+                default:
+                    budget = Context.Budgets
+                        .Include(x => x.CreatedBy).ThenInclude(x => x.Manager)
+                        .Include(x => x.Owner).ThenInclude(x => x.Manager)
+                        .Include(x => x.LastModifiedBy)
+                        .FirstOrDefault(x => x.Id == budgetId);
+                    break;
+            }
 
             if (budget == null)
             {
@@ -61,28 +114,26 @@ namespace MyInvoicingApp.Managers
             return budget;
         }
 
-        public Budget GetBudgetByIdSimple(string budgetId)
-        {
-            var budget = Context.Budgets
-                .FirstOrDefault(x => x.Id == budgetId);
-
-            if (budget == null)
-            {
-                throw new ArgumentException("Brak budżetu o podanym Id", nameof(budget));
-            }
-
-            return budget;
-        }
-
+        /// <summary>
+        /// Gets BudgetViewModel based on budget for given Id or throws exceptions if budget not found.
+        /// </summary>
+        /// <param name="budgetId">Budget id</param>
+        /// <returns>BudgetViewModel based on budget for given Id</returns>
         public BudgetViewModel GetBudgetViewModelById(string budgetId)
         {
-            var budget = GetBudgetById(budgetId);
+            var budget = GetBudgetById(budgetId, IncludeLevel.Level2);
 
             var model = new BudgetViewModel(budget);
 
             return model;
         }
 
+        /// <summary>
+        /// Add Budget from given BudgetViewModel.
+        /// </summary>
+        /// <param name="model">BudgetViewModel</param>
+        /// <param name="createdBy">ApplicationUser that creates Budget</param>
+        /// <returns>BudgetReturnResult with id, budget number and status</returns>
         public BudgetReturnResult Add(BudgetViewModel model, ApplicationUser createdBy)
         {
             if (model == null || createdBy == null)
@@ -128,6 +179,12 @@ namespace MyInvoicingApp.Managers
             };
         }
 
+        /// <summary>
+        /// Modify Budget from given BudgetViewModel or throws exceptions if budget not found.
+        /// </summary>
+        /// <param name="model">BudgetViewModel</param>
+        /// <param name="modifiedBy">ApplicationUser that is modifying budget</param>
+        /// <returns>BudgetReturnResult with id, budget number and status</returns>
         public BudgetReturnResult Edit(BudgetViewModel model, ApplicationUser modifiedBy)
         {
             if (model == null || modifiedBy == null)
@@ -135,7 +192,7 @@ namespace MyInvoicingApp.Managers
                 throw new ArgumentNullException("model", "Nieprawidłowe parametry");
             }
 
-            var budget = GetBudgetById(model.Id);
+            var budget = GetBudgetById(model.Id, IncludeLevel.Level1);
 
             if (!CanEdit(budget.CreatedBy, modifiedBy))
             {
@@ -177,6 +234,11 @@ namespace MyInvoicingApp.Managers
             };
         }
 
+        /// <summary>
+        /// Sum base netto from all invoices asigned to given budget
+        /// </summary>
+        /// <param name="budgetId">budget id for which totaling of invoice base netto amount should be done</param>
+        /// <returns>total base netto from all invoices asigned to budget</returns>
         public decimal GetBudgetBaseNettoTotalInvoicesAmount(string budgetId)
         {
             var amount = Context.InvoiceLines
@@ -187,26 +249,13 @@ namespace MyInvoicingApp.Managers
             return amount;
         }
 
-        public IEnumerable<InvoiceLine> GetInvoiceLinesForBudget(string budgetId)
-        {
-            var invoicesList = Context.InvoiceLines
-                .Include(x => x.CreatedBy)
-                .Include(x => x.LastModifiedBy)
-                .Include(x => x.Invoice).ThenInclude(x => x.Customer)
-                .Include(x => x.Budget)
-                .Where(x => x.BudgetId == budgetId);
-
-            return invoicesList;
-        }
-
-        public IEnumerable<InvoiceLineViewModel> GetInvoiceLineViewModelsForBudget(string budgetId)
-        {
-            var models = GetInvoiceLinesForBudget(budgetId)
-                .Select(x => new InvoiceLineViewModel(x));
-
-            return models;
-        }
-
+        /// <summary>
+        /// Changes status for given budget
+        /// </summary>
+        /// <param name="budgetId">budget id</param>
+        /// <param name="newStatus">new status</param>
+        /// <param name="modifiedBy">ApplicationUser that is modifying budget</param>
+        /// <returns>BudgetReturnResult with id, budget number and status</returns>
         public BudgetReturnResult ChangeStatus(string budgetId, Status newStatus, ApplicationUser modifiedBy)
         {
             if (modifiedBy == null)
@@ -214,7 +263,7 @@ namespace MyInvoicingApp.Managers
                 throw new ArgumentNullException(nameof(modifiedBy), "Nieprawidłowe parametry");
             }
 
-            var budget = GetBudgetById(budgetId);
+            var budget = GetBudgetById(budgetId, IncludeLevel.None);
 
             if (newStatus == Status.Closed)
             {
@@ -244,9 +293,15 @@ namespace MyInvoicingApp.Managers
             };
         }
 
+        /// <summary>
+        /// Updates budget invoiced amount with given amount and/or recalculate invoiced amount with total of base netto amount from invoices asigned to budget
+        /// </summary>
+        /// <param name="budgetId">budget id</param>
+        /// <param name="invoiceAmount">invoice amount that need to update budgets invoiced amount</param>
+        /// <param name="recalculateInvoicedAmount">indicates if recalculation of budget invoiced amount should to be done</param>
         public void UpdateBudgetInvoicedAmount(string budgetId, decimal invoiceAmount, bool recalculateInvoicedAmount)
         {
-            var budget = GetBudgetById(budgetId);
+            var budget = GetBudgetById(budgetId, IncludeLevel.None);
 
             var currentInvoicedAmount = budget.InvoicedAmount;
 
@@ -276,6 +331,12 @@ namespace MyInvoicingApp.Managers
             }
         }
 
+        /// <summary>
+        /// Simple checking if budget can be modified by user
+        /// </summary>
+        /// <param name="createdBy">ApplicationUser that created Budget</param>
+        /// <param name="modifiedBy">ApplicationUser that modifies Budget</param>
+        /// <returns></returns>
         public bool CanEdit(ApplicationUser createdBy, ApplicationUser modifiedBy)
         {
             if (createdBy.UserName == modifiedBy.UserName || createdBy.Manager.UserName == modifiedBy.UserName)

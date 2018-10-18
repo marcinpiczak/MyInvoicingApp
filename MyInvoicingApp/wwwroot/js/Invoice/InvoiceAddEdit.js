@@ -292,12 +292,12 @@
                             //console.log("error");
                             var div = createValidationSummary(result.errors);
                             //invoiceHdrAddForm.prepend(div);
-                            alertify.alert().setContent(div[0]).show();
+                            alertify.alert("Przepraszamy, wystąpił problem:", "").setContent(div[0]).show();
                         }
                     },
                     error: function (xhr, textStatus, errorThrown) {
                         //alert(xhr.status);
-                        alertify.alert().setContent("Wystąpił błąd: " + errorThrown).show();
+                        alertify.alert("Przepraszamy, wystąpił problem:", "").setContent("Wystąpił błąd: " + errorThrown).show();
                     }
                 });
         } else {
@@ -338,12 +338,12 @@
                             //console.log("error");
                             var div = createValidationSummary(result.errors);
                             //invoiceHdrAddForm.prepend(div);
-                            alertify.alert().setContent(div[0]).show();
+                            alertify.alert("Przepraszamy, wystąpił problem:", "").setContent(div[0]).show();
                         }
                     },
                     error: function (xhr, textStatus, errorThrown) {
                         //alert(xhr.status);
-                        alertify.alert().setContent("Wystąpił błąd: " + errorThrown).show();
+                        alertify.alert("Przepraszamy, wystąpił problem:", "").setContent("Wystąpił błąd: " + errorThrown).show();
                     }
                 });
         } else {
@@ -393,12 +393,12 @@
                             //console.log("error");
                             var div = createValidationSummary(result.errors);
                             //invoiceLineAddForm.prepend(div);
-                            alertify.alert().setContent(div[0]).show();
+                            alertify.alert("Przepraszamy, wystąpił problem:", "").setContent(div[0]).show();
                         }
                     },
                     error: function (xhr, textStatus, errorThrown) {
                         //alert(xhr.status);
-                        alertify.alert().setContent("Wystąpił błąd: " + errorThrown).show();
+                        alertify.alert("Przepraszamy, wystąpił problem:", "").setContent("Wystąpił błąd: " + errorThrown).show();
                     }
                 });
 
@@ -437,12 +437,12 @@
                             //console.log("error");
                             var div = createValidationSummary(result.errors);
                             //invoiceLineAddForm.prepend(div);
-                            alertify.alert().setContent(div[0]).show();
+                            alertify.alert("Przepraszamy, wystąpił problem:", "").setContent(div[0]).show();
                         }
                     },
                     error: function (xhr, textStatus, errorThrown) {
                         //alert(xhr.status);
-                        alertify.alert().setContent("Wystąpił błąd: " + errorThrown).show();
+                        alertify.alert("Przepraszamy, wystąpił problem:", "").setContent("Wystąpił błąd: " + errorThrown).show();
                     }
                 });
 
@@ -563,7 +563,7 @@
                     },
                     error: function (xhr, textStatus, errorThrown) {
                         //alert(xhr.status);
-                        alertify.alert().setContent("Wystąpił błąd: " + errorThrown).show();
+                        alertify.alert("Przepraszamy, wystąpił problem:", "").setContent("Wystąpił błąd: " + errorThrown).show();
                     }
                 });
         } else {
@@ -604,7 +604,7 @@
 
                         } else {
                             var div = createValidationSummary(result.errors);
-                            alertify.alert().setContent(div[0]).show();
+                            alertify.alert("Przepraszamy, wystąpił problem:", "").setContent(div[0]).show();
                         }
                     },
                     error: function (xhr, textStatus, errorThrown) {
@@ -674,12 +674,12 @@
                     } else {
                         var div = createValidationSummary(result.errors);
                         //invoiceLineAddForm.prepend(div);
-                        alertify.alert().setContent(div[0]).show();
+                        alertify.alert("Przepraszamy, wystąpił problem:", "").setContent(div[0]).show();
                     }
                 },
                 error: function (xhr, textStatus, errorThrown) {
                     //alert(xhr.status);
-                    alertify.alert().setContent("Wystąpił błąd: " + errorThrown).show();
+                    alertify.alert("Przepraszamy, wystąpił problem:", "").setContent("Wystąpił błąd: " + errorThrown).show();
                 }
             });
     });

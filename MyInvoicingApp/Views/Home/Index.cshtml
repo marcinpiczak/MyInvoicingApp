@@ -1,3 +1,80 @@
-﻿<a asp-controller="Budget" asp-action="Index" class="btn btn-success">Budżety</a>
-<a asp-controller="Customer" asp-action="Index" class="btn btn-success">Klienci</a>
-<a asp-controller="Invoice" asp-action="Index" class="btn btn-success">Faktury</a>
+﻿@if (User.Identity.IsAuthenticated)
+{
+    if (User.IsInRole("Admin") || User.IsInRole("Manager") || User.IsInRole("Accountant"))
+    {
+        <div class="jumbotron">
+            <h1 class="display-3 text-center">Witaj ...</h1>
+            <p class="lead text-center">Posiadasz dostęp do następujących modułów: </p>
+
+            <div class="row">
+                <div class="col-md-3 mx-auto">
+                    <div class="card mb-3 text-center">
+                        <h3 class="card-header">Budżety</h3>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <a asp-controller="Budget" asp-action="Index" class="card-link">Lista</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a asp-controller="Budget" asp-action="Add" class="card-link">Dodaj nowy</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-3 mx-auto">
+                    <div class="card mb-3 text-center">
+                        <h3 class="card-header">Klienci</h3>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <a asp-controller="Customer" asp-action="Index" class="card-link">Lista</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a asp-controller="Customer" asp-action="Add" class="card-link">Dodaj nowy</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-3 mx-auto">
+                    <div class="card mb-3 text-center">
+                        <h3 class="card-header">Faktury</h3>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <a asp-controller="Invoice" asp-action="Index" class="card-link">Lista</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a asp-controller="Invoice" asp-action="Add" class="card-link">Dodaj nowy</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            @if (User.IsInRole("Admin"))
+            {
+                <div class="row">
+                    <div class="col-md-3 mx-auto">
+                        <div class="card mb-3 text-center">
+                            <h3 class="card-header">Stanowiska</h3>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    <a asp-controller="Role" asp-action="Index" class="card-link">Lista</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <a asp-controller="Role" asp-action="Add" class="card-link">Dodaj nowy</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <a asp-controller="Role" asp-action="AsignUser" class="card-link">Przypisz użytkownika</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="jumbotron">
+            <h1 class="display-3 text-center">Witaj ...</h1>
+            <p class="lead text-center">Wyglada na to, że nie posiadasz uprawnień do żadnego z modułów. Skontkatuj się z administratorem w celu nadania odpowiednich uprawnień</p>
+        </div>
+    }
+}

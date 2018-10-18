@@ -5,7 +5,7 @@ namespace MyInvoicingApp.Helpers
     public class DateHelper
     {
         /// <summary>
-        /// Zwraca aktualną datę
+        /// Returns current date with time
         /// </summary>
         /// <returns>DateTime.Now</returns>
         public DateTime GetCurrentDatetime()

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -10,17 +9,19 @@ using MyInvoicingApp.ViewModels;
 
 namespace MyInvoicingApp.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin,Accountant,Manager")]
     public class BudgetController : Controller
     {
         protected UserManager<ApplicationUser> UserManager { get; set; }
         protected ApplicationUser CurrentUser => UserManager.Users.First(x => x.UserName == User.Identity.Name);
         protected IBudgetManager BudgetManager { get; set; }
+        protected IInvoiceManager InvoiceManager { get; set; }
 
-        public BudgetController(UserManager<ApplicationUser> userManager, IBudgetManager budgetManager)
+        public BudgetController(UserManager<ApplicationUser> userManager, IBudgetManager budgetManager, IInvoiceManager invoiceManager)
         {
             UserManager = userManager;
             BudgetManager = budgetManager;
+            InvoiceManager = invoiceManager;
         }
 
         public IActionResult Index()
@@ -196,7 +197,7 @@ namespace MyInvoicingApp.Controllers
             {
                 var model = BudgetManager.GetBudgetViewModelById(id);
 
-                model.InvoiceLines = BudgetManager.GetInvoiceLineViewModelsForBudget(id).ToList();
+                model.InvoiceLines = InvoiceManager.GetInvoiceLineViewModelsForBudget(id).ToList();
 
                 return View(model);
             }

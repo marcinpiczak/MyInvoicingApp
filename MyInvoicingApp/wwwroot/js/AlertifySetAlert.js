@@ -8,7 +8,7 @@
         if (errorMessage.length !== 0) {
             errorMessageDiv.remove();
             errorMessage.addClass("alert-danger");
-            alertify.alert().setContent(errorMessage[0]).show();
+            alertify.alert("Przepraszamy, wystąpił problem:", "").setContent(errorMessage[0]).show();
         }
     }
 

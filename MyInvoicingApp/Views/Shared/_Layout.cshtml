@@ -44,47 +44,50 @@
             </div>
             <div class="navbar-collapse collapse" id="navbarColor01">
                 <ul class="navbar-nav mr-auto">
-                    @*<li><a asp-area="" asp-controller="Home" asp-action="Index" class="nav-link">Home</a></li>
-                        <li><a asp-area="" asp-controller="Home" asp-action="Contact" class="nav-link">Contact</a></li>
-                        <li><a asp-area="" asp-controller="Home" asp-action="Privacy" class="nav-link">Polityka prywatności</a></li>*@
                     @if (User.Identity.IsAuthenticated)
                     {
-                        <li class="nav-item dropdown" id="menu-dropdown-role">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown-role" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Administracja
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a asp-controller="Role" asp-action="Index" class="dropdown-item" id="menu-dropdown-role-list">Lista ról</a>
-                                <a asp-controller="Role" asp-action="Add" class="dropdown-item" id="menu-dropdown-role-add">Nowa rola</a>
-                            </div>
-                        </li>
-                        <li class="nav-item dropdown" id="menu-dropdown-budget">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown-budget" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Budżet
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a asp-controller="Budget" asp-action="Index" class="dropdown-item" id="menu-dropdown-budget-list">Lista</a>
-                                <a asp-controller="Budget" asp-action="Add" class="dropdown-item" id="menu-dropdown-budget-add">Dodaj nowy</a>
-                            </div>
-                        </li>
-                        <li class="nav-item dropdown" id="menu-dropdown-customer">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown-customer" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Klienci
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a asp-controller="Customer" asp-action="Index" class="dropdown-item" id="menu-dropdown-customer-list">Lista</a>
-                                <a asp-controller="Customer" asp-action="Add" class="dropdown-item" id="menu-dropdown-customer-add">Dodaj nowy</a>
-                            </div>
-                        </li>
-                        <li class="nav-item dropdown" id="menu-dropdown-invoice">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown-invoice" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Faktury
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a asp-controller="Invoice" asp-action="Index" class="dropdown-item" id="menu-dropdown-invoice-list">Lista</a>
-                                <a asp-controller="Invoice" asp-action="Add" class="dropdown-item" id="menu-dropdown-invoice-add">Dodaj nowy</a>
-                            </div>
-                        </li>
+                        if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item dropdown" id="menu-dropdown-role">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown-role" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Administracja
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <a asp-controller="Role" asp-action="Index" class="dropdown-item" id="menu-dropdown-role-list">Lista ról</a>
+                                    <a asp-controller="Role" asp-action="Add" class="dropdown-item" id="menu-dropdown-role-add">Nowa rola</a>
+                                </div>
+                            </li>
+                        }
+                        if (User.IsInRole("Admin") || User.IsInRole("Manager") || User.IsInRole("Accountant"))
+                        {
+                            <li class="nav-item dropdown" id="menu-dropdown-budget">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown-budget" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Budżet
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <a asp-controller="Budget" asp-action="Index" class="dropdown-item" id="menu-dropdown-budget-list">Lista</a>
+                                    <a asp-controller="Budget" asp-action="Add" class="dropdown-item" id="menu-dropdown-budget-add">Dodaj nowy</a>
+                                </div>
+                            </li>
+                            <li class="nav-item dropdown" id="menu-dropdown-customer">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown-customer" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Klienci
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <a asp-controller="Customer" asp-action="Index" class="dropdown-item" id="menu-dropdown-customer-list">Lista</a>
+                                    <a asp-controller="Customer" asp-action="Add" class="dropdown-item" id="menu-dropdown-customer-add">Dodaj nowy</a>
+                                </div>
+                            </li>
+                            <li class="nav-item dropdown" id="menu-dropdown-invoice">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown-invoice" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Faktury
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <a asp-controller="Invoice" asp-action="Index" class="dropdown-item" id="menu-dropdown-invoice-list">Lista</a>
+                                    <a asp-controller="Invoice" asp-action="Add" class="dropdown-item" id="menu-dropdown-invoice-add">Dodaj nowy</a>
+                                </div>
+                            </li>
+                        }
                     }
                 </ul>
 
@@ -112,8 +115,8 @@
             else
             {
                 <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index"><i class="fas fa-home fa-lg"></i></a></li>
-                <li class="breadcrumb-item"><a asp-controller="@controllerName" asp-action="Index">@ControllerNameHelper.GetName(controllerName)</a></li>
-                <li class="breadcrumb-item active">@ControllerNameHelper.GetName(controllerName, actionName)</li>
+                <li class="breadcrumb-item"><a asp-controller="@controllerName" asp-action="Index">@ControllerNameHelper.GetControllerName(controllerName)</a></li>
+                <li class="breadcrumb-item active">@ControllerNameHelper.GetActionName(actionName)</li>
             }
         </ol>
         @if (@TempData["Message"] != null)

@@ -20,7 +20,7 @@ namespace MyInvoicingApp.Contexts
 
         public DbSet<Attachment> Attachments { get; set; }
 
-        public DbSet<ModuleAccess> ModuleAccesses { get; set; }
+        //public DbSet<ModuleAccess> ModuleAccesses { get; set; }
 
         public EFCDbContext(DbContextOptions<EFCDbContext> options) : base(options)
         {
