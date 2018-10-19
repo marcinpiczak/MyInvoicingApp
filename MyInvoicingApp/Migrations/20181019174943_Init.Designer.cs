@@ -10,8 +10,8 @@ using MyInvoicingApp.Contexts;
 namespace MyInvoicingApp.Migrations
 {
     [DbContext(typeof(EFCDbContext))]
-    [Migration("20181005173930_add_manager_to_user_model")]
-    partial class add_manager_to_user_model
+    [Migration("20181019174943_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -194,6 +194,48 @@ namespace MyInvoicingApp.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
+                });
+
+            modelBuilder.Entity("MyInvoicingApp.Models.Attachment", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("ContentType")
+                        .IsRequired();
+
+                    b.Property<string>("CreatedById")
+                        .IsRequired();
+
+                    b.Property<DateTime>("CreatedDate");
+
+                    b.Property<string>("DocumentId")
+                        .IsRequired();
+
+                    b.Property<int>("DocumentType");
+
+                    b.Property<string>("FileDescription")
+                        .IsRequired();
+
+                    b.Property<string>("FilePath")
+                        .IsRequired();
+
+                    b.Property<string>("LastModifiedById");
+
+                    b.Property<DateTime?>("LastModifiedDate");
+
+                    b.Property<string>("OriginalFileName")
+                        .IsRequired();
+
+                    b.Property<int>("Status");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("LastModifiedById");
+
+                    b.ToTable("Attachments");
                 });
 
             modelBuilder.Entity("MyInvoicingApp.Models.Budget", b =>
@@ -570,6 +612,18 @@ namespace MyInvoicingApp.Migrations
                     b.HasOne("MyInvoicingApp.Models.ApplicationUser", "Manager")
                         .WithMany()
                         .HasForeignKey("ManagerId");
+                });
+
+            modelBuilder.Entity("MyInvoicingApp.Models.Attachment", b =>
+                {
+                    b.HasOne("MyInvoicingApp.Models.ApplicationUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("MyInvoicingApp.Models.ApplicationUser", "LastModifiedBy")
+                        .WithMany()
+                        .HasForeignKey("LastModifiedById");
                 });
 
             modelBuilder.Entity("MyInvoicingApp.Models.Budget", b =>
