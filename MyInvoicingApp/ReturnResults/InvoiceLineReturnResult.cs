@@ -6,6 +6,8 @@
 
         public string InvoiceId { get; set; }
 
+        public string InvoiceNumber { get; set; }
+
         public int LineNumber { get; set; }
 
         public string Status { get; set; }

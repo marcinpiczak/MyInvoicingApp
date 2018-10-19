@@ -543,6 +543,7 @@ namespace MyInvoicingApp.Managers
             {
                 Id = newInvoiceLine.Id,
                 InvoiceId = newInvoiceLine.InvoiceId,
+                InvoiceNumber = invoice.InvoiceNumber,
                 LineNumber = newInvoiceLine.LineNumber,
                 Status = newInvoiceLine.Status.ToString()
             };
@@ -636,6 +637,7 @@ namespace MyInvoicingApp.Managers
             {
                 Id = invoiceLine.Id,
                 InvoiceId = invoiceLine.InvoiceId,
+                InvoiceNumber = invoiceLine.Invoice.InvoiceNumber,
                 LineNumber = invoiceLine.LineNumber,
                 Status = invoiceLine.Status.ToString()
             };
@@ -729,6 +731,7 @@ namespace MyInvoicingApp.Managers
         {
             var budgetsItemList = BudgetManager.GetBudgets(IncludeLevel.None)
                 .Where(x => x.Status == Status.Opened)
+                .OrderByDescending(x => x.CreatedDate)
                 .Select(x => new SelectListItem(x.BudgetNumber, x.Id));
 
             if (selectedBudget != null)
@@ -742,7 +745,7 @@ namespace MyInvoicingApp.Managers
                 budgetsItemList = budgetsItemList.Union(new List<SelectListItem>() { new SelectListItem(null, null, true) });
             }
 
-            return budgetsItemList.OrderByDescending(x => x.Value);
+            return budgetsItemList;
         }
 
         /// <summary>

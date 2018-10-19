@@ -287,7 +287,7 @@
                             //set documentId for attachment form
                             documentId.val(result.Invoice.Id);
 
-                            alertify.notify('Dodano nową fakturę z numerem ' + result.Invoice.InvoiceNumber, 'success', 10);
+                            alertify.notify('Dodano nową fakturę z numerem <b>' + result.Invoice.InvoiceNumber + '</b>', 'success', 10);
                         } else {
                             //console.log("error");
                             var div = createValidationSummary(result.errors);
@@ -333,7 +333,7 @@
                             invoiceLineCurrency.val(defaultCurrency.val());
                             invoiceLineBudgetId.val(defaultBudgetId.val()).change();
 
-                            alertify.notify('Zapisano zmiany dla faktury.', 'success', 10);
+                            alertify.notify('Zapisano zmiany dla faktury <b>' + result.Invoice.InvoiceNumber + '</b>', 'success', 10);
                         } else {
                             //console.log("error");
                             var div = createValidationSummary(result.errors);
@@ -388,7 +388,7 @@
                             addInvoiceLineToList(newInvoiceLine);
                             clearInvoiceLineForm();
 
-                            alertify.notify('Dodano nową linię faktury' + result.Invoice.InvoiceNumber, 'success', 10);
+                            alertify.notify('Dodano nową linię faktury <b>' + result.InvoiceLine.InvoiceNumber + '</b>', 'success', 10);
                         } else {
                             //console.log("error");
                             var div = createValidationSummary(result.errors);
@@ -432,7 +432,7 @@
                             clearInvoiceLineForm();
                             setInvoiceLineAddBtnDefaultAction();
 
-                            alertify.notify('Zapisano zmiany dla linii faktury', 'success', 10);
+                            alertify.notify('Zapisano zmiany dla linii faktury <b>' + result.InvoiceLine.InvoiceNumber + '</b>', 'success', 10);
                         } else {
                             //console.log("error");
                             var div = createValidationSummary(result.errors);

@@ -77,7 +77,7 @@ namespace MyInvoicingApp.Controllers
                 {
                     var result = InvoiceManager.Add(model, CurrentUser);
 
-                    TempData["Success"] = $"Dodano nową fakturę z numerem {result.InvoiceNumber}";
+                    TempData["Success"] = $"Dodano nową fakturę z numerem <b>{result.InvoiceNumber}</b>";
 
                     return RedirectToAction("AddLine", "Invoice", new { result.Id });
                 }
@@ -151,9 +151,9 @@ namespace MyInvoicingApp.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    InvoiceManager.AddLine(model.InvoiceLine, CurrentUser, false, true);
+                    var result = InvoiceManager.AddLine(model.InvoiceLine, CurrentUser, false, true);
 
-                    TempData["Success"] = $"Dodano nową linię do faktury";
+                    TempData["Success"] = $"Dodano nową linię do faktury <b>{model.InvoiceNumber}</b>";
 
                     return RedirectToAction("AddLine", new { model.InvoiceLine.InvoiceId });
                 }
@@ -349,7 +349,7 @@ namespace MyInvoicingApp.Controllers
             {
                 var result = InvoiceManager.ChangeStatus(invoiceId, Status.Cancelled, CurrentUser);
 
-                TempData["Success"] = $"Faktura {result.InvoiceNumber} została anulowana";
+                TempData["Success"] = $"Faktura <b>{result.InvoiceNumber}</b> została anulowana";
             }
             catch (Exception e)
             {

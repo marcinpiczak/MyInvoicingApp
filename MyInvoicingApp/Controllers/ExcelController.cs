@@ -15,7 +15,6 @@ namespace MyInvoicingApp.Controllers
             ExcelManager = excelManager;
         }
 
-        // GET: /<controller>/
         public IActionResult GetInvoiceExcel(string invoiceId)
         {
             try

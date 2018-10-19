@@ -58,7 +58,7 @@ namespace MyInvoicingApp.Controllers
                 {
                     var result = BudgetManager.Add(model, CurrentUser);
 
-                    TempData["Success"] = $"Dodano nowy Budżet z numerem {result.BudgetNumber}";
+                    TempData["Success"] = $"Dodano nowy Budżet z numerem <b>{result.BudgetNumber}</b>";
                     //return RedirectToAction("Index");
                     return RedirectToAction("Add");
                 }
@@ -139,7 +139,7 @@ namespace MyInvoicingApp.Controllers
                 {
                     BudgetManager.Edit(model, CurrentUser);
 
-                    TempData["Success"] = $"Zapisano wprowadzone zmiany w Budżecie {model.BudgetNumber}";
+                    TempData["Success"] = $"Zapisano wprowadzone zmiany w Budżecie <b>{model.BudgetNumber}</b>";
                     return RedirectToAction("Index");
                 }
             }
@@ -160,7 +160,7 @@ namespace MyInvoicingApp.Controllers
             try
             {
                 var result = BudgetManager.ChangeStatus(id, Status.Closed, CurrentUser);
-                TempData["Success"] = $"Budżet z numerem {result.BudgetNumber} został zamknięty";
+                TempData["Success"] = $"Budżet z numerem <b>{result.BudgetNumber}</b> został zamknięty";
             }
             catch (Exception e)
             {
@@ -178,7 +178,7 @@ namespace MyInvoicingApp.Controllers
             try
             {
                 var result = BudgetManager.ChangeStatus(id, Status.Opened, CurrentUser);
-                TempData["Success"] = $"Budżet z numerem {result.BudgetNumber} został otwarty";
+                TempData["Success"] = $"Budżet z numerem <b>{result.BudgetNumber}</b> został otwarty";
             }
             catch (Exception e)
             {

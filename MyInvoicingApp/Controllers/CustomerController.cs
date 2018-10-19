@@ -56,9 +56,9 @@ namespace MyInvoicingApp.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    CustomerManager.Add(model, CurrentUser);
+                    var result = CustomerManager.Add(model, CurrentUser);
 
-                    TempData["Success"] = $"Dodano nowego klienta";
+                    TempData["Success"] = $"Dodano nowego klienta <b>{result.Name}</b>";
                     //return RedirectToAction("Index");
                     return RedirectToAction("Add");
                 }
@@ -101,9 +101,9 @@ namespace MyInvoicingApp.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    CustomerManager.Edit(model, CurrentUser);
+                    var result = CustomerManager.Edit(model, CurrentUser);
 
-                    TempData["Success"] = $"Zapisano wprowadzone zmiany dla klienta {model.Name}";
+                    TempData["Success"] = $"Zapisano wprowadzone zmiany dla klienta <b>{result.Name}</b>";
                     return RedirectToAction("Index");
                 }
             }
@@ -124,7 +124,7 @@ namespace MyInvoicingApp.Controllers
             try
             {
                 var result = CustomerManager.ChangeStatus(id, Status.Closed, CurrentUser);
-                TempData["Success"] = $"Klient {result.Name} został zamknięty";
+                TempData["Success"] = $"Klient <b>{result.Name}</b> został zamknięty";
             }
             catch (Exception e)
             {
@@ -142,7 +142,7 @@ namespace MyInvoicingApp.Controllers
             try
             {
                 var result = CustomerManager.ChangeStatus(id, Status.Opened, CurrentUser);
-                TempData["Success"] = $"Klient {result.Name} został otwarty";
+                TempData["Success"] = $"Klient <b>{result.Name}</b> został otwarty";
             }
             catch (Exception e)
             {
