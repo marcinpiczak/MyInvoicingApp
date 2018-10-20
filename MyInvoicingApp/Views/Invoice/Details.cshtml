@@ -98,8 +98,10 @@
                         </div>
                     }
                     <div class="form-group">
-                        <a asp-action="Edit" asp-controller="Invoice" asp-route-id="@Model.Id" class="btn btn-success">Edytuj</a>
-                        <a asp-action="Index" asp-controller="Invoice" class="btn btn-outline-primary">Anuluj</a>
+                        <div class="btn-group special" role="group">
+                            <a asp-action="Edit" asp-controller="Invoice" asp-route-id="@Model.Id" class="btn btn-success">Edytuj</a>
+                            <a asp-action="Index" asp-controller="Invoice" class="btn btn-outline-primary">Anuluj</a>
+                        </div>
                     </div>
                 </form>
             </div>

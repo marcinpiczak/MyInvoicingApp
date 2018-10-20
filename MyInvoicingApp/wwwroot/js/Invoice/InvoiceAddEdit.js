@@ -600,6 +600,9 @@
 
                             addAttachmentToList(attachment);
 
+                            //do przerobienia na this
+                            invoiceAttachmentForm[0].reset();
+                            
                             alertify.notify('Dodano nowy załącznik', 'success', 10);
 
                         } else {

@@ -22,6 +22,7 @@ namespace MyInvoicingApp.ViewModels
         [DisplayName("Typ dokumentu")]
         public string DocumentId { get; set; }
 
+        [Required(ErrorMessage = "Nalezy wybrać jakiś plik")]
         [DisplayName("Pliki")]
         public IFormFile File { get; set; }
 

@@ -43,8 +43,18 @@
     margin-bottom: 10px
 }
 
+/*DataTables - scrolling*/
 /*table.dataTable thead,
 table.dataTable tbody th,
 table.dataTable tbody td {
     white-space: nowrap;
 }*/
+
+/*button group as button block*/
+.btn-group.special {
+    display: flex;
+}
+
+.special .btn {
+    flex: 1
+}
