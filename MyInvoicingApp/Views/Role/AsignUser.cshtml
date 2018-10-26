@@ -16,8 +16,10 @@
                 <select id="userId" name="userId" asp-items="@((IEnumerable<SelectListItem>)ViewBag.otherUsers)" class="form-control" multiple="multiple"></select>
             </div>
             <div class="form-group">
-                <input type="submit" value="Dodaj" class="btn btn-success" @(((IEnumerable<SelectListItem>)ViewBag.otherUsers).Any() ? "" : "disabled") />
-                <a asp-action="Index" asp-controller="Role" class="btn btn-outline-primary">Anuluj</a>
+                <div class="btn-group special" role="group">
+                    <input type="submit" value="Dodaj" class="btn btn-success" @(((IEnumerable<SelectListItem>)ViewBag.otherUsers).Any() ? "" : "disabled") />
+                    <a asp-action="Index" asp-controller="Role" class="btn btn-outline-primary">Anuluj</a>
+                </div>
             </div>
         </form>
     </div>
@@ -34,8 +36,10 @@
                 <select id="userId" name="userId" asp-items="@((IEnumerable<SelectListItem>)ViewBag.asignedUsers)" class="form-control" multiple="multiple"></select>
             </div>
             <div class="form-group">
-                <input type="submit" value="Usuń" class="btn btn-danger" @(((IEnumerable<SelectListItem>)ViewBag.asignedUsers).Any() ? "" : "disabled") />
-                <a asp-action="Index" asp-controller="Role" class="btn btn-outline-primary">Anuluj</a>
+                <div class="btn-group special" role="group">
+                    <input type="submit" value="Usuń" class="btn btn-danger" @(((IEnumerable<SelectListItem>)ViewBag.asignedUsers).Any() ? "" : "disabled") />
+                    <a asp-action="Index" asp-controller="Role" class="btn btn-outline-primary">Anuluj</a>
+                </div>
             </div>
         </form>
     </div>

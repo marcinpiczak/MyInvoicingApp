@@ -19,9 +19,9 @@ namespace MyInvoicingApp.Controllers
         protected ApplicationUser CurrentUser => UserManager.Users.First(x => x.UserName == User.Identity.Name);
         protected IInvoiceManager InvoiceManager { get; set; }
         protected IAttachmentManager AttachmentManager { get; set; }
-        protected DateHelper DateHelper { get; set; }
+        protected IDateHelper DateHelper { get; set; }
 
-        public InvoiceController(UserManager<ApplicationUser> userManager, IInvoiceManager invoiceManager, DateHelper dateHelper, IAttachmentManager attachmentManager)
+        public InvoiceController(UserManager<ApplicationUser> userManager, IInvoiceManager invoiceManager, IDateHelper dateHelper, IAttachmentManager attachmentManager)
         {
             UserManager = userManager;
             InvoiceManager = invoiceManager;

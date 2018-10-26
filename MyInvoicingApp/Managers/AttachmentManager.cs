@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using MyInvoicingApp.Contexts;
-using MyInvoicingApp.Helpers;
 using MyInvoicingApp.Interfaces;
 using MyInvoicingApp.Models;
 using MyInvoicingApp.ViewModels;
@@ -20,11 +19,11 @@ namespace MyInvoicingApp.Managers
         protected IInvoiceManager InvoiceManager { get; set; }
         protected IBudgetManager BudgetManager { get; set; }
         protected IHostingEnvironment HostingEnvironment { get; set; }
-        protected DateHelper DateHelper { get; set; }
-        protected FileHelper FileHelper { get; set; }
+        protected IDateHelper DateHelper { get; set; }
+        protected IFileHelper FileHelper { get; set; }
         protected readonly string AttachmentsFolder = "Attachments";
 
-        public AttachmentManager(EFCDbContext context, IHostingEnvironment environment, UserManager<ApplicationUser> userManager, IInvoiceManager invoiceManager, IBudgetManager budgetManager, DateHelper dateHelper, FileHelper fileHelper)
+        public AttachmentManager(EFCDbContext context, IHostingEnvironment environment, UserManager<ApplicationUser> userManager, IInvoiceManager invoiceManager, IBudgetManager budgetManager, IDateHelper dateHelper, IFileHelper fileHelper)
         {
             Context = context;
             HostingEnvironment = environment;
@@ -45,8 +44,8 @@ namespace MyInvoicingApp.Managers
         {
             var uniqueFileName = FileHelper.GetUniqueFileName(model.File.FileName);
             //var uploads = Path.Combine(HostingEnvironment.WebRootPath, AttachmentsFolder);
-            var uploads = Path.Combine("wwwroot", AttachmentsFolder);
-            var filePath = Path.Combine(uploads, uniqueFileName);
+            //var uploads = Path.Combine("wwwroot", AttachmentsFolder);
+            var filePath = Path.Combine(AttachmentsFolder, uniqueFileName);
 
             await FileHelper.SaveFile(model, filePath);
 

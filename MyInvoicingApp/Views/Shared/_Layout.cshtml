@@ -1,10 +1,10 @@
-﻿@using MyInvoicingApp.Helpers
+﻿@using MyInvoicingApp.Interfaces
 @{
     var controllerName = this.ViewContext.RouteData.Values["controller"].ToString();
     var actionName = this.ViewContext.RouteData.Values["action"].ToString();
 }
 
-@inject ControllerNameHelper ControllerNameHelper;
+@inject IControllerNameHelper ControllerNameHelper;
 
 <!DOCTYPE html>
 <html>
@@ -116,7 +116,7 @@
             {
                 <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index"><i class="fas fa-home fa-lg"></i></a></li>
                 <li class="breadcrumb-item"><a asp-controller="@controllerName" asp-action="Index">@ControllerNameHelper.GetControllerName(controllerName)</a></li>
-                <li class="breadcrumb-item active">@ControllerNameHelper.GetActionName(actionName)</li>
+                <li class="breadcrumb-item active">@ControllerNameHelper.GetActionName(controllerName, actionName)</li>
             }
         </ol>
         @if (@TempData["Message"] != null)

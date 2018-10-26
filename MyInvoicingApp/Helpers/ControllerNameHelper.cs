@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using MyInvoicingApp.Interfaces;
 
 namespace MyInvoicingApp.Helpers
 {
-    public class ControllerNameHelper
+    public class ControllerNameHelper : IControllerNameHelper
     {
         private Dictionary<string, string> _controllers { get; } = new Dictionary<string, string>()
         {
@@ -30,7 +31,7 @@ namespace MyInvoicingApp.Helpers
         /// Returns localised name of the controller
         /// </summary>
         /// <param name="controller">Controller name</param>
-        /// <returns>localised name of the controller</returns>
+        /// <returns>localized name of the controller</returns>
         public string GetControllerName(string controller)
         {
             if (string.IsNullOrWhiteSpace(controller))
@@ -51,9 +52,10 @@ namespace MyInvoicingApp.Helpers
         /// <summary>
         /// Returns localised name of the controllers action
         /// </summary>
+        /// <param name="controller">Controller name</param>
         /// <param name="action">Action name</param>
-        /// <returns>localised name of the controllers action</returns>
-        public string GetActionName(string action = null)
+        /// <returns>localized name of the controllers action</returns>
+        public string GetActionName(string controller, string action = null)
         {
             if (string.IsNullOrWhiteSpace(action))
             {

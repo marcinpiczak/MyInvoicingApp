@@ -1,8 +1,9 @@
 ﻿using System;
+using MyInvoicingApp.Interfaces;
 
 namespace MyInvoicingApp.Helpers
 {
-    public class DateHelper
+    public class DateHelper : IDateHelper
     {
         /// <summary>
         /// Returns current date with time

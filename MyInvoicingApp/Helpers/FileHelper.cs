@@ -1,11 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using MyInvoicingApp.Interfaces;
 using MyInvoicingApp.ViewModels;
 
 namespace MyInvoicingApp.Helpers
 {
-    public class FileHelper
+    public class FileHelper : IFileHelper
     {
         /// <summary>
         /// Adds guid to file name to make it unique.

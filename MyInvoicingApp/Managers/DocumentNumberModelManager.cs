@@ -21,7 +21,7 @@ namespace MyInvoicingApp.Managers
         /// <param name="forDate">date for which document number should be taken</param>
         /// <param name="modifiedBy">ApplicationUser that is getting document number</param>
         /// <returns>DocumentNumber model for given document type and date</returns>
-        public DocumentNumber GetDocumentNumberModel(EFCDbContext context, DateHelper dateHelper, DocumentType type, DateTime forDate, ApplicationUser modifiedBy)
+        public DocumentNumber GetDocumentNumberModel(EFCDbContext context, IDateHelper dateHelper, DocumentType type, DateTime forDate, ApplicationUser modifiedBy)
         {
             if (context == null || dateHelper == null || modifiedBy == null)
             {

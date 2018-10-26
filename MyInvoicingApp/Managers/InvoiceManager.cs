@@ -17,12 +17,12 @@ namespace MyInvoicingApp.Managers
     {
         protected EFCDbContext Context { get; set; }
         protected UserManager<ApplicationUser> UserManager { get; set; }
-        protected DateHelper DateHelper { get; set; }
+        protected IDateHelper DateHelper { get; set; }
         protected IDocumentNumberingManager DocumentNumberingManager { get; set; }
         protected ICustomerManager CustomerManager { get; set; }
         protected IBudgetManager BudgetManager { get; set; }
 
-        public InvoiceManager(EFCDbContext context, UserManager<ApplicationUser> userManager, DateHelper dateHelper, ICustomerManager customerManager, IBudgetManager budgetManager, IDocumentNumberingManager documentNumberingManager)
+        public InvoiceManager(EFCDbContext context, UserManager<ApplicationUser> userManager, IDateHelper dateHelper, ICustomerManager customerManager, IBudgetManager budgetManager, IDocumentNumberingManager documentNumberingManager)
         {
             Context = context;
             UserManager = userManager;

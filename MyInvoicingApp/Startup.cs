@@ -30,7 +30,8 @@ namespace MyInvoicingApp
         {
             services.Configure<CookiePolicyOptions>(options =>
             {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+                //Added for TempData in Chrome
+                //This lambda determines whether user consent for non-essential cookies is needed for a given request.
                 //options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
@@ -54,9 +55,9 @@ namespace MyInvoicingApp
 
             //My services
             //services.AddScoped<ApplicationInitialize>();
-            services.AddScoped<DateHelper>();
-            services.AddScoped<FileHelper>();
-            services.AddScoped<ControllerNameHelper>();
+            services.AddScoped<IDateHelper, DateHelper>();
+            services.AddScoped<IFileHelper, FileHelper>();
+            services.AddScoped<IControllerNameHelper, ControllerNameHelper>();
             services.AddScoped<IBudgetManager, BudgetManager>();
             services.AddScoped<ICustomerManager, CustomerManager>();
             services.AddScoped<IInvoiceManager, InvoiceManager>();

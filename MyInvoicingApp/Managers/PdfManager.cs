@@ -16,9 +16,9 @@ namespace MyInvoicingApp.Managers
     public class PdfManager : IManager, IPdfManager
     {
         protected IInvoiceManager InvoiceManager { get; set; }
-        protected DateHelper DateHelper { get; set; }
+        protected IDateHelper DateHelper { get; set; }
 
-        public PdfManager(IInvoiceManager invoiceManager, DateHelper dateHelper)
+        public PdfManager(IInvoiceManager invoiceManager, IDateHelper dateHelper)
         {
             InvoiceManager = invoiceManager;
             DateHelper = dateHelper;

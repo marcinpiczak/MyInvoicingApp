@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using MyInvoicingApp.Interfaces;
 using MyInvoicingApp.Models;
 using MyInvoicingApp.ViewModels;
+using Microsoft.AspNetCore.Hosting;
 
 namespace MyInvoicingApp.Controllers
 {
@@ -16,11 +18,13 @@ namespace MyInvoicingApp.Controllers
         protected UserManager<ApplicationUser> UserManager { get; set; }
         protected ApplicationUser CurrentUser => UserManager.Users.First(x => x.UserName == User.Identity.Name);
         protected IAttachmentManager AttachmentManager { get; set; }
+        protected IHostingEnvironment HostingEnvironment;
 
-        public AttachmentController(UserManager<ApplicationUser> userManager, IAttachmentManager attachmentManager)
+        public AttachmentController(UserManager<ApplicationUser> userManager, IAttachmentManager attachmentManager, IHostingEnvironment hostingEnvironment)
         {
             UserManager = userManager;
             AttachmentManager = attachmentManager;
+            HostingEnvironment = hostingEnvironment;
         }
 
         /// <summary>
@@ -111,8 +115,11 @@ namespace MyInvoicingApp.Controllers
             {
                 var attachment = AttachmentManager.GetAttachmentById(attachmentId, documentType, documentId, true);
 
-                return File(attachment.FilePath.Replace("wwwroot", ""), attachment.ContentType, attachment.OriginalFileName);
-                //return File(@"\Attachments\26-trp9s_73a580ec-2cd7-4e2f-a34e-455ec2ead947.jpg", "image/jpeg", "plik");
+                var path = HostingEnvironment.ContentRootPath;
+
+                //return File(attachment.FilePath.Replace("wwwroot", ""), attachment.ContentType, attachment.OriginalFileName);
+                //return File(path + @"/Attachments/26-trp9s_88755675-7ad6-4aa3-9bcf-056b8ad84098.jpg", "image/jpeg", "plik");
+                return PhysicalFile(Path.Combine(path, attachment.FilePath), attachment.ContentType, attachment.OriginalFileName);
             }
             catch (Exception e)
             {

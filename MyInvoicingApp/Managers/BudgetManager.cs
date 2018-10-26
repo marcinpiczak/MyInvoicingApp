@@ -17,9 +17,9 @@ namespace MyInvoicingApp.Managers
         protected EFCDbContext Context { get; set; }
         protected IDocumentNumberingManager DocumentNumberingManager { get; set; }
         protected UserManager<ApplicationUser> UserManager { get; set; }
-        protected DateHelper DateHelper { get; set; }
+        protected IDateHelper DateHelper { get; set; }
 
-        public BudgetManager(EFCDbContext context, UserManager<ApplicationUser> userManager, DateHelper dateHelper, IDocumentNumberingManager documentNumberingManager)
+        public BudgetManager(EFCDbContext context, UserManager<ApplicationUser> userManager, IDateHelper dateHelper, IDocumentNumberingManager documentNumberingManager)
         {
             Context = context;
             DocumentNumberingManager = documentNumberingManager;

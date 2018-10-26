@@ -10,10 +10,10 @@ namespace MyInvoicingApp.Managers
     public class DocumentNumberingManager : IManager, IDocumentNumberingManager
     {
         protected EFCDbContext Context { get; set; }
-        protected DateHelper DateHelper { get; set; }
+        protected IDateHelper DateHelper { get; set; }
         protected IDocumentNumberModelManager DocumentNumberModelManager { get; set; }
 
-        public DocumentNumberingManager(EFCDbContext context, DateHelper dateHelper, IDocumentNumberModelManager documentNumberModelManager)
+        public DocumentNumberingManager(EFCDbContext context, IDateHelper dateHelper, IDocumentNumberModelManager documentNumberModelManager)
         {
             Context = context;
             DateHelper = dateHelper;

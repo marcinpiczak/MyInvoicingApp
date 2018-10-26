@@ -11,9 +11,9 @@ namespace MyInvoicingApp.Managers
     public class ExcelManager : IExcelManager
     {
         protected IInvoiceManager InvoiceManager { get; set; }
-        protected DateHelper DateHelper { get; set; }
+        protected IDateHelper DateHelper { get; set; }
 
-        public ExcelManager(IInvoiceManager invoiceManager, DateHelper dateHelper)
+        public ExcelManager(IInvoiceManager invoiceManager, IDateHelper dateHelper)
         {
             InvoiceManager = invoiceManager;
             DateHelper = dateHelper;
@@ -127,6 +127,7 @@ namespace MyInvoicingApp.Managers
 
             sheet.Range[$"A{invoiceLineHdgIndex}"].RowHeight = 30;
             sheet.Range[$"A{invoiceLineHdgIndex}:O{invoiceLineHdgIndex}"].WrapText = true;
+            sheet.Range[$"A{invoiceLineHdgIndex}:O{invoiceLineHdgIndex}"].BorderInside(ExcelLineStyle.Thin, ExcelKnownColors.White);
 
             sheet.Range[$"A{invoiceLineHdgIndex}:O{invoiceLineHdgIndex}"].CellStyle.Font.Bold = true;
             sheet.Range[$"A{invoiceLineHdgIndex}:O{invoiceLineHdgIndex}"].CellStyle.Font.Color = ExcelKnownColors.White;

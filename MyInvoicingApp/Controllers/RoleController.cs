@@ -139,14 +139,25 @@ namespace MyInvoicingApp.Controllers
                         throw new ArgumentNullException();
                     }
 
-                    role.Name = model.Position;
+                    if (!_systemRoles.Contains(role.Name))
+                    {
+                        role.Name = model.Position;
+                    }
+
                     role.Description = model.Description;
 
                     var result = await RoleManager.UpdateAsync(role);
 
                     if (result.Succeeded)
                     {
-                        TempData["Success"] = $"Zapisano wprowadzone zmiany dla roli/stanowiska <b> {role.Name} </b>";
+                        if (_systemRoles.Contains(role.Name) && model.Position != role.Name)
+                        {
+                            TempData["Success"] = $"Nie można zmieniać nazw ról systemowych. Pozotałe wprowadzone zmiany zostały zapisane dla roli/stanowiska <b> {role.Name} </b>";
+                        }
+                        else
+                        {
+                            TempData["Success"] = $"Zapisano wprowadzone zmiany dla roli/stanowiska <b> {role.Name} </b>";
+                        }
 
                         return RedirectToAction("Index");
                     }
@@ -184,7 +195,7 @@ namespace MyInvoicingApp.Controllers
                 {
                     throw new Exception("Nie można zamknąć ról systemowych");
                 }
-            
+
                 var usersInRole = await UserManager.GetUsersInRoleAsync(role.Name);
 
                 if (usersInRole.Any())
@@ -261,7 +272,7 @@ namespace MyInvoicingApp.Controllers
                 var asignedUsers = await UserManager.GetUsersInRoleAsync(role.Name);
                 var otherUsers = UserManager.Users.Except(asignedUsers);
 
-                ViewBag.otherUsers = otherUsers.ToList().Select(x => new SelectListItem(){ Text = x.UserName, Value = x.Id });
+                ViewBag.otherUsers = otherUsers.ToList().Select(x => new SelectListItem() { Text = x.UserName, Value = x.Id });
                 ViewBag.asignedUsers = asignedUsers.ToList().Select(x => new SelectListItem() { Text = x.UserName, Value = x.Id });
 
                 return View(new RoleViewModel(role)

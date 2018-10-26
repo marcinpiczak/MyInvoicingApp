@@ -5,6 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="Attachments\200711055956-2193_1cc9c9f2-927c-4909-b9aa-3917b2ce3e53.jpg" />
+    <Content Include="Attachments\26-trp9s_90568458-0ec1-4287-b276-3b6de3fe98c4.jpg" />
+    <Content Include="Attachments\26-trp9s_92342fc4-305f-4f6c-ae5a-7505d6df574b.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.5" />
     <PackageReference Include="Syncfusion.Licensing" Version="16.3.0.21" />
@@ -19,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\Attachments\" />
+    <Folder Include="Attachments\" />
   </ItemGroup>
 
 </Project>
