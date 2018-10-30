@@ -1,95 +1,97 @@
 # MyInvoicingApp
 
-## Instalacja:
+*Read this in other languages: [Polish](README.pl-PL.md)
 
-W celu uruchomienia aplikacji należy stworzyć nową bazę danych lub odtworzyć bazę z przykładowymi danymi.
+## Installation:
 
-### I. Nowa baza danych 
+In order to run the application, a MS SQL database is required. New database can be created or can be restored from provided backup with sample data.
 
-1. utworzenie nowej bazy danych MyInvoicingAppDb korzystając np. ze skryptu ```create database MyInvoicingAppDb```
-1. wykonenie `Update-Database` w VisualStudio z poziomu **Package Manager Console**
-1. dodanie przykładowych danych po przez wykonanie skryptu **\scripts\Sample_data.sql** 
-1. podmiana bazy w pliku konfiguracyjnym `appsettings.xml`
+### I. New database 
+
+1. create new database MyInvoicingAppDb - you can use following script ```create database MyInvoicingAppDb```
+1. do `Update-Database` in VisualStudio in **Package Manager Console**
+1. add sample data by running script **\scripts\Sample_data.sql**
+
 
 ### II. SampleDB
 
-1. odworzonie bazy z backupu znajdującego się w katalogu **SampleDB**
+1. restore database backup with sample data. Backup can be found in folder **SampleDB**
 
-## Przykładowe dane:
+## Sample data:
 
-Przykładowe dane zawierają:
-1. cztery role (w tym trzy systemowe): 
-    * `Accountant` (Księgowy) - rola systemowa
-    * `Manager` (Menadżer) - rola systemowa
-    * `Admin` (Administrator) - rola systemowa
-    * `Temporary` (Tymczasowy)
-1. trzech użytkowników (z hasłami: _Qazwsx1@_):
-    * `marcin` przypisany do ról: Accountant, Manager, Admin
-    * `tomek` przypisany do ról: Accountant, Manager
-    * `kasia` nie przypisany do żadnej roli
-1. zestaw przykładowych:
-    * `klientów`
-    * `budżetów`
-    * `faktur`
+Sample data contains:
+1. four roles (including three system roles): 
+    * `Accountant` - one of the system roles
+    * `Manager` - one of the system roles
+    * `Admin` - one of the system roles
+    * `Temporary` - temporary role
+1. three users (password: _Qazwsx1@_):
+    * `marcin` asigned to roles: Accountant, Manager, Admin
+    * `tomek` asigned to role: Accountant, Manager
+    * `kasia` not asigned to any role
+1. collection of sample:
+    * `customers`
+    * `budgets`
+    * `invoices`
     
-## Dostępne moduły:
+## Available modules:
 
-#### Funkcjonalności dostępne we wszystkich modułach
-* Eksport danych z tabel z danymi do PDF i Excel
-* Sortowanie po dostępnych kolumnach tabel
-* Filtrowanie po zawrtości dostępnych kolumn tabel
+#### Functionalities available in all modules
+* Export data from all tables to PDF and Excel
+* Sorting data by available columns
+* Filtering data in each column
 
-### Budżety
+### Budgets
 
-Moduł pozwala na tworzenie, modyfikowanie, zamykanie, otwieranie i przeglądanie stworzonych budżetów. W szczególach budżetów znajduje się także lista z fakturami przypisanymi do danego budżetu.
+Budget module allows for creation, modification, closing, opening and browsing created budgets. In budget details list of invoices asigned to this budgets is also available.
 
-#### Dostępne funkcjonalności
-* Tworzenie nowego budżetu
-* Modyfikowanie istniejącego budżetu
-* Zamykanie otwartego budżetu
-* Otwieranie zamkniętego budżetu
-* Przeglądanie szczegółów budżetu wraz z fakturami przypisanymi do danego budżetu
+#### Functionalities
+* Creation of new budget
+* Modification of created budget
+* Closing opened budget
+* Opening closed budget
+* Browsing budget details along with invoices asigned to current budget
 
-### Klienci
+### Customers
 
-Moduł pozwala na tworzenie, modyfikowanie, zamykanie, otwieranie i przeglądanie kartotek klientów. W szczegółach klienta znajduje się także lista z fakturami stworzonymi dla danego klienta.
+Customer module allows for creation, modification, closing, opening and browsing created customers. In customer details list of invoices for this customer is also available.
 
-#### Dostępne funkcjonalności
-* Tworzenie nowego klienta
-* Modyfikowanie istniejącego klienta
-* Zamykanie otwartego klienta
-* Otwieranie zamkniętego klienta
-* Przeglądanie szczegółów klienta wraz z fakturami stworzonymi do danego budżetu
+#### Functionalities
+* Creation of new customer
+* Modification of created customer
+* Closing opened customer
+* Opening closed customer
+* Browsing customer details along with invoices for current customer
 
-### Faktury
+### Invoices
 
-Moduł pozwala na tworzenie, modyfikowanie, anulowanie i przeglądanie faktur. Każda z faktur jest tworzona dla konkretnego klienta. Linie faktur są natomiast przypisane do określonego budżetu.
+Invoice module allows for creation, modification, cancellation and browsing created invoices. Each invoice is created for specific customer. Invocie lines are asigned to selected budget.
 
-#### Dostępne funkcjonalności
-* Tworzenie nowego faktury
-* Modyfikowanie istniejącego faktury
-* Dodanie nowej linii do faktury w trakcie jej edycji
-* Anulowanie faktury
-* Anulowanie linii faktury
-* Przeglądanie szczegółów faktury
-* Eksport faktury do PDF i Excel
-* Dodawanie załaczników do faktur
+#### Functionalities
+* Creation of new invoice
+* Modification of created invoice
+* Adding new line to invoice while in edit mode
+* Invoice cancellation
+* Invoice line cancellation
+* Browsing invoice details
+* Export invoice to PDF i Excel with predefined layout
+* Adding attachments to invoice
 
-### Administracja
+### Administration
 
-Moduł pozwala na tworzenie, modyfikowanie, zamykanie i otwieranie ról/stanowisk oraz przypisywanie użytkowników do istniejących ról/stanowisk.
+Administration module allows for creation, modification, closing, opening roles/positions and asigning users to roles/positions. 
 
-#### Dostępne funkcjonalności
-* Tworzenie nowej roli/stanowiska
-* Modyfikowanie istniejącej roli/stanowiska
-* Zamykanie otwartej roli/stanowiska o ile nie jest to rola systemowa: `Accountant`, `Manager`, `Admin`
-* Otwarcie zamkniętej roli/stanowiska
-* Przypisanie użytkownika do roli/stanowiska
-* Usunięcie użytkownika z roli/stanowiska
+#### Functionalities
+* Creation of new role/position
+* Modification of created role/position
+* Closing opened role/position if its not one of system roles : `Accountant`, `Manager`, `Admin`
+* Opening closed role/position
+* Asigning users to roles/positions
+* Removing user from role/position
 
-## Korzystanie z aplikacji:
+## Usage:
 
-Do skorzystania z aplikacji wymagane jest zalogowanie się użytkownika przypisanego przynajmniej do roli: `Accountant` lub `Manager` pozwalających na dostęp do modułów: `Budżety`, `Klienci`, `Faktury`. 
-Rola `Admin` pozwala dodatkowo na dostęp do modułu administracyjnego umożliwiającego zarządzanie rolami/stanowiskami oraz przypisywanie do nich użytkowników.
+In order to get access to application modules you need to login with user that is asigned to at least one of the roles: `Accountant` or `Manager` which provides access to modules: `Budgets`, `Customers`, `Invoices`. 
+`Admin` role provides access to administration module which allows to manage roles/positions and asigning users to them.
 
-##### cdn.
+##### to be continued.
