@@ -1,5 +1,7 @@
 # MyInvoicingApp
 
+MyInvoicingApp is simple application that allows to create invoices for customers and asign them to created budget within available funds.
+
 *Read this in other languages: [Polish](README.pl-PL.md)
 
 ## Installation:
@@ -8,7 +10,8 @@ In order to run the application, a MS SQL database is required. New database can
 
 ### I. New database 
 
-1. create new database MyInvoicingAppDb - you can use following script ```create database MyInvoicingAppDb```
+1. create new database ex. MyInvoicingAppDb using following script ```create database MyInvoicingAppDb```
+1. change database in application config file `appsettings.xml` if necessary
 1. do `Update-Database` in VisualStudio in **Package Manager Console**
 1. add sample data by running script **\scripts\Sample_data.sql**
 
@@ -26,9 +29,9 @@ Sample data contains:
     * `Admin` - one of the system roles
     * `Temporary` - temporary role
 1. three users (password: _Qazwsx1@_):
-    * `marcin` asigned to roles: Accountant, Manager, Admin
-    * `tomek` asigned to role: Accountant, Manager
-    * `kasia` not asigned to any role
+    * `marcin` asigned to roles: Accountant, Manager, Admin - can login and have access to all modules
+    * `tomek` asigned to role: Accountant, Manager - can login and have access to all modules except administration module
+    * `kasia` not asigned to any role - can login but don't have access to any module
 1. collection of sample:
     * `customers`
     * `budgets`
@@ -39,11 +42,11 @@ Sample data contains:
 #### Functionalities available in all modules
 * Export data from all tables to PDF and Excel
 * Sorting data by available columns
-* Filtering data in each column
+* Filtering data
 
 ### Budgets
 
-Budget module allows for creation, modification, closing, opening and browsing created budgets. In budget details list of invoices asigned to this budgets is also available.
+Budget module allows for creation, modification, closing, opening and browsing created budgets. In budget details a list of invoices asigned to current budgets is also available.
 
 #### Functionalities
 * Creation of new budget
@@ -54,7 +57,7 @@ Budget module allows for creation, modification, closing, opening and browsing c
 
 ### Customers
 
-Customer module allows for creation, modification, closing, opening and browsing created customers. In customer details list of invoices for this customer is also available.
+Customer module allows for creation, modification, closing, opening and browsing created customers. In customer details a list of invoices for current customer is also available.
 
 #### Functionalities
 * Creation of new customer
@@ -89,9 +92,9 @@ Administration module allows for creation, modification, closing, opening roles/
 * Asigning users to roles/positions
 * Removing user from role/position
 
-## Usage:
+## Application:
 
-In order to get access to application modules you need to login with user that is asigned to at least one of the roles: `Accountant` or `Manager` which provides access to modules: `Budgets`, `Customers`, `Invoices`. 
+In order to get access to application modules login with user that is asigned to at least one of the roles: `Accountant` or `Manager` which provides access to modules: `Budgets`, `Customers`, `Invoices`. 
 `Admin` role provides access to administration module which allows to manage roles/positions and asigning users to them.
 
 ##### to be continued.

@@ -1,15 +1,17 @@
 # MyInvoicingApp
 
+MyInvoicingApp jest prostą aplikacją pozwalającą na rejestrowanie faktur dla konkretnego kontrahenta i przypisywanie jej do utworzonego wcześniej budżetu w ramach środków na nim się znajdujących.
+
 ## Instalacja:
 
 W celu uruchomienia aplikacji należy stworzyć nową bazę danych lub odtworzyć bazę z przykładowymi danymi.
 
 ### I. Nowa baza danych 
 
-1. utworzenie nowej bazy danych MyInvoicingAppDb korzystając np. ze skryptu ```create database MyInvoicingAppDb```
+1. utworzenie nowej bazy danych np. MyInvoicingAppDb korzystając ze skryptu ```create database MyInvoicingAppDb```
+1. podmiana bazy w pliku konfiguracyjnym `appsettings.xml` jeżeli jest to wymagane
 1. wykonenie `Update-Database` w VisualStudio z poziomu **Package Manager Console**
 1. dodanie przykładowych danych po przez wykonanie skryptu **\scripts\Sample_data.sql** 
-1. podmiana bazy w pliku konfiguracyjnym `appsettings.xml`
 
 ### II. SampleDB
 
@@ -24,9 +26,9 @@ Przykładowe dane zawierają:
     * `Admin` (Administrator) - rola systemowa
     * `Temporary` (Tymczasowy)
 1. trzech użytkowników (z hasłami: _Qazwsx1@_):
-    * `marcin` przypisany do ról: Accountant, Manager, Admin
-    * `tomek` przypisany do ról: Accountant, Manager
-    * `kasia` nie przypisany do żadnej roli
+    * `marcin` przypisany do ról: Accountant, Manager, Admin - może się zalogować do aplikacji i posiada dostęp do wszystkich modułów
+    * `tomek` przypisany do ról: Accountant, Manager - może się zalogować do aplikacji i posiada dostęp do wszystkich modułów poza modułem administracyjnym
+    * `kasia` nie przypisany do żadnej roli - może się zalogować do aplikacji ale nie posiada dostępu do żadnego z modułów
 1. zestaw przykładowych:
     * `klientów`
     * `budżetów`
@@ -37,7 +39,7 @@ Przykładowe dane zawierają:
 #### Funkcjonalności dostępne we wszystkich modułach
 * Eksport danych z tabel z danymi do PDF i Excel
 * Sortowanie po dostępnych kolumnach tabel
-* Filtrowanie po zawrtości dostępnych kolumn tabel
+* Filtrowanie po zawartości dostępnych kolumn tabel
 
 ### Budżety
 
