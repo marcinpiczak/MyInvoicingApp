@@ -1,8 +1,14 @@
 # MyInvoicingApp
 
-MyInvoicingApp is simple application that allows to create invoices for customers and asign them to created budget within available funds.
-
 *Read this in other languages: [Polish](README.pl-PL.md)
+
+MyInvoicingApp is a application for registering customer invoices and asign them to created budget within available funds. 
+
+### Technologies
+ASP.NET Core 2.1 MVC, C#, JavaScript, JQuery, CSS, MS SQL Server
+
+### Libraries/Frameworks
+EntityFarmework Core, Identity, SyncFusion, DataTables, Alertify, Numerals, Bootstrap
 
 ## Installation:
 

@@ -1,6 +1,12 @@
 # MyInvoicingApp
 
-MyInvoicingApp jest prostą aplikacją pozwalającą na rejestrowanie faktur dla konkretnego kontrahenta i przypisywanie jej do utworzonego wcześniej budżetu w ramach środków na nim się znajdujących.
+MyInvoicingApp aplikacją pozwalającą na rejestrowanie faktur kontrahenta i przypisywanie ich do utworzonego wcześniej budżetu w ramach środków na nim się znajdujących.
+
+### Technologie
+ASP.NET Core 2.1 MVC, C#, JavaScript, JQuery, CSS, MS SQL Server
+
+### Biblioteki/Frameworki
+EntityFarmework Core, Identity, SyncFusion, DataTables, Alertify, Numerals, Bootstrap
 
 ## Instalacja:
 
