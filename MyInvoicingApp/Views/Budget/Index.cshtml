@@ -1,10 +1,10 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using MyInvoicingApp.Interfaces
 @model IEnumerable<MyInvoicingApp.ViewModels.BudgetViewModel>
+@inject IDataAccessManager DataAccessManager;
 @inject UserManager<ApplicationUser> UserManager;
-@inject IBudgetManager BudgetManager;
 @{
-    var currentUser = UserManager.Users.First(x => x.UserName == User.Identity.Name);
+    var currentUser = await UserManager.GetUserAsync(User);
 }
 
 <h2 class="text-center">Lista budżetów</h2>
@@ -86,19 +86,26 @@
                 </td>
                 <td>
 
-                    @if (BudgetManager.CanEdit(item.CreatedBy, currentUser))
-                    {
-                        if (item.Status == Status.Closed)
+                    @*@if (BudgetManager.CanEdit(item, currentUser))
+                    {*@
+                        @if (item.Status == Status.Closed && DataAccessManager.CanOpen(item, currentUser))
                         {
                             <a asp-controller="Budget" asp-action="ReOpen" asp-route-id="@item.Id" title="Otwórz ponownie" class="btn-sm btn-default"><i class="fas fa-door-open fa-lg"></i></a>
                         }
                         else
                         {
-                            <a asp-controller="Budget" asp-action="Edit" asp-route-id="@item.Id" title="Edycja" class="btn-sm btn-default"><i class="fas fa-pen fa-lg"></i></a>
-                            <a asp-controller="Budget" asp-action="Close" asp-route-id="@item.Id" title="Zamknięcie" class="btn-sm btn-default"><i class="fas fa-door-closed fa-lg"></i></a>
+                            if (DataAccessManager.CanEdit(item, currentUser))
+                            {
+                                <a asp-controller="Budget" asp-action="Edit" asp-route-id="@item.Id" title="Edycja" class="btn-sm btn-default"><i class="fas fa-pen fa-lg"></i></a>
+                            }
+
+                            if (DataAccessManager.CanClose(item, currentUser))
+                            {
+                                <a asp-controller="Budget" asp-action="Close" asp-route-id="@item.Id" title="Zamknięcie" class="btn-sm btn-default"><i class="fas fa-door-closed fa-lg"></i></a>
+                            }
                         }
 
-                    }
+                    @*}*@
                     <a asp-controller="Budget" asp-action="Details" asp-route-id="@item.Id" title="Szczegóły" class="btn-sm btn-default"><i class="fas fa-info fa-lg"></i></a>
                 </td>
             </tr>

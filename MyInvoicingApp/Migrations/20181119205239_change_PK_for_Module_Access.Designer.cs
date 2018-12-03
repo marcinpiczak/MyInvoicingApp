@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyInvoicingApp.Contexts;
 
 namespace MyInvoicingApp.Migrations
 {
     [DbContext(typeof(EFCDbContext))]
-    partial class EFCDbContextModelSnapshot : ModelSnapshot
+    [Migration("20181119205239_change_PK_for_Module_Access")]
+    partial class change_PK_for_Module_Access
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -456,9 +458,6 @@ namespace MyInvoicingApp.Migrations
 
                     b.Property<DateTime?>("LastModifiedDate");
 
-                    b.Property<string>("OwnerId")
-                        .IsRequired();
-
                     b.Property<DateTime>("PaymentDueDate");
 
                     b.Property<string>("PaymentMethod")
@@ -481,8 +480,6 @@ namespace MyInvoicingApp.Migrations
                     b.HasIndex("CustomerId");
 
                     b.HasIndex("LastModifiedById");
-
-                    b.HasIndex("OwnerId");
 
                     b.ToTable("Invoices");
                 });
@@ -565,14 +562,13 @@ namespace MyInvoicingApp.Migrations
                     b.ToTable("InvoiceLines");
                 });
 
-            modelBuilder.Entity("MyInvoicingApp.Models.RoleModuleAccess", b =>
+            modelBuilder.Entity("MyInvoicingApp.Models.ModuleAccess", b =>
                 {
-                    b.Property<string>("AccessorId")
-                        .HasMaxLength(450);
+                    b.Property<string>("RoleId");
+
+                    b.Property<string>("UserId");
 
                     b.Property<int>("Module");
-
-                    b.Property<int>("AccessorType");
 
                     b.Property<bool>("Add");
 
@@ -594,8 +590,6 @@ namespace MyInvoicingApp.Migrations
                     b.Property<string>("Id")
                         .IsRequired();
 
-                    b.Property<bool>("Index");
-
                     b.Property<string>("LastModifiedById");
 
                     b.Property<DateTime?>("LastModifiedDate");
@@ -608,7 +602,7 @@ namespace MyInvoicingApp.Migrations
 
                     b.Property<int>("Status");
 
-                    b.HasKey("AccessorId", "Module");
+                    b.HasKey("RoleId", "UserId", "Module");
 
                     b.HasAlternateKey("Id");
 
@@ -616,61 +610,9 @@ namespace MyInvoicingApp.Migrations
 
                     b.HasIndex("LastModifiedById");
 
-                    b.ToTable("RoleModuleAccesses");
-                });
+                    b.HasIndex("UserId");
 
-            modelBuilder.Entity("MyInvoicingApp.Models.UserModuleAccess", b =>
-                {
-                    b.Property<string>("AccessorId")
-                        .HasMaxLength(450);
-
-                    b.Property<int>("Module");
-
-                    b.Property<int>("AccessorType");
-
-                    b.Property<bool>("Add");
-
-                    b.Property<bool>("Approve");
-
-                    b.Property<bool>("Cancel");
-
-                    b.Property<bool>("Close");
-
-                    b.Property<string>("CreatedById")
-                        .IsRequired();
-
-                    b.Property<DateTime>("CreatedDate");
-
-                    b.Property<bool>("Details");
-
-                    b.Property<bool>("Edit");
-
-                    b.Property<string>("Id")
-                        .IsRequired();
-
-                    b.Property<bool>("Index");
-
-                    b.Property<string>("LastModifiedById");
-
-                    b.Property<DateTime?>("LastModifiedDate");
-
-                    b.Property<bool>("Open");
-
-                    b.Property<bool>("Remove");
-
-                    b.Property<bool>("Send");
-
-                    b.Property<int>("Status");
-
-                    b.HasKey("AccessorId", "Module");
-
-                    b.HasAlternateKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("LastModifiedById");
-
-                    b.ToTable("UserModuleAccesses");
+                    b.ToTable("ModuleAccesses");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -762,7 +704,7 @@ namespace MyInvoicingApp.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("MyInvoicingApp.Models.ApplicationUser", "LastModifiedBy")
-                        .WithMany()
+                        .WithMany("LastModifiedCustomers")
                         .HasForeignKey("LastModifiedById");
                 });
 
@@ -802,7 +744,7 @@ namespace MyInvoicingApp.Migrations
                         .HasForeignKey("BudgetId");
 
                     b.HasOne("MyInvoicingApp.Models.ApplicationUser", "CreatedBy")
-                        .WithMany("CreatedInvoices")
+                        .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
@@ -814,11 +756,6 @@ namespace MyInvoicingApp.Migrations
                     b.HasOne("MyInvoicingApp.Models.ApplicationUser", "LastModifiedBy")
                         .WithMany()
                         .HasForeignKey("LastModifiedById");
-
-                    b.HasOne("MyInvoicingApp.Models.ApplicationUser", "Owner")
-                        .WithMany("OwnedInvoices")
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("MyInvoicingApp.Models.InvoiceLine", b =>
@@ -843,38 +780,26 @@ namespace MyInvoicingApp.Migrations
                         .HasForeignKey("LastModifiedById");
                 });
 
-            modelBuilder.Entity("MyInvoicingApp.Models.RoleModuleAccess", b =>
+            modelBuilder.Entity("MyInvoicingApp.Models.ModuleAccess", b =>
                 {
+                    b.HasOne("MyInvoicingApp.Models.ApplicationUser", "CreatedBy")
+                        .WithMany("CreatedModuleAccesses")
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("MyInvoicingApp.Models.ApplicationUser", "LastModifiedBy")
+                        .WithMany()
+                        .HasForeignKey("LastModifiedById");
+
                     b.HasOne("MyInvoicingApp.Models.ApplicationRole", "Role")
                         .WithMany()
-                        .HasForeignKey("AccessorId")
+                        .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("MyInvoicingApp.Models.ApplicationUser", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("MyInvoicingApp.Models.ApplicationUser", "LastModifiedBy")
-                        .WithMany()
-                        .HasForeignKey("LastModifiedById");
-                });
-
-            modelBuilder.Entity("MyInvoicingApp.Models.UserModuleAccess", b =>
-                {
                     b.HasOne("MyInvoicingApp.Models.ApplicationUser", "User")
                         .WithMany("UserModuleAccesses")
-                        .HasForeignKey("AccessorId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("MyInvoicingApp.Models.ApplicationUser", "CreatedBy")
-                        .WithMany("CreatedUserModuleAccesses")
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("MyInvoicingApp.Models.ApplicationUser", "LastModifiedBy")
-                        .WithMany()
-                        .HasForeignKey("LastModifiedById");
                 });
 #pragma warning restore 612, 618
         }

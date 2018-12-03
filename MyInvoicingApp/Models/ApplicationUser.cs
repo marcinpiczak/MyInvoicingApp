@@ -17,7 +17,7 @@ namespace MyInvoicingApp.Models
         [ForeignKey("ManagerId")]
         public ApplicationUser Manager { get; set; }
 
-        //public ICollection<Invoice> CreatedInvoices { get; set; }
+        public ICollection<Invoice> CreatedInvoices { get; set; }
 
         //public ICollection<Invoice> LastModifiedInvoices { get; set; }
 
@@ -31,9 +31,15 @@ namespace MyInvoicingApp.Models
 
         public ICollection<Budget> OwnedBudgets { get; set; }
 
+        public ICollection<Invoice> OwnedInvoices { get; set; }
+
         public ICollection<Customer> CreatedCustomers { get; set; }
 
-        public ICollection<Customer> LastModifiedCustomers { get; set; }
+        //public ICollection<Customer> LastModifiedCustomers { get; set; }
+
+        public ICollection<UserModuleAccess> CreatedUserModuleAccesses { get; set; }
+
+        public ICollection<UserModuleAccess> UserModuleAccesses { get; set; }
 
         public ApplicationUser(string userName) : base(userName)
         {

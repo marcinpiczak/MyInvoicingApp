@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MyInvoicingApp.Contexts;
-using MyInvoicingApp.Helpers;
 using MyInvoicingApp.Interfaces;
 using MyInvoicingApp.Models;
 using MyInvoicingApp.ReturnResults;
@@ -21,8 +20,9 @@ namespace MyInvoicingApp.Managers
         protected IDocumentNumberingManager DocumentNumberingManager { get; set; }
         protected ICustomerManager CustomerManager { get; set; }
         protected IBudgetManager BudgetManager { get; set; }
+        protected IDataAccessManager DataAccessManager { get; set; }
 
-        public InvoiceManager(EFCDbContext context, UserManager<ApplicationUser> userManager, IDateHelper dateHelper, ICustomerManager customerManager, IBudgetManager budgetManager, IDocumentNumberingManager documentNumberingManager)
+        public InvoiceManager(EFCDbContext context, UserManager<ApplicationUser> userManager, IDateHelper dateHelper, ICustomerManager customerManager, IBudgetManager budgetManager, IDocumentNumberingManager documentNumberingManager, IDataAccessManager dataAccessManager)
         {
             Context = context;
             UserManager = userManager;
@@ -30,6 +30,7 @@ namespace MyInvoicingApp.Managers
             DocumentNumberingManager = documentNumberingManager;
             CustomerManager = customerManager;
             BudgetManager = budgetManager;
+            DataAccessManager = dataAccessManager;
         }
 
         /// <summary>
@@ -54,7 +55,8 @@ namespace MyInvoicingApp.Managers
                         .Include(x => x.Budget)
                         .Include(x => x.Budget)
                         .Include(x => x.CreatedBy)
-                        .Include(x => x.LastModifiedBy);
+                        .Include(x => x.LastModifiedBy)
+                        .Include(x => x.Owner);
                     break;
 
                 default:
@@ -64,7 +66,8 @@ namespace MyInvoicingApp.Managers
                         .Include(x => x.Budget).ThenInclude(x => x.CreatedBy)
                         .Include(x => x.Budget).ThenInclude(x => x.LastModifiedBy)
                         .Include(x => x.CreatedBy)
-                        .Include(x => x.LastModifiedBy);
+                        .Include(x => x.LastModifiedBy)
+                        .Include(x => x.Owner).ThenInclude(x => x.Manager);
                     break;
             }
 
@@ -79,6 +82,14 @@ namespace MyInvoicingApp.Managers
         {
             var models = GetInvoices(IncludeLevel.Level2)
                 .Select(x => new InvoiceViewModel(x));
+
+            return models;
+        }
+
+        public IEnumerable<InvoiceViewModel> GetInvoiceViewModelsForUser(ApplicationUser user)
+        {
+            var models = GetInvoiceViewModels()
+                .Where(x => DataAccessManager.CanView(x, user));
 
             return models;
         }
@@ -106,6 +117,7 @@ namespace MyInvoicingApp.Managers
                         .Include(x => x.Budget)
                         .Include(x => x.CreatedBy)
                         .Include(x => x.LastModifiedBy)
+                        .Include(x => x.Owner)
                         .SingleOrDefault(x => x.Id == invoiceId);
                     break;
 
@@ -117,6 +129,7 @@ namespace MyInvoicingApp.Managers
                         .Include(x => x.Budget).ThenInclude(x => x.LastModifiedBy)
                         .Include(x => x.CreatedBy)
                         .Include(x => x.LastModifiedBy)
+                        .Include(x => x.Owner).ThenInclude(x => x.Manager)
                         .SingleOrDefault(x => x.Id == invoiceId);
                     break;
             }
@@ -147,6 +160,18 @@ namespace MyInvoicingApp.Managers
                 CustomerItemList = customerItemList,
                 InvoiceLines = GetInvoiceLineViewModels(invoiceId)
             };
+
+            return model;
+        }
+
+        public InvoiceViewModel GetInvoiceViewModelByIdForUser(string invoiceId, ApplicationUser user)
+        {
+            var model = GetInvoiceViewModelById(invoiceId);
+
+            if (!DataAccessManager.CanView(model, user))
+            {
+                throw new InvalidOperationException("Nie masz uprawnień do przeglądania tej faktury");
+            }
 
             return model;
         }
@@ -219,7 +244,12 @@ namespace MyInvoicingApp.Managers
                 throw new ArgumentNullException(nameof(model), "Nieprawidłowe parametry");
             }
 
-            var invoice = GetInvoiceById(model.Id, IncludeLevel.None);
+            var invoice = GetInvoiceById(model.Id, IncludeLevel.Level2);
+
+            if (!DataAccessManager.CanEdit(new InvoiceViewModel(invoice), modifiedBy))
+            {
+                throw new InvalidOperationException("Nie masz uprawnień do edycji tej faktury");
+            }
 
             if (invoice.Status == Status.Cancelled)
             {
@@ -234,6 +264,9 @@ namespace MyInvoicingApp.Managers
                 {
                     throw new ArgumentException($"Budżet o podanym ID nie istnieje.", nameof(budget));
                 }
+
+                //sprawdzanie czy uzytkownik ma dostep do budzetu
+                BudgetManager.GetBudgetViewModelByIdForUser(model.BudgetId, modifiedBy);
             }
 
             var customer = Context.Customers.SingleOrDefault(x => x.Id == model.CustomerId);
@@ -242,6 +275,9 @@ namespace MyInvoicingApp.Managers
             {
                 throw new ArgumentException($"Klient o podanym ID nie istnieje.", nameof(customer));
             }
+
+            //sprawdzanie czy uzytkownik ma dostep do klienta
+            CustomerManager.GetCustomerViewModelByIdForUser(model.CustomerId, modifiedBy);
 
             var now = DateHelper.GetCurrentDatetime();
 
@@ -314,6 +350,54 @@ namespace MyInvoicingApp.Managers
             };
         }
 
+        public InvoiceReturnResult CancelInvoice(string invoiceId, ApplicationUser modifiedBy)
+        {
+            var model = GetInvoiceViewModelById(invoiceId);
+
+            if (!DataAccessManager.CanCancel(model, modifiedBy))
+            {
+                throw new InvalidOperationException("Nie masz uprawnień do anulowania tej faktury");
+            }
+
+            return ChangeStatus(invoiceId, Status.Cancelled, modifiedBy);
+        }
+
+        public InvoiceReturnResult ApproveInvoice(string invoiceId, ApplicationUser modifiedBy)
+        {
+            var model = GetInvoiceViewModelById(invoiceId);
+
+            if (!DataAccessManager.CanApprove(model, modifiedBy))
+            {
+                throw new InvalidOperationException("Nie masz uprawnień do zatwierdzania tej faktury");
+            }
+
+            return ChangeStatus(invoiceId, Status.Cancelled, modifiedBy);
+        }
+
+        public InvoiceReturnResult SentInvoiceToApprove(string invoiceId, ApplicationUser modifiedBy)
+        {
+            var model = GetInvoiceViewModelById(invoiceId);
+
+            if (!DataAccessManager.CanSentToApprove(model, modifiedBy))
+            {
+                throw new InvalidOperationException("Nie masz uprawnień do wysyłania tej faktury do zatwierdzenia");
+            }
+
+            return ChangeStatus(invoiceId, Status.Sent, modifiedBy);
+        }
+
+        public InvoiceReturnResult RejectInvoice(string invoiceId, ApplicationUser modifiedBy)
+        {
+            var model = GetInvoiceViewModelById(invoiceId);
+
+            if (!DataAccessManager.CanReject(model, modifiedBy))
+            {
+                throw new InvalidOperationException("Nie masz uprawnień do odrzucania tej faktury");
+            }
+
+            return ChangeStatus(invoiceId, Status.Rejected, modifiedBy);
+        }
+
         /// <summary>
         /// Gets InvoiceViewModel with default values set for Add method
         /// </summary>
@@ -323,6 +407,28 @@ namespace MyInvoicingApp.Managers
         {
             var customerItemList = GetOpenCustomersItemList();
             var budgetItemList = GetOpenBudgetsItemList();
+
+            var now = DateHelper.GetCurrentDatetime();
+
+            var model = new InvoiceViewModel()
+            {
+                CustomerItemList = customerItemList,
+                BudgetItemList = budgetItemList,
+                PaymentDueDate = now,
+                IssueDate = now,
+                ReceiveDate = now,
+                Currency = defaultCurrency,
+                //
+                InvoiceLine = new InvoiceLineViewModel()
+            };
+
+            return model;
+        }
+
+        public InvoiceViewModel GetDefaultInvoiceViewModelForAddForUser(ApplicationUser user, string defaultCurrency = "PLN")
+        {
+            var customerItemList = GetOpenCustomersItemListForUser(user);
+            var budgetItemList = GetOpenBudgetsItemListForUser(user);
 
             var now = DateHelper.GetCurrentDatetime();
 
@@ -373,6 +479,7 @@ namespace MyInvoicingApp.Managers
                     invoiceLines = Context.InvoiceLines
                         .Include(x => x.Invoice).ThenInclude(x => x.CreatedBy)
                         .Include(x => x.Invoice).ThenInclude(x => x.LastModifiedBy)
+                        .Include(x => x.Invoice).ThenInclude(x => x.Owner)
                         .Include(x => x.Budget).ThenInclude(x => x.CreatedBy)
                         .Include(x => x.Budget).ThenInclude(x => x.LastModifiedBy)
                         .Include(x => x.Budget).ThenInclude(x => x.Owner)
@@ -395,6 +502,14 @@ namespace MyInvoicingApp.Managers
 
             var models = invoiceLines
                 .Select(x => new InvoiceLineViewModel(x));
+
+            return models;
+        }
+
+        public IEnumerable<InvoiceLineViewModel> GetInvoiceLineViewModelsForUser(string invoiceId, ApplicationUser user)
+        {
+            var models = GetInvoiceLineViewModels(invoiceId)
+                .Where(x => DataAccessManager.CanView(x.Invoice, user));
 
             return models;
         }
@@ -449,6 +564,15 @@ namespace MyInvoicingApp.Managers
             return invoiceLine;
         }
 
+        public InvoiceLineViewModel GetInvoiceLineViewModelById(string lineId, string invoiceId)
+        {
+            var invoiceLine = GetInvoiceLineById(lineId, invoiceId, IncludeLevel.Level2);
+
+            var model = new InvoiceLineViewModel(invoiceLine);
+
+            return model;
+        }
+
         /// <summary>
         /// Add Invoice line based on given InvoiceLineViewModel.
         /// </summary>
@@ -475,6 +599,12 @@ namespace MyInvoicingApp.Managers
             {
                 throw new InvalidOperationException("Fatura jest anulowana. Nie można dodawać nowych linii do anulowanej faktury");
             }
+
+            //sprawdzenie czy uzytkownik ma dostep do budzetu dla ktorego tworzy faktur
+            BudgetManager.GetBudgetViewModelByIdForUser(model.BudgetId, createdBy);
+
+            //sprawdzenie czy uzytkownik ma dostep do faktury dla ktorej tworzy linie faktur
+            GetInvoiceViewModelByIdForUser(model.InvoiceId, createdBy);
 
             decimal netto = model.Netto;
             decimal tax = model.Tax;
@@ -570,6 +700,12 @@ namespace MyInvoicingApp.Managers
             {
                 throw new InvalidOperationException("Linia fatury jest anulowana. Nie można edytować anulowanej linii faktury");
             }
+
+            //sprawdzenie czy uzytkownik ma dostep do budzetu dla ktorego tworzy faktur
+            BudgetManager.GetBudgetViewModelByIdForUser(model.BudgetId, modifiedBy);
+
+            //sprawdzenie czy uzytkownik ma dostep do faktury dla ktorej modyfikuje linie faktur
+            GetInvoiceViewModelByIdForUser(model.InvoiceId, modifiedBy);
 
             decimal netto = model.Netto;
             decimal tax = model.Tax;
@@ -683,6 +819,54 @@ namespace MyInvoicingApp.Managers
             };
         }
 
+        public InvoiceLineReturnResult CancelInvoiceLine(string lineId, string invoiceId, ApplicationUser modifiedBy)
+        {
+            var model = GetInvoiceLineViewModelById(lineId, invoiceId);
+
+            if (!DataAccessManager.CanCancel(model.Invoice, modifiedBy))
+            {
+                throw new InvalidOperationException("Nie masz uprawnień do anulowania tej linii faktury");
+            }
+
+            return ChangeLineStatus(lineId, invoiceId, Status.Cancelled, modifiedBy);
+        }
+
+        public InvoiceLineReturnResult ApproveInvoiceLine(string lineId, string invoiceId, ApplicationUser modifiedBy)
+        {
+            var model = GetInvoiceLineViewModelById(lineId, invoiceId);
+
+            if (!DataAccessManager.CanApprove(model.Invoice, modifiedBy))
+            {
+                throw new InvalidOperationException("Nie masz uprawnień do zatwierdzania tej linii faktury");
+            }
+
+            return ChangeLineStatus(lineId, invoiceId, Status.Cancelled, modifiedBy);
+        }
+
+        public InvoiceLineReturnResult SentInvoiceLineToApprove(string lineId, string invoiceId, ApplicationUser modifiedBy)
+        {
+            var model = GetInvoiceLineViewModelById(lineId, invoiceId);
+
+            if (!DataAccessManager.CanSentToApprove(model.Invoice, modifiedBy))
+            {
+                throw new InvalidOperationException("Nie masz uprawnień do wysyłania tej linii faktury do zatwierdzenia");
+            }
+
+            return ChangeLineStatus(lineId, invoiceId, Status.Sent, modifiedBy);
+        }
+
+        public InvoiceLineReturnResult RejectInvoiceLine(string lineId, string invoiceId, ApplicationUser modifiedBy)
+        {
+            var model = GetInvoiceLineViewModelById(lineId, invoiceId);
+
+            if (!DataAccessManager.CanReject(model.Invoice, modifiedBy))
+            {
+                throw new InvalidOperationException("Nie masz uprawnień do odrzucania tej linii faktury");
+            }
+
+            return ChangeLineStatus(lineId, invoiceId, Status.Rejected, modifiedBy);
+        }
+
         /// <summary>
         /// Gets next invoice line number for given invoice id
         /// </summary>
@@ -722,6 +906,26 @@ namespace MyInvoicingApp.Managers
             return customersItemList.OrderByDescending(x => x.Value);
         }
 
+        public IEnumerable<SelectListItem> GetOpenCustomersItemListForUser(ApplicationUser user, CustomerViewModel selectedCustomer = null)
+        {
+            var customersItemList = CustomerManager.GetCustomerViewModelsForUser(user)
+                .Where(x => x.Status == Status.Opened)
+                .Select(x => new SelectListItem(x.Name, x.Id));
+
+            if (selectedCustomer != null)
+            {
+                customersItemList = customersItemList
+                    .Where(x => x.Value != selectedCustomer.Id)
+                    .Union(new List<SelectListItem>() { new SelectListItem(selectedCustomer.Name, selectedCustomer.Id, true) });
+            }
+            else
+            {
+                customersItemList = customersItemList.Union(new List<SelectListItem>() { new SelectListItem(null, null, true) });
+            }
+
+            return customersItemList.OrderByDescending(x => x.Value);
+        }
+
         /// <summary>
         /// Gets collection of SelectListItem for select field in View with opened budgets
         /// </summary>
@@ -730,6 +934,27 @@ namespace MyInvoicingApp.Managers
         public IEnumerable<SelectListItem> GetOpenBudgetsItemList(BudgetViewModel selectedBudget = null)
         {
             var budgetsItemList = BudgetManager.GetBudgets(IncludeLevel.None)
+                .Where(x => x.Status == Status.Opened)
+                .OrderByDescending(x => x.CreatedDate)
+                .Select(x => new SelectListItem(x.BudgetNumber, x.Id));
+
+            if (selectedBudget != null)
+            {
+                budgetsItemList = budgetsItemList
+                    .Where(x => x.Value != selectedBudget.Id)
+                    .Union(new List<SelectListItem>() { new SelectListItem(selectedBudget.BudgetNumber, selectedBudget.Id, true) });
+            }
+            else
+            {
+                budgetsItemList = budgetsItemList.Union(new List<SelectListItem>() { new SelectListItem(null, null, true) });
+            }
+
+            return budgetsItemList;
+        }
+
+        public IEnumerable<SelectListItem> GetOpenBudgetsItemListForUser(ApplicationUser user, BudgetViewModel selectedBudget = null)
+        {
+            var budgetsItemList = BudgetManager.GetBudgetViewModelsForUser(user)
                 .Where(x => x.Status == Status.Opened)
                 .OrderByDescending(x => x.CreatedDate)
                 .Select(x => new SelectListItem(x.BudgetNumber, x.Id));

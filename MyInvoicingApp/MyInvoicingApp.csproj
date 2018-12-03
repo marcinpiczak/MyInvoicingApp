@@ -5,6 +5,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20181119211321_change_PK_for_Module_Access_2.cs" />
+    <Compile Remove="Migrations\20181119211321_change_PK_for_Module_Access_2.Designer.cs" />
+    <Compile Remove="Migrations\20181121213759_change_structure_for_module_Access.cs" />
+    <Compile Remove="Migrations\20181121213759_change_structure_for_module_Access.Designer.cs" />
+    <Compile Remove="Migrations\20181129211741_add_owner_to_invoice.cs" />
+    <Compile Remove="Migrations\20181129211741_add_owner_to_invoice.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="Attachments\200711055956-2193_1cc9c9f2-927c-4909-b9aa-3917b2ce3e53.jpg" />
     <Content Include="Attachments\26-trp9s_90568458-0ec1-4287-b276-3b6de3fe98c4.jpg" />
     <Content Include="Attachments\26-trp9s_92342fc4-305f-4f6c-ae5a-7505d6df574b.jpg" />

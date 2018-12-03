@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyInvoicingApp.Contexts;
 
 namespace MyInvoicingApp.Migrations
 {
     [DbContext(typeof(EFCDbContext))]
-    partial class EFCDbContextModelSnapshot : ModelSnapshot
+    [Migration("20181121214412_change_structure_for_module_Access")]
+    partial class change_structure_for_module_Access
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -456,9 +458,6 @@ namespace MyInvoicingApp.Migrations
 
                     b.Property<DateTime?>("LastModifiedDate");
 
-                    b.Property<string>("OwnerId")
-                        .IsRequired();
-
                     b.Property<DateTime>("PaymentDueDate");
 
                     b.Property<string>("PaymentMethod")
@@ -481,8 +480,6 @@ namespace MyInvoicingApp.Migrations
                     b.HasIndex("CustomerId");
 
                     b.HasIndex("LastModifiedById");
-
-                    b.HasIndex("OwnerId");
 
                     b.ToTable("Invoices");
                 });
@@ -594,8 +591,6 @@ namespace MyInvoicingApp.Migrations
                     b.Property<string>("Id")
                         .IsRequired();
 
-                    b.Property<bool>("Index");
-
                     b.Property<string>("LastModifiedById");
 
                     b.Property<DateTime?>("LastModifiedDate");
@@ -647,8 +642,6 @@ namespace MyInvoicingApp.Migrations
 
                     b.Property<string>("Id")
                         .IsRequired();
-
-                    b.Property<bool>("Index");
 
                     b.Property<string>("LastModifiedById");
 
@@ -802,7 +795,7 @@ namespace MyInvoicingApp.Migrations
                         .HasForeignKey("BudgetId");
 
                     b.HasOne("MyInvoicingApp.Models.ApplicationUser", "CreatedBy")
-                        .WithMany("CreatedInvoices")
+                        .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
@@ -814,11 +807,6 @@ namespace MyInvoicingApp.Migrations
                     b.HasOne("MyInvoicingApp.Models.ApplicationUser", "LastModifiedBy")
                         .WithMany()
                         .HasForeignKey("LastModifiedById");
-
-                    b.HasOne("MyInvoicingApp.Models.ApplicationUser", "Owner")
-                        .WithMany("OwnedInvoices")
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("MyInvoicingApp.Models.InvoiceLine", b =>

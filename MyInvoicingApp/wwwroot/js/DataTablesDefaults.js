@@ -1,5 +1,5 @@
 ﻿$(document).ready(function () {
-    var table = $("table");
+    var table = $("table:not(.no-data-table)");
     //table.addClass("display nowrap");
 
     //var tableLength = table.children().first().find("th").length;

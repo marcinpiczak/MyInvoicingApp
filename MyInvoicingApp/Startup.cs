@@ -66,6 +66,8 @@ namespace MyInvoicingApp
             services.AddSingleton<IDocumentNumberModelManager, DocumentNumberModelManager>();
             services.AddScoped<IPdfManager, PdfManager>();
             services.AddScoped<IExcelManager, ExcelManager>();
+            services.AddScoped<IDataAccessManager, DataAccessManager>();
+            services.AddScoped<IModuleAccessManager, ModuleAccessManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

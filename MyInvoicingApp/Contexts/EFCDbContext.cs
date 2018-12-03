@@ -22,6 +22,10 @@ namespace MyInvoicingApp.Contexts
 
         //public DbSet<ModuleAccess> ModuleAccesses { get; set; }
 
+        public DbSet<RoleModuleAccess> RoleModuleAccesses { get; set; }
+
+        public DbSet<UserModuleAccess> UserModuleAccesses { get; set; }
+
         public EFCDbContext(DbContextOptions<EFCDbContext> options) : base(options)
         {
         }
@@ -85,14 +89,42 @@ namespace MyInvoicingApp.Contexts
                 .WithMany(x => x.CreatedCustomers)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            //builder.Entity<Customer>()
-            //    .HasOne(x => x.LastModifiedBy)
-            //    .WithMany(x => x.LastModifiedCustomers);
-
             builder.Entity<DocumentNumber>()
                 .HasOne(x => x.DocumentSequence)
                 .WithMany(x => x.DocumentNumbers)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<UserModuleAccess>()
+                .HasOne(x => x.CreatedBy)
+                .WithMany(x => x.CreatedUserModuleAccesses)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<UserModuleAccess>()
+                .HasOne(x => x.User)
+                .WithMany(x => x.UserModuleAccesses)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Invoice>()
+                .HasOne(x => x.Owner)
+                .WithMany(x => x.OwnedInvoices)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Invoice>()
+                .HasOne(x => x.CreatedBy)
+                .WithMany(x => x.CreatedInvoices);
+
+            //primary key for ModuleAccesses
+            //builder.Entity<ModuleAccess>()
+            //    .HasIndex(x => new {x.RoleId, x.UserId, x.Module})
+            //    .IsUnique();
+            //.HasKey(x => new { x.RoleId, x.UserId, x.Module });
+
+            builder.Entity<RoleModuleAccess>()
+                .HasKey(x => new  { x.AccessorId, x.Module });
+
+            builder.Entity<UserModuleAccess>()
+                .HasKey(x => new { x.AccessorId, x.Module });
+
         }
     }
 }

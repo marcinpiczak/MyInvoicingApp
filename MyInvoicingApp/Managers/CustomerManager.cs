@@ -17,12 +17,14 @@ namespace MyInvoicingApp.Managers
         protected EFCDbContext Context { get; set; }
         protected UserManager<ApplicationUser> UserManager { get; set; }
         protected IDateHelper DateHelper { get; set; }
+        protected IDataAccessManager DataAccessManager { get; set; }
 
-        public CustomerManager(EFCDbContext context, UserManager<ApplicationUser> userManager, IDateHelper dateHelper)
+        public CustomerManager(EFCDbContext context, UserManager<ApplicationUser> userManager, IDateHelper dateHelper, IDataAccessManager dataAccessManager)
         {
             Context = context;
             UserManager = userManager;
             DateHelper = dateHelper;
+            DataAccessManager = dataAccessManager;
         }
 
         /// <summary>
@@ -66,6 +68,14 @@ namespace MyInvoicingApp.Managers
                 .Select(x => new CustomerViewModel(x));
 
             return customers;
+        }
+
+        public IEnumerable<CustomerViewModel> GetCustomerViewModelsForUser(ApplicationUser user)
+        {
+            var models = GetCustomerViewModels()
+                .Where(x => DataAccessManager.CanView(x, user));
+
+            return models;
         }
 
         /// <summary>
@@ -123,6 +133,18 @@ namespace MyInvoicingApp.Managers
             }
 
             var model = new CustomerViewModel(customer);
+
+            return model;
+        }
+
+        public CustomerViewModel GetCustomerViewModelByIdForUser(string id, ApplicationUser user)
+        {
+            var model = GetCustomerViewModelById(id);
+
+            if (!DataAccessManager.CanView(model, user))
+            {
+                throw new InvalidOperationException("Nie masz uprawnień do przeglądania tego klienta");
+            }
 
             return model;
         }
@@ -187,6 +209,11 @@ namespace MyInvoicingApp.Managers
 
             var customer = GetCustomerById(model.Id, IncludeLevel.None);
 
+            if (!DataAccessManager.CanEdit(new CustomerViewModel(customer), modifiedBy))
+            {
+                throw new InvalidOperationException("Nie masz uprawnień do edycji tego klienta");
+            }
+
             customer.Name = model.Name;
             customer.Description = model.Description;
             customer.City = model.City;
@@ -248,6 +275,30 @@ namespace MyInvoicingApp.Managers
                 Name = customer.Name,
                 Status = customer.Status.ToString()
             };
+        }
+
+        public CustomerReturnResult Close(string id, ApplicationUser modifiedBy)
+        {
+            var model = GetCustomerViewModelById(id);
+
+            if (!DataAccessManager.CanClose(model, modifiedBy))
+            {
+                throw new InvalidOperationException("Nie masz uprawnień do zamykania tego klienta");
+            }
+
+            return ChangeStatus(id, Status.Closed, modifiedBy);
+        }
+
+        public CustomerReturnResult Open(string id, ApplicationUser modifiedBy)
+        {
+            var model = GetCustomerViewModelById(id);
+
+            if (!DataAccessManager.CanOpen(model, modifiedBy))
+            {
+                throw new InvalidOperationException("Nie masz uprawnień do otwierania tego klienta");
+            }
+
+            return ChangeStatus(id, Status.Opened, modifiedBy);
         }
     }
 }

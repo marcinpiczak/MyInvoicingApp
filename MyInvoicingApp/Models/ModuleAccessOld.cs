@@ -1,21 +1,24 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MyInvoicingApp.Models
 {
-    public class ModuleAccess : BaseTable
+    public class ModuleAccessOld : BaseTable
     {
         [Required]
-        public AccessorType AccessorType { get; set; }
+        public string RoleId { get; set; }
 
-        [Required]
-        [MaxLength(450)]
-        public string AccessorId { get; set; }
+        [ForeignKey("RoleId")]
+        public ApplicationRole Role { get; set; }
+
+        public string UserId { get; set; }
+
+        [ForeignKey("UserId")]
+        public ApplicationUser User { get; set; }
 
         [Required]
         public Controllers Module { get; set; }
-
-        [Required]
-        public bool Index { get; set; }
 
         [Required]
         public bool Add { get; set; }
@@ -43,5 +46,10 @@ namespace MyInvoicingApp.Models
 
         [Required]
         public bool Remove { get; set; }
+
+        public ModuleAccessOld()
+        {
+            Id = Guid.NewGuid().ToString();
+        }
     }
 }

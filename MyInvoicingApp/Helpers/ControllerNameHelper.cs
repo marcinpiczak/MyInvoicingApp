@@ -11,6 +11,7 @@ namespace MyInvoicingApp.Helpers
             {"Budget", "Budżety" },
             {"Customer", "Klienci" },
             {"Role", "Stanowiska" },
+            {"ModuleAccess", "Uprawnienia do modułów" },
             {"Account", "Konta" }
 
         };
@@ -24,7 +25,8 @@ namespace MyInvoicingApp.Helpers
             {"AddLine", "Dodawania linii" },
             {"AsignUser", "Przypisanie użytkownika" },
             {"Login", "Logowanie" },
-            {"Register", "Rejesracja" }
+            {"Register", "Rejesracja" },
+            {"ChangeRoleAccess", "Zmiana uprawnień dla stanowisk" },
         };
 
         /// <summary>

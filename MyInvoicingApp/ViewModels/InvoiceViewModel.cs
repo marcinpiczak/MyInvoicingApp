@@ -53,6 +53,9 @@ namespace MyInvoicingApp.ViewModels
         [DisplayName("Domyślny budżet")]
         public BudgetViewModel Budget { get; set; }
 
+        [DisplayName("Właściciel")]
+        public ApplicationUser Owner { get; set; }
+
         public IEnumerable<SelectListItem> CustomerItemList { get; set; }
 
         public IEnumerable<SelectListItem> BudgetItemList { get; set; }
@@ -91,6 +94,7 @@ namespace MyInvoicingApp.ViewModels
             Currency = model.Currency;
             Budget = model.Budget == null ? new BudgetViewModel() : new BudgetViewModel(model.Budget);
             BudgetId = model.BudgetId;
+            Owner = model.Owner;
         }
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Mvc;
+using MyInvoicingApp.Interfaces;
 using MyInvoicingApp.Models;
 
 namespace MyInvoicingApp.ViewModels
@@ -33,6 +33,14 @@ namespace MyInvoicingApp.ViewModels
 
         [DisplayName("Właściciel")]
         public ApplicationUser Owner { get; set; }
+
+        //public bool CanView { get; set; }
+
+        //public bool CanEdit { get; set; }
+
+        //public bool CanClose { get; set; }
+
+        //public bool CanOpen { get; set; }
 
         public ICollection<InvoiceLineViewModel> InvoiceLines { get; set; }
 

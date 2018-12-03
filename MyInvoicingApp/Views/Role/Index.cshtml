@@ -45,6 +45,7 @@
                         <a asp-controller="Role" asp-action="AsignUser" asp-route-Id="@item.Id" title="Przypisanie użytkownka" class="btn-sm btn-default"><i class="fas fa-plus fa-lg"></i></a>
                         <a asp-controller="Role" asp-action="Edit" asp-route-id="@item.Id" title="Edycja" class="btn-sm btn-default"><i class="fas fa-pen fa-lg"></i></a>
                         <a asp-controller="Role" asp-action="Close" asp-route-id="@item.Id" title="Zamknięcie" class="btn-sm btn-default"><i class="fas fa-times fa-lg"></i></a>
+                        <a asp-controller="ModuleAccess" asp-action="ChangeRoleAccess" asp-route-roleId="@item.Id" title="Zmiana uprawnień" class="btn-sm btn-default"><i class="fas fa-key fa-lg"></i></a>
                     }
                 </td>
             </tr>

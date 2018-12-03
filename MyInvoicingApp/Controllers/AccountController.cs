@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MyInvoicingApp.Models;
@@ -16,6 +17,12 @@ namespace MyInvoicingApp.Controllers
             UserManager = userManager;
             SignInManager = signInManager;
         }
+
+        //[Authorize]
+        //public IActionResult Index()
+        //{
+        //    return RedirectToAction("Index", "Home");
+        //}
 
         [HttpGet]
         public IActionResult Register()
@@ -85,5 +92,7 @@ namespace MyInvoicingApp.Controllers
 
             return RedirectToAction("Index", "Home");
         }
+
+
     }
 }

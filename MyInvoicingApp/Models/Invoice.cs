@@ -39,6 +39,12 @@ namespace MyInvoicingApp.Models
         [ForeignKey("BudgetId")]
         public Budget Budget { get; set; }
 
+        [Required]
+        public string OwnerId { get; set; }
+
+        [ForeignKey("OwnerId")]
+        public ApplicationUser Owner { get; set; }
+
         public ICollection<InvoiceLine> InvoiceLines { get; set; }
 
         public Invoice()

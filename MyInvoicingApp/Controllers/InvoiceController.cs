@@ -1,10 +1,9 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using MyInvoicingApp.Helpers;
 using MyInvoicingApp.Interfaces;
 using MyInvoicingApp.Models;
 using MyInvoicingApp.ViewModels;
@@ -20,20 +19,30 @@ namespace MyInvoicingApp.Controllers
         protected IInvoiceManager InvoiceManager { get; set; }
         protected IAttachmentManager AttachmentManager { get; set; }
         protected IDateHelper DateHelper { get; set; }
+        protected IModuleAccessManager ModuleAccessManager { get; set; }
 
-        public InvoiceController(UserManager<ApplicationUser> userManager, IInvoiceManager invoiceManager, IDateHelper dateHelper, IAttachmentManager attachmentManager)
+        public InvoiceController(UserManager<ApplicationUser> userManager, IInvoiceManager invoiceManager, IDateHelper dateHelper, IAttachmentManager attachmentManager, IModuleAccessManager moduleAccessManager)
         {
             UserManager = userManager;
             InvoiceManager = invoiceManager;
             DateHelper = dateHelper;
             AttachmentManager = attachmentManager;
+            ModuleAccessManager = moduleAccessManager;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             try
             {
-                var invoiceList = InvoiceManager.GetInvoiceViewModels().OrderByDescending(x => x.CreatedDate);
+                var access = await ModuleAccessManager.CheckModuleActionAccessAsync(Models.Controllers.Invoice, Actions.Index, CurrentUser);
+
+                if (!access)
+                {
+                    throw new UnauthorizedAccessException("Nie posiadasz uprawnień do akcji Lista w module Faktury. Skontaktuj się z administratorem");
+                }
+
+                var invoiceList = InvoiceManager.GetInvoiceViewModelsForUser(CurrentUser)
+                    .OrderByDescending(x => x.CreatedDate);
 
                 return View(invoiceList);
             }
@@ -49,11 +58,18 @@ namespace MyInvoicingApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Add()
+        public async Task<IActionResult> Add()
         {
             try
             {
-                var model = InvoiceManager.GetDefaultInvoiceViewModelForAdd("PLN");
+                var access = await ModuleAccessManager.CheckModuleActionAccessAsync(Models.Controllers.Invoice, Actions.Add, CurrentUser);
+
+                if (!access)
+                {
+                    throw new UnauthorizedAccessException("Nie posiadasz uprawnień do akcji Dodawania w module Faktury. Skontaktuj się z administratorem");
+                }
+
+                var model = InvoiceManager.GetDefaultInvoiceViewModelForAddForUser(CurrentUser, "PLN");
             
                 return View(model);
             }
@@ -62,17 +78,24 @@ namespace MyInvoicingApp.Controllers
                 //Console.WriteLine(e);
                 //throw;
                 var innerMessage = e.InnerException == null ? "" : $": {e.InnerException.Message}";
-                TempData["Error"] = $"Wystąpił problem podczas pobierania domyslnych wartości dla faktury: {e.Message}{innerMessage}";
+                TempData["Error"] = $"Wystąpił problem podczas dodawania nowej faktury: {e.Message}{innerMessage}";
             }
 
             return RedirectToAction("Index");
         }
 
         [HttpPost]
-        public IActionResult Add(InvoiceViewModel model)
+        public async Task<IActionResult> Add(InvoiceViewModel model)
         {
             try
             {
+                var access = await ModuleAccessManager.CheckModuleActionAccessAsync(Models.Controllers.Invoice, Actions.Add, CurrentUser);
+
+                if (!access)
+                {
+                    throw new UnauthorizedAccessException("Nie posiadasz uprawnień do akcji Dodawania w module Faktury. Skontaktuj się z administratorem");
+                }
+
                 if (ModelState.IsValid)
                 {
                     var result = InvoiceManager.Add(model, CurrentUser);
@@ -94,10 +117,17 @@ namespace MyInvoicingApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddJson(InvoiceViewModel model)
+        public async Task<IActionResult> AddJson(InvoiceViewModel model)
         {
             try
             {
+                var access = await ModuleAccessManager.CheckModuleActionAccessAsync(Models.Controllers.Invoice, Actions.Add, CurrentUser);
+
+                if (!access)
+                {
+                    throw new UnauthorizedAccessException("Nie posiadasz uprawnień do akcji Dodawania w module Faktury. Skontaktuj się z administratorem");
+                }
+
                 if (ModelState.IsValid)
                 {
                     var result = InvoiceManager.Add(model, CurrentUser);
@@ -126,11 +156,18 @@ namespace MyInvoicingApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult AddLine(string invoiceId)
+        public async Task<IActionResult> AddLine(string invoiceId)
         {
             try
             {
-                var model = InvoiceManager.GetInvoiceViewModelById(invoiceId);
+                var access = await ModuleAccessManager.CheckModuleActionAccessAsync(Models.Controllers.Invoice, Actions.Add, CurrentUser);
+
+                if (!access)
+                {
+                    throw new UnauthorizedAccessException("Nie posiadasz uprawnień do akcji Dodawania w module Faktury. Skontaktuj się z administratorem");
+                }
+
+                var model = InvoiceManager.GetInvoiceViewModelByIdForUser(invoiceId, CurrentUser);
                 return View(model);
             }
             catch (Exception e)
@@ -145,10 +182,17 @@ namespace MyInvoicingApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddLine(InvoiceViewModel model)
+        public async Task<IActionResult> AddLine(InvoiceViewModel model)
         {
             try
             {
+                var access = await ModuleAccessManager.CheckModuleActionAccessAsync(Models.Controllers.Invoice, Actions.Add, CurrentUser);
+
+                if (!access)
+                {
+                    throw new UnauthorizedAccessException("Nie posiadasz uprawnień do akcji Dodawania w module Faktury. Skontaktuj się z administratorem");
+                }
+
                 if (ModelState.IsValid)
                 {
                     var result = InvoiceManager.AddLine(model.InvoiceLine, CurrentUser, false, true);
@@ -160,7 +204,7 @@ namespace MyInvoicingApp.Controllers
 
                 var line = model.InvoiceLine;
 
-                model = InvoiceManager.GetInvoiceViewModelById(line.InvoiceId);
+                model = InvoiceManager.GetInvoiceViewModelByIdForUser(line.InvoiceId, CurrentUser);
                 model.InvoiceLine = line;
 
                 return View(model);
@@ -175,10 +219,17 @@ namespace MyInvoicingApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddLineJson(InvoiceLineViewModel model)
+        public async Task<IActionResult> AddLineJson(InvoiceLineViewModel model)
         {
             try
             {
+                var access = await ModuleAccessManager.CheckModuleActionAccessAsync(Models.Controllers.Invoice, Actions.Add, CurrentUser);
+
+                if (!access)
+                {
+                    throw new UnauthorizedAccessException("Nie posiadasz uprawnień do akcji Dodawania w module Faktury. Skontaktuj się z administratorem");
+                }
+
                 if (ModelState.IsValid)
                 {
                     var result = InvoiceManager.AddLine(model, CurrentUser, false, true);
@@ -206,10 +257,17 @@ namespace MyInvoicingApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Edit(string id)
+        public async Task<IActionResult> Edit(string id)
         {
             try
             {
+                var access = await ModuleAccessManager.CheckModuleActionAccessAsync(Models.Controllers.Invoice, Actions.Edit, CurrentUser);
+
+                if (!access)
+                {
+                    throw new UnauthorizedAccessException("Nie posiadasz uprawnień do akcji Edycji w module Faktury. Skontaktuj się z administratorem");
+                }
+
                 var invoice = InvoiceManager.GetInvoiceViewModelById(id);
                 invoice.InvoiceLines = InvoiceManager.GetInvoiceLineViewModels(id);
                 invoice.InvoiceLine = new InvoiceLineViewModel();
@@ -233,10 +291,17 @@ namespace MyInvoicingApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult EditJson(InvoiceViewModel model)
+        public async Task<IActionResult> EditJson(InvoiceViewModel model)
         {
             try
             {
+                var access = await ModuleAccessManager.CheckModuleActionAccessAsync(Models.Controllers.Invoice, Actions.Edit, CurrentUser);
+
+                if (!access)
+                {
+                    throw new UnauthorizedAccessException("Nie posiadasz uprawnień do akcji Edycji w module Faktury. Skontaktuj się z administratorem");
+                }
+
                 if (ModelState.IsValid)
                 {
                     var result = InvoiceManager.Edit(model, CurrentUser);
@@ -265,10 +330,17 @@ namespace MyInvoicingApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult EditLineJson(InvoiceLineViewModel model)
+        public async Task<IActionResult> EditLineJson(InvoiceLineViewModel model)
         {
             try
             {
+                var access = await ModuleAccessManager.CheckModuleActionAccessAsync(Models.Controllers.Invoice, Actions.Edit, CurrentUser);
+
+                if (!access)
+                {
+                    throw new UnauthorizedAccessException("Nie posiadasz uprawnień do akcji Edycji w module Faktury. Skontaktuj się z administratorem");
+                }
+
                 if (ModelState.IsValid)
                 {
                     var result = InvoiceManager.EditLine(model, CurrentUser, false, true);
@@ -297,11 +369,18 @@ namespace MyInvoicingApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult CancelLineJson(string lineId, string invoiceId)
+        public async Task<IActionResult> CancelLineJson(string lineId, string invoiceId)
         {
             try
             {
-                InvoiceManager.ChangeLineStatus(lineId, invoiceId, Status.Cancelled, CurrentUser);
+                var access = await ModuleAccessManager.CheckModuleActionAccessAsync(Models.Controllers.Invoice, Actions.Cancel, CurrentUser);
+
+                if (!access)
+                {
+                    throw new UnauthorizedAccessException("Nie posiadasz uprawnień do akcji Anulowania w module Faktury. Skontaktuj się z administratorem");
+                }
+
+                InvoiceManager.CancelInvoiceLine(lineId, invoiceId, CurrentUser);
 
                 return Json(new
                 {
@@ -322,10 +401,17 @@ namespace MyInvoicingApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Details(string id)
+        public async Task<IActionResult> Details(string id)
         {
             try
             {
+                var access = await ModuleAccessManager.CheckModuleActionAccessAsync(Models.Controllers.Invoice, Actions.Details, CurrentUser);
+
+                if (!access)
+                {
+                    throw new UnauthorizedAccessException("Nie posiadasz uprawnień do akcji wyświetlania Szczegółów w module Faktury. Skontaktuj się z administratorem");
+                }
+
                 var invoice = InvoiceManager.GetInvoiceViewModelById(id);
                 invoice.InvoiceLines = InvoiceManager.GetInvoiceLineViewModels(id);
                 invoice.Attachments = AttachmentManager.GetAttachmentViewModelsForDocument(DocumentType.Invoice, id);
@@ -343,11 +429,18 @@ namespace MyInvoicingApp.Controllers
             return RedirectToAction("Index");
         }
 
-        public IActionResult Cancel(string invoiceId)
+        public async Task<IActionResult> Cancel(string invoiceId)
         {
             try
             {
-                var result = InvoiceManager.ChangeStatus(invoiceId, Status.Cancelled, CurrentUser);
+                var access = await ModuleAccessManager.CheckModuleActionAccessAsync(Models.Controllers.Invoice, Actions.Cancel, CurrentUser);
+
+                if (!access)
+                {
+                    throw new UnauthorizedAccessException("Nie posiadasz uprawnień do akcji Anulowania w module Faktury. Skontaktuj się z administratorem");
+                }
+
+                var result = InvoiceManager.CancelInvoice(invoiceId, CurrentUser);
 
                 TempData["Success"] = $"Faktura <b>{result.InvoiceNumber}</b> została anulowana";
             }

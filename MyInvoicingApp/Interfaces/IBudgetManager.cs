@@ -20,6 +20,8 @@ namespace MyInvoicingApp.Interfaces
         /// <returns>collection with BudgetViewModels</returns>
         IEnumerable<BudgetViewModel> GetBudgetViewModels();
 
+        IEnumerable<BudgetViewModel> GetBudgetViewModelsForUser(ApplicationUser user);
+
         /// <summary>
         /// Gets Budget for given Id or throws exceptions if budget not found.
         /// </summary>
@@ -34,6 +36,8 @@ namespace MyInvoicingApp.Interfaces
         /// <param name="budgetId">Budget id</param>
         /// <returns>BudgetViewModel based on budget for given Id</returns>
         BudgetViewModel GetBudgetViewModelById(string budgetId);
+
+        BudgetViewModel GetBudgetViewModelByIdForUser(string budgetId, ApplicationUser user);
 
         /// <summary>
         /// Add Budget from given BudgetViewModel.
@@ -67,6 +71,10 @@ namespace MyInvoicingApp.Interfaces
         /// <returns>BudgetReturnResult with id, budget number and status</returns>
         BudgetReturnResult ChangeStatus(string budgetId, Status newStatus, ApplicationUser modifiedBy);
 
+        BudgetReturnResult Close(string budgetId, ApplicationUser modifiedBy);
+
+        BudgetReturnResult Open(string budgetId, ApplicationUser modifiedBy);
+
         /// <summary>
         /// Updates budget invoiced amount with given amount and/or recalculate invoiced amount with total of base netto amount from invoices asigned to budget
         /// </summary>
@@ -74,13 +82,5 @@ namespace MyInvoicingApp.Interfaces
         /// <param name="invoiceAmount">invoice amount that need to update budgets invoiced amount</param>
         /// <param name="recalculateInvoicedAmount">indicates if recalculation of budget invoiced amount should to be done</param>
         void UpdateBudgetInvoicedAmount(string budgetId, decimal invoiceAmount, bool recalculateInvoicedAmount);
-
-        /// <summary>
-        /// Simple checking if budget can be modified by user
-        /// </summary>
-        /// <param name="createdBy">ApplicationUser that created Budget</param>
-        /// <param name="modifiedBy">ApplicationUser that modifies Budget</param>
-        /// <returns></returns>
-        bool CanEdit(ApplicationUser createdBy, ApplicationUser modifiedBy);
     }
 }

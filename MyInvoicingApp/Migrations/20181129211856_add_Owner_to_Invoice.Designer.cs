@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyInvoicingApp.Contexts;
 
 namespace MyInvoicingApp.Migrations
 {
     [DbContext(typeof(EFCDbContext))]
-    partial class EFCDbContextModelSnapshot : ModelSnapshot
+    [Migration("20181129211856_add_Owner_to_Invoice")]
+    partial class add_Owner_to_Invoice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -456,8 +458,7 @@ namespace MyInvoicingApp.Migrations
 
                     b.Property<DateTime?>("LastModifiedDate");
 
-                    b.Property<string>("OwnerId")
-                        .IsRequired();
+                    b.Property<string>("OwnerId");
 
                     b.Property<DateTime>("PaymentDueDate");
 
@@ -802,7 +803,7 @@ namespace MyInvoicingApp.Migrations
                         .HasForeignKey("BudgetId");
 
                     b.HasOne("MyInvoicingApp.Models.ApplicationUser", "CreatedBy")
-                        .WithMany("CreatedInvoices")
+                        .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
@@ -816,9 +817,8 @@ namespace MyInvoicingApp.Migrations
                         .HasForeignKey("LastModifiedById");
 
                     b.HasOne("MyInvoicingApp.Models.ApplicationUser", "Owner")
-                        .WithMany("OwnedInvoices")
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .WithMany()
+                        .HasForeignKey("OwnerId");
                 });
 
             modelBuilder.Entity("MyInvoicingApp.Models.InvoiceLine", b =>

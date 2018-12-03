@@ -20,6 +20,8 @@ namespace MyInvoicingApp.Interfaces
         /// <returns>collection with CustomerViewModels</returns>
         IEnumerable<CustomerViewModel> GetCustomerViewModels();
 
+        IEnumerable<CustomerViewModel> GetCustomerViewModelsForUser(ApplicationUser user);
+
         /// <summary>
         /// Gets Customer for given Id or throws exceptions if budget not found.
         /// </summary>
@@ -34,6 +36,8 @@ namespace MyInvoicingApp.Interfaces
         /// <param name="customerId">Customer id</param>
         /// <returns>BudgetViewModel based on customer for given Id</returns>
         CustomerViewModel GetCustomerViewModelById(string customerId);
+
+        CustomerViewModel GetCustomerViewModelByIdForUser(string customerId, ApplicationUser user);
 
         /// <summary>
         /// Add Customer from given CustomerViewModel.
@@ -59,5 +63,9 @@ namespace MyInvoicingApp.Interfaces
         /// <param name="modifiedBy">ApplicationUser that is modifying customer</param>
         /// <returns>CustomerReturnResult with id, name and status</returns>
         CustomerReturnResult ChangeStatus(string customerId, Status newStatus, ApplicationUser modifiedBy);
+
+        CustomerReturnResult Close(string customerId, ApplicationUser modifiedBy);
+
+        CustomerReturnResult Open(string customerId, ApplicationUser modifiedBy);
     }
 }

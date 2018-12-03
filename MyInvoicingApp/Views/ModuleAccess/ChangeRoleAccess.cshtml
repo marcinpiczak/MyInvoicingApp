@@ -1,0 +1,100 @@
+﻿@model IEnumerable<MyInvoicingApp.ViewModels.ModuleAccessViewModel>
+
+<h2 class="text-center">Uprawnienia do modułów dla roli: <b></b></h2>
+
+</hr>
+<div class="row">
+    <div class="col-md-10 border rounded mx-auto">
+        <table id="module-access-table" class="table no-data-table" data-roleId="@Model.FirstOrDefault()?.AccessorId">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Module)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Index)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Add)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Edit)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Close)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Open)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Cancel)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Send)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Details)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Approve)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Remove)
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr data-id="@item.Id">
+                        <td class="text-center module-access-module" data-module="@((int)item.Module)">
+                            @Html.DisplayFor(modelItem => item.Module)
+                        </td>
+                        <td class="text-center">
+                            <input asp-for="@item.Index" class="module-access-index"/>
+                        </td>
+                        <td class="text-center">
+                            <input asp-for="@item.Add" class="module-access-add" />
+                        </td>
+                        <td class="text-center">
+                            <input asp-for="@item.Edit" class="module-access-edit" />
+                        </td>
+                        <td class="text-center">
+                            <input asp-for="@item.Close" class="module-access-close" />
+                        </td>
+                        <td class="text-center">
+                            <input asp-for="@item.Open" class="module-access-open" />
+                        </td>
+                        <td class="text-center">
+                            <input asp-for="@item.Cancel" class="module-access-cancel" />
+                        </td>
+                        <td class="text-center">
+                            <input asp-for="@item.Send" class="module-access-send" />
+                        </td>
+                        <td class="text-center">
+                            <input asp-for="@item.Details" class="module-access-details" />
+                        </td>
+                        <td class="text-center">
+                            <input asp-for="@item.Approve" class="module-access-approve" />
+                        </td>
+                        <td class="text-center">
+                            <input asp-for="@item.Remove" class="module-access-remove" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div class="form-group">
+            <div class="btn-group special" role="group">
+                <a href="#" id="save-module-access-btn" class="btn btn-success" >Zapisz</a>
+                <a asp-action="Index" asp-controller="Role" class="btn btn-outline-primary">Anuluj</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        <script src="~/js/ModuleAccess/ModuleAccessChange.js" asp-append-version="true"></script>
+    }
+}

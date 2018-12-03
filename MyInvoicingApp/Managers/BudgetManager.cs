@@ -4,7 +4,6 @@ using System.Linq;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MyInvoicingApp.Contexts;
-using MyInvoicingApp.Helpers;
 using MyInvoicingApp.Interfaces;
 using MyInvoicingApp.Models;
 using MyInvoicingApp.ReturnResults;
@@ -18,13 +17,16 @@ namespace MyInvoicingApp.Managers
         protected IDocumentNumberingManager DocumentNumberingManager { get; set; }
         protected UserManager<ApplicationUser> UserManager { get; set; }
         protected IDateHelper DateHelper { get; set; }
+        protected IDataAccessManager DataAccessManager { get; set; }
 
-        public BudgetManager(EFCDbContext context, UserManager<ApplicationUser> userManager, IDateHelper dateHelper, IDocumentNumberingManager documentNumberingManager)
+        public BudgetManager(EFCDbContext context, UserManager<ApplicationUser> userManager, IDateHelper dateHelper, IDocumentNumberingManager documentNumberingManager/*, IDocumentAccessManager documentAccessManager*/, IDataAccessManager dataAccessManager)
         {
             Context = context;
             DocumentNumberingManager = documentNumberingManager;
             UserManager = userManager;
             DateHelper = dateHelper;
+            //DocumentAccessManager = documentAccessManager;
+            DataAccessManager = dataAccessManager;
         }
 
         /// <summary>
@@ -67,6 +69,14 @@ namespace MyInvoicingApp.Managers
         {
             var models = GetBudgets(IncludeLevel.Level2)
                 .Select(x => new BudgetViewModel(x));
+
+            return models;
+        }
+
+        public IEnumerable<BudgetViewModel> GetBudgetViewModelsForUser(ApplicationUser user)
+        {
+            var models = GetBudgetViewModels()
+                .Where(x => DataAccessManager.CanView(x, user));
 
             return models;
         }
@@ -128,6 +138,18 @@ namespace MyInvoicingApp.Managers
             return model;
         }
 
+        public BudgetViewModel GetBudgetViewModelByIdForUser(string budgetId, ApplicationUser user)
+        {
+            var model = GetBudgetViewModelById(budgetId);
+
+            if (!DataAccessManager.CanView(model, user))
+            {
+                throw new InvalidOperationException("Nie masz uprawnień do przeglądania tego budżetu");
+            }
+
+            return model;
+        }
+
         /// <summary>
         /// Add Budget from given BudgetViewModel.
         /// </summary>
@@ -138,7 +160,7 @@ namespace MyInvoicingApp.Managers
         {
             if (model == null || createdBy == null)
             {
-                throw new ArgumentNullException(nameof(model), "Nieprawidłowe parametry");
+                throw new ArgumentNullException(nameof(BudgetViewModel), "Nieprawidłowe parametry");
             }
 
             var now = DateHelper.GetCurrentDatetime();
@@ -148,7 +170,7 @@ namespace MyInvoicingApp.Managers
 
             if (budget != null)
             {
-                throw new ArgumentException($"Budżet o podanym numerze {documentNumber} już istnieje. Spróbuj ponownie a jeżeli problem będzie się powtarzał przestaw ręcznie numerację", nameof(budget));
+                throw new ArgumentException($"Budżet o podanym numerze {documentNumber} już istnieje. Spróbuj ponownie a jeżeli problem będzie się powtarzał przestaw ręcznie numerację", nameof(Budget));
             }
 
             var newBudget = new Budget()
@@ -192,11 +214,11 @@ namespace MyInvoicingApp.Managers
                 throw new ArgumentNullException("model", "Nieprawidłowe parametry");
             }
 
-            var budget = GetBudgetById(model.Id, IncludeLevel.Level1);
+            var budget = GetBudgetById(model.Id, IncludeLevel.Level2);
 
-            if (!CanEdit(budget.CreatedBy, modifiedBy))
+            if (!DataAccessManager.CanEdit(new BudgetViewModel(budget), modifiedBy))
             {
-                throw new InvalidOperationException("Nie możesz edytować czyjegoś Budżetu");
+                throw new InvalidOperationException("Nie masz uprawnień do edycji tego budżetu");
             }
 
             if (model.CommitedAmount != budget.CommitedAmount)
@@ -207,7 +229,7 @@ namespace MyInvoicingApp.Managers
                 }
                 else
                 {
-                    throw new Exception("Wprowadzona nowa wartość budżetu" + (model.CommitedAmount < 0 ? "jest ujemna" : "nie pokrywa wartości wszystkich faktur przypisanych do budżetu"));
+                    throw new Exception("Wprowadzona nowa wartość budżetu " + (model.CommitedAmount < 0 ? "jest ujemna" : "nie pokrywa wartości wszystkich faktur przypisanych do budżetu"));
                 }
             }
 
@@ -293,6 +315,30 @@ namespace MyInvoicingApp.Managers
             };
         }
 
+        public BudgetReturnResult Close(string budgetId, ApplicationUser modifiedBy)
+        {
+            var model = GetBudgetViewModelById(budgetId);
+
+            if (!DataAccessManager.CanClose(model, modifiedBy))
+            {
+                throw new InvalidOperationException("Nie masz uprawnień do zamykania tego budżetu");
+            }
+
+            return ChangeStatus(budgetId, Status.Closed, modifiedBy);
+        }
+
+        public BudgetReturnResult Open(string budgetId, ApplicationUser modifiedBy)
+        {
+            var model = GetBudgetViewModelById(budgetId);
+
+            if (!DataAccessManager.CanOpen(model, modifiedBy))
+            {
+                throw new InvalidOperationException("Nie masz uprawnień do otwierania tego budżetu");
+            }
+
+            return ChangeStatus(budgetId, Status.Opened, modifiedBy);
+        }
+
         /// <summary>
         /// Updates budget invoiced amount with given amount and/or recalculate invoiced amount with total of base netto amount from invoices asigned to budget
         /// </summary>
@@ -314,8 +360,8 @@ namespace MyInvoicingApp.Managers
             {
                 throw new InvalidOperationException($"Alokacja kwoty faktury spodouje przekroczenie wartości budżetu. " +
                                                     $"Wartość faktury: {invoiceAmount}, " +
-                                                    $"wartość dotychczas zaalokowanych faktur {budget.InvoicedAmount}, " +
-                                                    $"wartość budżetu {budget.CommitedAmount}");
+                                                    $"wartość dotychczas zaalokowanych faktur: {budget.InvoicedAmount}, " +
+                                                    $"wartość budżetu: {budget.CommitedAmount}");
             }
 
             currentInvoicedAmount += invoiceAmount;
@@ -329,22 +375,6 @@ namespace MyInvoicingApp.Managers
             {
                 throw new Exception("Nie zapisano żadnych danych.");
             }
-        }
-
-        /// <summary>
-        /// Simple checking if budget can be modified by user
-        /// </summary>
-        /// <param name="createdBy">ApplicationUser that created Budget</param>
-        /// <param name="modifiedBy">ApplicationUser that modifies Budget</param>
-        /// <returns></returns>
-        public bool CanEdit(ApplicationUser createdBy, ApplicationUser modifiedBy)
-        {
-            if (createdBy.UserName == modifiedBy.UserName || createdBy.Manager.UserName == modifiedBy.UserName)
-            {
-                return true;
-            }
-
-            return false;
         }
     }
 }

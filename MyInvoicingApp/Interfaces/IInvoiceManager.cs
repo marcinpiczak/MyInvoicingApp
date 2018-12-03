@@ -21,6 +21,8 @@ namespace MyInvoicingApp.Interfaces
         /// <returns>collection with InvoiceViewModels</returns>
         IEnumerable<InvoiceViewModel> GetInvoiceViewModels();
 
+        IEnumerable<InvoiceViewModel> GetInvoiceViewModelsForUser(ApplicationUser user);
+
         /// <summary>
         /// Gets Invoice for given Id or throws exceptions if budget not found.
         /// </summary>
@@ -35,6 +37,8 @@ namespace MyInvoicingApp.Interfaces
         /// <param name="invoiceId">Invoice id</param>
         /// <returns>InvoiceViewModel based on invoice for given Id</returns>
         InvoiceViewModel GetInvoiceViewModelById(string invoiceId);
+
+        InvoiceViewModel GetInvoiceViewModelByIdForUser(string invoiceId, ApplicationUser user);
 
         /// <summary>
         /// Add Invoice based on given InvoiceViewModel.
@@ -61,12 +65,16 @@ namespace MyInvoicingApp.Interfaces
         /// <returns>InvoiceReturnResult with id, invoice number and status</returns>
         InvoiceReturnResult ChangeStatus(string invoiceId, Status newStatus, ApplicationUser modifiedBy);
 
+        InvoiceReturnResult CancelInvoice(string invoiceId, ApplicationUser modifiedBy);
+
         /// <summary>
         /// Gets InvoiceViewModel with default values set for Add method
         /// </summary>
         /// <param name="defaultCurrency">Default currency</param>
         /// <returns>InvoiceViewModel with default values set</returns>
         InvoiceViewModel GetDefaultInvoiceViewModelForAdd(string defaultCurrency = "PLN");
+
+        InvoiceViewModel GetDefaultInvoiceViewModelForAddForUser(ApplicationUser user, string defaultCurrency = "PLN");
 
         /// <summary>
         /// Gets collection of Invoice line models for given invoice Id
@@ -120,6 +128,8 @@ namespace MyInvoicingApp.Interfaces
         /// <param name="modifiedBy">ApplicationUser that is modifying invoice line</param>
         /// <returns>InvoiceLineReturnResult with line id, invoice id, line number and status</returns>
         InvoiceLineReturnResult ChangeLineStatus(string lineId, string invoiceId, Status newStatus, ApplicationUser modifiedBy);
+
+        InvoiceLineReturnResult CancelInvoiceLine(string lineId, string invoiceId, ApplicationUser modifiedBy);
 
         /// <summary>
         /// Gets next invoice line number for given invoice id
