@@ -53,8 +53,10 @@ namespace MyInvoicingApp.ViewModels
         [DisplayName("Domyślna metoda płatności")]
         public string DefaultPaymentMethod { get; set; }
 
-        public ICollection<InvoiceViewModel> Invoices { get; set; }
+        public AccessViewModel Accesses { get; set; } = new AccessViewModel();
 
+        public ICollection<InvoiceViewModel> Invoices { get; set; }
+        
         public CustomerViewModel()
         {
         }

@@ -167,6 +167,8 @@ namespace MyInvoicingApp.Interfaces
         /// <returns>collection of InvoiceView models for given customer id</returns>
         IEnumerable<InvoiceViewModel> GetInvoiceViewModelsForCustomer(string customerId);
 
+        IEnumerable<InvoiceViewModel> GetInvoiceViewModelsForCustomerWithAccess(string customerId, ApplicationUser user);
+
         /// <summary>
         /// Gets collection of Invoice line models for given budget id
         /// </summary>
@@ -181,5 +183,7 @@ namespace MyInvoicingApp.Interfaces
         /// <param name="budgetId">budget Id for which invoice lines should be retrieved</param>
         /// <returns>collection of InvoiceLineView models for given customer id</returns>
         IEnumerable<InvoiceLineViewModel> GetInvoiceLineViewModelsForBudget(string budgetId);
+
+        IEnumerable<InvoiceLineViewModel> GetInvoiceLineViewModelsForBudgetWithAccess(string budgetId, ApplicationUser user);
     }
 }

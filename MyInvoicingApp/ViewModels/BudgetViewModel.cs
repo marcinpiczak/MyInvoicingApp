@@ -34,13 +34,7 @@ namespace MyInvoicingApp.ViewModels
         [DisplayName("Właściciel")]
         public ApplicationUser Owner { get; set; }
 
-        //public bool CanView { get; set; }
-
-        //public bool CanEdit { get; set; }
-
-        //public bool CanClose { get; set; }
-
-        //public bool CanOpen { get; set; }
+        public AccessViewModel Accesses { get; set; } = new AccessViewModel();
 
         public ICollection<InvoiceLineViewModel> InvoiceLines { get; set; }
 

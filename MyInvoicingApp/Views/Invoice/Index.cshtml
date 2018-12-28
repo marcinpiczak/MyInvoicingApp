@@ -102,12 +102,21 @@
                     @Html.DisplayFor(modelItem => item.LastModifiedDate)
                 </td>
                 <td>
-                    @if (item.Status != Status.Cancelled)
+                    @if (item.Status != Status.Cancelled && item.Accesses.CanView)
                     {
                         <a asp-controller="Invoice" asp-action="Edit" asp-route-id="@item.Id" title="Edycja" class="btn-sm btn-default"><i class="fas fa-pen fa-lg"></i></a>
                     }
-                    <a asp-controller="Invoice" asp-action="Cancel" asp-route-invoiceId="@item.Id" title="Anulowanie" class="btn-sm btn-default"><i class="fas fa-times fa-lg"></i></a>
-                    <a asp-controller="Invoice" asp-action="Details" asp-route-id="@item.Id" title="Szczegóły" class="btn-sm btn-default"><i class="fas fa-info fa-lg"></i></a>
+                    
+                    @if (item.Accesses.CanCancel)
+                    {
+                        <a asp-controller="Invoice" asp-action="Cancel" asp-route-invoiceId="@item.Id" title="Anulowanie" class="btn-sm btn-default"><i class="fas fa-times fa-lg"></i></a>
+                    }
+                    
+                    @if (item.Accesses.CanView)
+                    {
+                        <a asp-controller="Invoice" asp-action="Details" asp-route-id="@item.Id" title="Szczegóły" class="btn-sm btn-default"><i class="fas fa-info fa-lg"></i></a>
+                    }
+
                     <a asp-controller="Pdf" asp-action="GetInvoicePdf" asp-route-invoiceId="@item.Id" title="PDF" class="btn-sm btn-default"><i class='fas fa-file-pdf fa-lg'></i></a>
                     <a asp-controller="Excel" asp-action="GetInvoiceExcel" asp-route-invoiceId="@item.Id" title="Excel" class="btn-sm btn-default"><i class='fas fa-file-excel fa-lg'></i></a>
                 </td>

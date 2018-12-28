@@ -56,6 +56,8 @@ namespace MyInvoicingApp.ViewModels
         [DisplayName("Właściciel")]
         public ApplicationUser Owner { get; set; }
 
+        public AccessViewModel Accesses { get; set; } = new AccessViewModel();
+
         public IEnumerable<SelectListItem> CustomerItemList { get; set; }
 
         public IEnumerable<SelectListItem> BudgetItemList { get; set; }

@@ -19,7 +19,7 @@ namespace MyInvoicingApp.Controllers
         protected IInvoiceManager InvoiceManager { get; set; }
         protected IModuleAccessManager ModuleAccessManager { get; set; }
 
-        public BudgetController(UserManager<ApplicationUser> userManager, IBudgetManager budgetManager, IInvoiceManager invoiceManager/*, IDocumentAccessManager documentAccessManager*/, IModuleAccessManager moduleAccessManager)
+        public BudgetController(UserManager<ApplicationUser> userManager, IBudgetManager budgetManager, IInvoiceManager invoiceManager, IModuleAccessManager moduleAccessManager)
         {
             UserManager = userManager;
             BudgetManager = budgetManager;
@@ -273,7 +273,7 @@ namespace MyInvoicingApp.Controllers
                 //var model = BudgetManager.GetBudgetViewModelById(id);
                 var model = BudgetManager.GetBudgetViewModelByIdForUser(id, CurrentUser);
 
-                model.InvoiceLines = InvoiceManager.GetInvoiceLineViewModelsForBudget(id).ToList();
+                model.InvoiceLines = InvoiceManager.GetInvoiceLineViewModelsForBudgetWithAccess(id, CurrentUser).ToList();
 
                 return View(model);
             }

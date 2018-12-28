@@ -89,7 +89,8 @@ namespace MyInvoicingApp.Managers
         public IEnumerable<InvoiceViewModel> GetInvoiceViewModelsForUser(ApplicationUser user)
         {
             var models = GetInvoiceViewModels()
-                .Where(x => DataAccessManager.CanView(x, user));
+                .Where(x => DataAccessManager.CanView(x, user))
+                .Select(x => DataAccessManager.GetInvoiceViewModelAccess(x, user));
 
             return models;
         }
@@ -172,6 +173,8 @@ namespace MyInvoicingApp.Managers
             {
                 throw new InvalidOperationException("Nie masz uprawnień do przeglądania tej faktury");
             }
+
+            model = DataAccessManager.GetInvoiceViewModelAccess(model, user);
 
             return model;
         }
@@ -1026,6 +1029,15 @@ namespace MyInvoicingApp.Managers
             return models;
         }
 
+        public IEnumerable<InvoiceViewModel> GetInvoiceViewModelsForCustomerWithAccess(string customerId, ApplicationUser user)
+        {
+            var models = GetInvoicesForCustomer(customerId, IncludeLevel.Level2)
+                .Select(x => new InvoiceViewModel(x))
+                .Select(x => DataAccessManager.GetInvoiceViewModelAccess(x, user));
+
+            return models;
+        }
+
         /// <summary>
         /// Gets collection of Invoice line models for given budget id
         /// </summary>
@@ -1075,6 +1087,15 @@ namespace MyInvoicingApp.Managers
         {
             var models = GetInvoiceLinesForBudget(budgetId, IncludeLevel.Level3)
                 .Select(x => new InvoiceLineViewModel(x));
+
+            return models;
+        }
+
+        public IEnumerable<InvoiceLineViewModel> GetInvoiceLineViewModelsForBudgetWithAccess(string budgetId, ApplicationUser user)
+        {
+            var models = GetInvoiceLinesForBudget(budgetId, IncludeLevel.Level3)
+                .Select(x => new InvoiceLineViewModel(x))
+                .Select(x => DataAccessManager.GetInvoiceLineViewModelAccess(x, user));
 
             return models;
         }

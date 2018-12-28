@@ -73,7 +73,8 @@ namespace MyInvoicingApp.Managers
         public IEnumerable<CustomerViewModel> GetCustomerViewModelsForUser(ApplicationUser user)
         {
             var models = GetCustomerViewModels()
-                .Where(x => DataAccessManager.CanView(x, user));
+                .Where(x => DataAccessManager.CanView(x, user))
+                .Select(x => DataAccessManager.GetCustomerViewModelAccess(x, user));
 
             return models;
         }
@@ -145,6 +146,8 @@ namespace MyInvoicingApp.Managers
             {
                 throw new InvalidOperationException("Nie masz uprawnień do przeglądania tego klienta");
             }
+
+            model = DataAccessManager.GetCustomerViewModelAccess(model, user);
 
             return model;
         }

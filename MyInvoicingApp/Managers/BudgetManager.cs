@@ -19,7 +19,7 @@ namespace MyInvoicingApp.Managers
         protected IDateHelper DateHelper { get; set; }
         protected IDataAccessManager DataAccessManager { get; set; }
 
-        public BudgetManager(EFCDbContext context, UserManager<ApplicationUser> userManager, IDateHelper dateHelper, IDocumentNumberingManager documentNumberingManager/*, IDocumentAccessManager documentAccessManager*/, IDataAccessManager dataAccessManager)
+        public BudgetManager(EFCDbContext context, UserManager<ApplicationUser> userManager, IDateHelper dateHelper, IDocumentNumberingManager documentNumberingManager, IDataAccessManager dataAccessManager)
         {
             Context = context;
             DocumentNumberingManager = documentNumberingManager;
@@ -76,7 +76,8 @@ namespace MyInvoicingApp.Managers
         public IEnumerable<BudgetViewModel> GetBudgetViewModelsForUser(ApplicationUser user)
         {
             var models = GetBudgetViewModels()
-                .Where(x => DataAccessManager.CanView(x, user));
+                .Where(x => DataAccessManager.CanView(x, user))
+                .Select(x => DataAccessManager.GetBudgetViewModelAccess(x, user));
 
             return models;
         }
@@ -146,6 +147,8 @@ namespace MyInvoicingApp.Managers
             {
                 throw new InvalidOperationException("Nie masz uprawnień do przeglądania tego budżetu");
             }
+
+            model = DataAccessManager.GetBudgetViewModelAccess(model, user);
 
             return model;
         }

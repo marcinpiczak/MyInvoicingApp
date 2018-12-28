@@ -412,7 +412,7 @@ namespace MyInvoicingApp.Controllers
                     throw new UnauthorizedAccessException("Nie posiadasz uprawnień do akcji wyświetlania Szczegółów w module Faktury. Skontaktuj się z administratorem");
                 }
 
-                var invoice = InvoiceManager.GetInvoiceViewModelById(id);
+                var invoice = InvoiceManager.GetInvoiceViewModelByIdForUser(id, CurrentUser);
                 invoice.InvoiceLines = InvoiceManager.GetInvoiceLineViewModels(id);
                 invoice.Attachments = AttachmentManager.GetAttachmentViewModelsForDocument(DocumentType.Invoice, id);
 

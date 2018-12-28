@@ -101,16 +101,27 @@
             @Html.DisplayFor(modelItem => item.LastModifiedDate)
         </td>
         <td>
-            @if (item.Status == Status.Closed)
+            @if (item.Status == Status.Closed && item.Accesses.CanOpen)
             {
                 <a asp-controller="Customer" asp-action="ReOpen" asp-route-id="@item.Id" title="Otwórz ponownie" class="btn-sm btn-default"><i class="fas fa-door-open fa-lg"></i></a>
             }
             else
             {
-                <a asp-controller="Customer" asp-action="Edit" asp-route-id="@item.Id" title="Edycja" class="btn-sm btn-default"><i class="fas fa-pen fa-lg"></i></a>
-                <a asp-controller="Customer" asp-action="Close" asp-route-id="@item.Id" title="Zamknięcie" class="btn-sm btn-default"><i class="fas fa-door-closed fa-lg"></i></a>
+                if (item.Accesses.CanEdit)
+                {
+                    <a asp-controller="Customer" asp-action="Edit" asp-route-id="@item.Id" title="Edycja" class="btn-sm btn-default"><i class="fas fa-pen fa-lg"></i></a>
+                }
+
+                if (item.Accesses.CanClose)
+                {
+                    <a asp-controller="Customer" asp-action="Close" asp-route-id="@item.Id" title="Zamknięcie" class="btn-sm btn-default"><i class="fas fa-door-closed fa-lg"></i></a>
+                }
             }
-            <a asp-controller="Customer" asp-action="Details" asp-route-id="@item.Id" title="Szczegóły" class="btn-sm btn-default"><i class="fas fa-info fa-lg"></i></a>
+            @if (item.Accesses.CanView)
+            {
+                <a asp-controller="Customer" asp-action="Details" asp-route-id="@item.Id" title="Szczegóły" class="btn-sm btn-default"><i class="fas fa-info fa-lg"></i></a>
+            }
+
         </td>
     </tr>
 }

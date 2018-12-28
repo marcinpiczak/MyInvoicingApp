@@ -232,7 +232,7 @@ namespace MyInvoicingApp.Controllers
                 //var model = CustomerManager.GetCustomerViewModelById(id);
                 var model = CustomerManager.GetCustomerViewModelByIdForUser(id, CurrentUser);
 
-                model.Invoices = InvoiceManager.GetInvoiceViewModelsForCustomer(id).ToList();
+                model.Invoices = InvoiceManager.GetInvoiceViewModelsForCustomerWithAccess(id, CurrentUser).ToList();
             
                 return View(model);
             }
